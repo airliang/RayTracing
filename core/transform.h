@@ -42,7 +42,8 @@ namespace AIR
 		//Vector3f ObjectToWorldPoint(const Vector3f& point, const Vector3f& ptError, Vector3f* absError) const;
 		Interaction ObjectToWorldInteraction(const Interaction& isect) const;
 
-		bool Transform::SwapsHandedness() const {
+		bool SwapsHandedness() const 
+		{
 			Float det =
 				mat._M[0][0] * (mat._M[1][1] * mat._M[2][2] - mat._M[1][2] * mat._M[2][1]) -
 				mat._M[0][1] * (mat._M[1][0] * mat._M[2][2] - mat._M[1][2] * mat._M[2][0]) +

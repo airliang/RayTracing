@@ -14,6 +14,7 @@ project(RayTracing)
 #add_subdirectory ("shapes")
 #add_subdirectory ("filters")
 #add_subdirectory ("samplers")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/math)
@@ -91,6 +92,20 @@ set(SOURCES
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+MESSAGE("Identifying the OS...")
+if(WIN32)
+  MESSAGE("This is Windows.")
+elseif(APPLE)
+  MESSAGE("This is MacOS.")
+  SET(CMAKE_C_COMPILER "/usr/bin/gcc") # 默认c编译器
+  SET(CMAKE_CXX_COMPILER "/usr/bin/g++") # 默认c++编译器
+  SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
+elseif(UNIX)
+  MESSAGE("This is Linux.")
+endif()
+
+
 add_executable (RayTracing ${SOURCES})
 if (CMAKE_BUILD_TYPE MATCHES Debug)
 #target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/Half-2_4_d.lib)

@@ -8,12 +8,14 @@ namespace AIR
 #define MaxFloat std::numeric_limits<Float>::max()
 #define Infinity std::numeric_limits<Float>::infinity()
 #else
-
+static constexpr Float MaxFloat = std::numeric_limits<Float>::max();
+static constexpr Float Infinity = std::numeric_limits<Float>::infinity();
 #endif
 #ifdef _MSC_VER
 #define MachineEpsilon (std::numeric_limits<Float>::epsilon() * 0.5)
 #else
-
+static constexpr Float MachineEpsilon =
+    std::numeric_limits<Float>::epsilon() * 0.5;
 #endif
 	static Float ShadowEpsilon = 0.0001f;
 	static Float Pi = 3.14159265358979323846;

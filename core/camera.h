@@ -23,7 +23,7 @@ namespace AIR
 					1 / (screenWindow.pMin.y - screenWindow.pMax.y), 1) *
 				Matrix4f::GetTranslateMatrix(-screenWindow.pMin.x, -screenWindow.pMax.y, 0);
 			RasterToScreen = Matrix4f::Inverse(ScreenToRaster);
-			//这里x,y是投影在z = 1的平面上，而不是near面上，near和far只是为了让z变到0-1之间
+			//锟斤拷锟斤拷x,y锟斤拷投影锟斤拷z = 1锟斤拷平锟斤拷锟较ｏ拷锟斤拷锟斤拷锟斤拷near锟斤拷锟较ｏ拷near锟斤拷far只锟斤拷为锟斤拷锟斤拷z锟戒到0-1之锟斤拷
 			//
 			float n = 0.1f;
 			float f = 1000.0f;
@@ -33,8 +33,8 @@ namespace AIR
 				0, 0, 1, 0);
 
 			RasterToCamera = Matrix4f::Inverse(CameraToScreen) * RasterToScreen;
-			//这里非常奇怪，按这个RasterToCamera的计算，出来的结果：x,y是z = 1的坐标，而z是nearplane的坐标
-			//所以这个坐标是near平面上的
+			//锟斤拷锟斤拷浅锟斤拷锟街ｏ拷锟斤拷锟斤拷锟絉asterToCamera锟侥硷拷锟姐，锟斤拷锟斤拷锟侥斤拷锟斤拷锟絰,y锟斤拷z = 1锟斤拷锟斤拷锟疥，锟斤拷z锟斤拷nearplane锟斤拷锟斤拷锟斤拷
+			//锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟斤拷锟絥ear平锟斤拷锟较碉拷
 
 			dxCamera = (MultiplyPoint(RasterToCamera, Point3f(1, 0, 0)) - MultiplyPoint(RasterToCamera, Point3f(0, 0, 0)));
 			dyCamera = (MultiplyPoint(RasterToCamera, Point3f(0, 1, 0)) - MultiplyPoint(RasterToCamera, Point3f(0, 0, 0)));
@@ -54,7 +54,7 @@ namespace AIR
 		Float GenerateRay(const CameraSample &sample,
 			Ray *ray) const;
 
-		Float Camera::GenerateRayDifferential(const CameraSample &sample, RayDifferential *ray) const;
+		Float GenerateRayDifferential(const CameraSample &sample, RayDifferential *ray) const;
 
 		static std::shared_ptr<Camera> CreateCamera(const Transform& cameraToWorld, const Transform& cameraToScreen);
 

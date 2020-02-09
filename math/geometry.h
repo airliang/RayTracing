@@ -317,12 +317,19 @@ namespace AIR
 	typedef Vector3<Float> Vector3f;
 	typedef Vector3<int> Vector3i;
 
+    template <>
 	Vector3f Vector3f::forward = Vector3f(0, 0, 1.0f);
+	template <>
 	Vector3f Vector3f::up = Vector3<float>(0, 1.0f, 0);
+	template <>
 	Vector3f Vector3f::right = Vector3<float>(1.0f, 0, 0);
+	template <>
 	Vector3f Vector3f::one = Vector3<float>(1.0f, 1.0f, 1.0f);
+	template <>
 	Vector3f Vector3f::zero = Vector3<float>(0, 0, 0);
+	template <>
 	Vector2f Vector2f::one = Vector2f(1.0f, 1.0f);
+	template <>
 	Vector2f Vector2f::zero = Vector2f(0, 0);
 
 	template <typename T>
@@ -366,6 +373,69 @@ namespace AIR
 	typedef Vector2f Point2f;
 	typedef Vector2i Point2i;
 	typedef Vector3f Point3f;
+
+	class Ray
+	{
+	public:
+		Ray() : tMax(Infinity), time(0.f) { }
+		Ray(const Vector3f &o, const Vector3f &d, Float tMax = Infinity,
+			Float time = 0.f)
+			: o(o), d(d), tMax(tMax), time(time) 
+		{ 
+		
+		}
+		Vector3f operator()(Float t) const { return o + d * t; }
+
+		bool HasNaNs() const {
+			return (o.HasNaNs() || d.HasNaNs() || std::isnan(tMax));
+		}
+		//friend std::ostream& operator<<(std::ostream& os, const Ray &r) {
+		//	os << "[o=" << r.o << ", d=" << r.d << ", tMax="
+		//		<< r.tMax << ", time=" << r.time << "]";
+		//	return os;
+		//}
+
+		Vector3f o;
+		Vector3f d;
+		mutable Float tMax;
+		Float time;
+	};
+
+	class RayDifferential : public Ray 
+	{
+	public:
+		RayDifferential() : hasDifferentials(false) 
+		{
+		}
+
+		RayDifferential(const Vector3f &o, const Vector3f &d,
+			Float tMax = Infinity, Float time = 0.f)
+			: Ray(o, d, tMax, time) 
+		{
+			hasDifferentials = false;
+		}
+		RayDifferential(const Ray &ray) : Ray(ray) {
+			hasDifferentials = false;
+		}
+		bool HasNaNs() const 
+		{
+			return Ray::HasNaNs() ||
+				(hasDifferentials && (rxOrigin.HasNaNs() || ryOrigin.HasNaNs() ||
+					rxDirection.HasNaNs() || ryDirection.HasNaNs()));
+		}
+		void ScaleDifferentials(Float s) 
+		{
+			rxOrigin = o + (rxOrigin - o) * s;
+			ryOrigin = o + (ryOrigin - o) * s;
+			rxDirection = d + (rxDirection - d) * s;
+			ryDirection = d + (ryDirection - d) * s;
+		}
+
+		bool hasDifferentials;
+		Vector3f rxOrigin, ryOrigin;
+		Vector3f rxDirection, ryDirection;
+
+	};
 
 	template <typename T>
 	class Bounds3 
@@ -775,68 +845,7 @@ namespace AIR
 		return ret;
 	}
 
-	class Ray
-	{
-	public:
-		Ray() : tMax(Infinity), time(0.f) { }
-		Ray(const Vector3f &o, const Vector3f &d, Float tMax = Infinity,
-			Float time = 0.f)
-			: o(o), d(d), tMax(tMax), time(time) 
-		{ 
-		
-		}
-		Vector3f operator()(Float t) const { return o + d * t; }
-
-		bool HasNaNs() const {
-			return (o.HasNaNs() || d.HasNaNs() || std::isnan(tMax));
-		}
-		//friend std::ostream& operator<<(std::ostream& os, const Ray &r) {
-		//	os << "[o=" << r.o << ", d=" << r.d << ", tMax="
-		//		<< r.tMax << ", time=" << r.time << "]";
-		//	return os;
-		//}
-
-		Vector3f o;
-		Vector3f d;
-		mutable Float tMax;
-		Float time;
-	};
-
-	class RayDifferential : public Ray 
-	{
-	public:
-		RayDifferential() : hasDifferentials(false) 
-		{
-		}
-
-		RayDifferential(const Vector3f &o, const Vector3f &d,
-			Float tMax = Infinity, Float time = 0.f)
-			: Ray(o, d, tMax, time) 
-		{
-			hasDifferentials = false;
-		}
-		RayDifferential(const Ray &ray) : Ray(ray) {
-			hasDifferentials = false;
-		}
-		bool HasNaNs() const 
-		{
-			return Ray::HasNaNs() ||
-				(hasDifferentials && (rxOrigin.HasNaNs() || ryOrigin.HasNaNs() ||
-					rxDirection.HasNaNs() || ryDirection.HasNaNs()));
-		}
-		void ScaleDifferentials(Float s) 
-		{
-			rxOrigin = o + (rxOrigin - o) * s;
-			ryOrigin = o + (ryOrigin - o) * s;
-			rxDirection = d + (rxDirection - d) * s;
-			ryDirection = d + (ryDirection - d) * s;
-		}
-
-		bool hasDifferentials;
-		Vector3f rxOrigin, ryOrigin;
-		Vector3f rxDirection, ryDirection;
-
-	};
+	
 
 	//y is up,so is different from pbrt
 	inline Vector3f SphericalDirection(Float sinTheta, Float cosTheta, Float phi) {
