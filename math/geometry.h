@@ -301,6 +301,16 @@ namespace AIR
 			return Vector3<T>(std::ceil(v.x), std::ceil(v.y), std::ceil(v.z));
 		}
 
+        static Vector3<T> FaceForward(const Vector3<T> &v, const Vector3<T> &v2)
+		{
+			return (Dot(v, v2) < 0.f) ? -v : v;
+		}
+
+		static T AbsDot(const Vector3<T> &v1, const Vector3<T> &v2) 
+		{
+            //DCHECK(!v1.HasNaNs() && !v2.HasNaNs());
+            return std::abs(Dot(v1, v2));
+		}
 		
 		// Vector3 Public Data
 		T x, y, z;
@@ -845,20 +855,19 @@ namespace AIR
 		return ret;
 	}
 
-	
+	//切线空间里统一z向上
 
-	//y is up,so is different from pbrt
+	//z is up, the same as pbrt
 	inline Vector3f SphericalDirection(Float sinTheta, Float cosTheta, Float phi) {
-		return Vector3f(sinTheta * std::cos(phi), cosTheta,
-			sinTheta * std::sin(phi));
+		return Vector3f(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
 	}
 
 	inline Float SphericalTheta(const Vector3f &v) {
-		return std::acos(Clamp(v.y, -1, 1));
+		return std::acos(Clamp(v.z, -1, 1));
 	}
 
 	inline Float SphericalPhi(const Vector3f &v) {
-		Float p = std::atan2(v.z, v.x);
+		Float p = std::atan2(v.y, v.x);
 		return (p < 0) ? (p + 2 * Pi) : p;
 	}
 

@@ -53,6 +53,7 @@ set(CORE_SOURCES
 	core/film.cpp
 	core/imageio.cpp
 	core/fileutil.cpp
+	core/bsdf.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
