@@ -4,6 +4,7 @@
 namespace AIR
 {
 	class RObject;
+	class BSDF;
 	class Interaction
 	{
 	public:
@@ -13,13 +14,23 @@ namespace AIR
 			const Vector3f &dndu, const Vector3f &dndv, Float t) : interactPoint(p), time(t), pError(error)
 			, wo(Vector3f::Normalize(wo)), normal(n), dpdu(dpdu), dpdv(dpdv), dndu(dndu), dndv(dndv)
 		{
-
+			shading.n = n;
+			shading.dndu = dndu;
+			shading.dndv = dndv;
+			shading.dpdu = dndu;
+			shading.dpdv = dpdv;
 		}
 
 		~Interaction()
 		{
 
 		}
+
+		void SetGeometryShading(const Vector3f &dpdus,
+			const Vector3f &dpdvs,
+			const Vector3f &dndus,
+			const Vector3f &dndvs,
+			bool orientationIsAuthoritative);
 
 		Vector3f interactPoint;   //交点
 		Float time;        //应该是相交的ray的参数t
@@ -30,10 +41,19 @@ namespace AIR
 		Vector2f uv;          //parameterization of surface;
 		Vector3f dpdu, dpdv;  //partial derivatives of the point,can see as tangents
 		Vector3f dndu, dndv;  //differential change in surface normal
+
+		struct 
+		{
+			Vector3f n;
+			Vector3f dpdu, dpdv;
+			Vector3f dndu, dndv;
+		} shading;
+
 		mutable Vector3f dpdx, dpdy;
 		mutable Float dudx = 0, dvdx = 0, dudy = 0, dvdy = 0;
 
 		const RObject* robject = nullptr;
+		BSDF* bsdf = nullptr;
 	};
 };
 

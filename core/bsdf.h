@@ -168,6 +168,7 @@ class BxDF {
                               BxDFType *sampledType = nullptr) const;
 
     //该函数返回的是对wo方向有贡献的半球内入射方向的bxdf的积分值ρhd
+	//实际上是返回总共出射的radiance的光量分布
     //ρhd = ∫[H]f(p, wo, wi)|cosθi|dwi
     //wo 出射方向
     //nSamples 样本数量
@@ -196,37 +197,37 @@ public:
     BSDF(const Interaction &si, Float eta = 1)
         : eta(eta),
           //ns(si.shading.n),
-          //ng(si.n),
+		  geometryNormal(si.normal),
           //ss(Vector3f::Normalize(si.shading.dpdu)),
           //ts(Vector3f::Cross(ns, ss)) 
-          n(si.normal),
-          s(si.dpdu),
-          t(Vector3f::Cross(n, s)) {}
+          ns(si.normal),
+          ss(si.dpdu),
+          ts(Vector3f::Cross(ns, ss)) {}
     void Add(BxDF *b) {
         //CHECK_LT(nBxDFs, MaxBxDFs);
         bxdfs[nBxDFs++] = b;
     }
     int NumComponents(BxDFType flags = BSDF_ALL) const;
     Vector3f WorldToLocal(const Vector3f &v) const {
-        return Vector3f(Vector3f::Dot(v, s), Vector3f::Dot(v, t), Vector3f::Dot(v, n));
+        return Vector3f(Vector3f::Dot(v, ss), Vector3f::Dot(v, ts), Vector3f::Dot(v, ns));
     }
     Vector3f LocalToWorld(const Vector3f &v) const {
-        return Vector3f(s.x * v.x + t.x * v.y + n.x * v.z,
-                        s.y * v.x + t.y * v.y + n.y * v.z,
-                        s.z * v.x + t.z * v.y + n.z * v.z);
+		return Vector3f(ss.x * v.x + ts.x * v.y + ns.x * v.z,
+			ss.y * v.x + ts.y * v.y + ns.y * v.z,
+			ss.z * v.x + ts.z * v.y + ns.z * v.z);
     }
     Spectrum f(const Vector3f &woW, const Vector3f &wiW,
                BxDFType flags = BSDF_ALL) const;
-    Spectrum rho_hd(int nSamples, const Point2f *samples1, const Point2f *samples2,
+    Spectrum rho_hh(int nSamples, const Point2f *samples1, const Point2f *samples2,
                  BxDFType flags = BSDF_ALL) const;
-    Spectrum rho_hh(const Vector3f &wo, int nSamples, const Point2f *samples,
+    Spectrum rho_hd(const Vector3f &wo, int nSamples, const Point2f *samples,
                  BxDFType flags = BSDF_ALL) const;
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                       Float *pdf, BxDFType type = BSDF_ALL,
                       BxDFType *sampledType = nullptr) const;
     Float Pdf(const Vector3f &wo, const Vector3f &wi,
               BxDFType flags = BSDF_ALL) const;
-    std::string ToString() const;
+    //std::string ToString() const;
 
     // BSDF Public Data
     const Float eta;
@@ -239,9 +240,10 @@ private:
     //const Vector3f ns, ng;
     //const Vector3f ss, ts;
     //is geometry's normal tangent not shading
-    const Vector3f n;
-    const Vector3f s;
-    const Vector3f t;
+	const Vector3f geometryNormal;   
+    const Vector3f ns;   //shading normal (z)
+    const Vector3f ss;   //shading s (x)
+    const Vector3f ts;   //shading tangent = cross(n, s) (y)
     int nBxDFs = 0;
     static constexpr int MaxBxDFs = 8;
     BxDF *bxdfs[MaxBxDFs];
@@ -312,6 +314,16 @@ public:
     LambertianReflection(const Spectrum &R)
         : BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), R(R) 
         {}
+
+	//ρhd = ∫[H]f(p, wo, wi) |cosθi| dwi = R，该函数返回的是R
+	//上面公式的f(p, wo, wi) = kR，因为每个立体角的反射是一个常量R，
+	//所以f一定是一个R的缩放值
+	//ρhd = ∫[H]kR|cosθi|dwi = kR∫[0,2π]∫[0,π/2]|cosθ|sinθdθdφ
+	//     = kR∫[0,2π]∫[0,π/2](1/2)sin2θdθdφ
+	//     = kR∫[0,2π](1/4)-cos2θ|[0,π/2]dφ
+	//     = kR/2∫[0,2π]dφ = kRπ= R
+	//k = 1 / π
+	//所以f(p, wo, wi) = kR = R / π
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
     Spectrum rho_hd(const Vector3f &, int, const Point2f *) const 
     { 
@@ -339,6 +351,10 @@ public:
           R(R),
           distribution(distribution),
           fresnel(fresnel) {}
+
+	//               D(ωh) G(ωo,ωi) Fr(ωo)
+	// f(ωo,ωi) = ---------------------------
+	//                   4 cosθo cosθi
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                       Float *pdf, BxDFType *sampledType) const;

@@ -14,7 +14,7 @@ project(RayTracing)
 #add_subdirectory ("shapes")
 #add_subdirectory ("filters")
 #add_subdirectory ("samplers")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/math)
@@ -54,6 +54,9 @@ set(CORE_SOURCES
 	core/imageio.cpp
 	core/fileutil.cpp
 	core/bsdf.cpp
+	core/memory.cpp
+	core/microfacet.cpp
+	core/interaction.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -81,6 +84,14 @@ set(MATH_SOURCES
 	math/quaternion.cpp
 )
 
+set(SAMPLERS_SOURCES
+    samplers/stratified.cpp
+)
+
+set(MATERIALS_SOURCES
+    materials/matte.cpp
+)
+
 set(SOURCES 
     RayTracing.h
 	RayTracing.cpp
@@ -89,10 +100,12 @@ set(SOURCES
 	${MATH_SOURCES}
 	${SAMPLER_SOURCES}
 	${FILTER_SOURCES}
+	${MATERIALS_SOURCES}
 	)
 
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
 
 MESSAGE("Identifying the OS...")
 if(WIN32)
@@ -106,6 +119,19 @@ elseif(UNIX)
   MESSAGE("This is Linux.")
 endif()
 
+# 检查c++编译器标志，设置c++11支持变量
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("/std:c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("/std:c++0x" COMPILER_SUPPORTS_CXX0X)
+
+# 使用变量设置编译标志
+if(COMPILER_SUPPORTS_CXX11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++11")
+elseif(COMPILER_SUPPORTS_CXX0X)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++0x")
+else()
+message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+endif()
 
 add_executable (RayTracing ${SOURCES})
 if (CMAKE_BUILD_TYPE MATCHES Debug)
@@ -117,4 +143,4 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 target_link_libraries(RayTracing Half IlmImf)
 else ()
 endif()
-add_compile_options(-std=c++14)
+add_definitions(/std:c++14)

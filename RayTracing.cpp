@@ -13,7 +13,7 @@ using namespace AIR;
 int main()
 {
 	cout << "Hello CMake。" << endl;
-	Vector3f forward = Vector3f::forward;
+	auto forward = Vector3f::forward;
 	forward = forward.Normalize();
 	cout << "sizeof(matrix4x4)=" << sizeof(Matrix4x4) <<endl;
 	cout << "sizeof(quaternion)=" << sizeof(Quaternion) <<endl;
