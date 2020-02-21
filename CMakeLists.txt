@@ -114,9 +114,14 @@ elseif(APPLE)
   MESSAGE("This is MacOS.")
   SET(CMAKE_C_COMPILER "/usr/bin/gcc") # 默认c编译器
   SET(CMAKE_CXX_COMPILER "/usr/bin/g++") # 默认c++编译器
-  SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin")
 elseif(UNIX)
   MESSAGE("This is Linux.")
+endif()
+
+if (CMAKE_BUILD_TYPE MATCHES "Release")
+  SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin/release")
+elseif (CMAKE_BUILD_TYPE MATCHES "Debug")
+  SET(EXECUTABLE_OUTPUT_PATH "${PROJECT_SOURCE_DIR}/bin/debug")
 endif()
 
 # 检查c++编译器标志，设置c++11支持变量

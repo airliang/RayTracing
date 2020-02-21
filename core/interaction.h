@@ -32,6 +32,17 @@ namespace AIR
 			const Vector3f &dndvs,
 			bool orientationIsAuthoritative);
 
+		//先求出ray和Interaction point所在的平面的相交
+		//因为这里不知道具体的模型轮廓，所以只能用平面来模拟！
+		//假设该点的平面是：ax + by + cz + d = 0
+		//其中平面法线是(a,b,c)，d = -(n·p)
+		//ray方程是：o + td,代入平面方程得：
+		//a(ox + tdx) + b(oy + tdy) + c(oz + tdz) - (n·p) = 0
+		// n = (a,b,c)
+		//(a,b,c)·o + t(a,b,c)·d = n·p
+		//t = (n·p - n·o) / n·d
+		void ComputeDifferentials(const RayDifferential& ray) const;
+
 		Vector3f interactPoint;   //交点
 		Float time;        //应该是相交的ray的参数t
 		Vector3f pError;   //floating-point error
@@ -49,6 +60,7 @@ namespace AIR
 			Vector3f dndu, dndv;
 		} shading;
 
+		//交点p对输出图像的x,y坐标的偏导数
 		mutable Vector3f dpdx, dpdy;
 		mutable Float dudx = 0, dvdx = 0, dudy = 0, dvdy = 0;
 
