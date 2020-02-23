@@ -1333,4 +1333,10 @@ void ResampleLinearSpectrum(const Float *lambdaIn, const Float *vIn, int nIn,
     }
 }
 
-}  // namespace pbrt
+RGBSpectrum RGBSpectrum::red = RGBSpectrum(1.0f, 0.0f, 0.0f);
+RGBSpectrum RGBSpectrum::green = RGBSpectrum(0.0f, 1.0f, 0.0f);
+RGBSpectrum RGBSpectrum::blue = RGBSpectrum(0.0f, 0.0f, 1.0f);
+RGBSpectrum RGBSpectrum::white = RGBSpectrum(1.0f, 1.0f, 1.0f);
+RGBSpectrum RGBSpectrum::black = RGBSpectrum(0.0f, 0.0f, 0.0f);
+
+}  // namespace AIR

@@ -57,6 +57,7 @@ set(CORE_SOURCES
 	core/memory.cpp
 	core/microfacet.cpp
 	core/interaction.cpp
+	core/texture.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -92,6 +93,10 @@ set(MATERIALS_SOURCES
     materials/matte.cpp
 )
 
+set(TEXTURES_SOURCES
+    
+)
+
 set(SOURCES 
     RayTracing.h
 	RayTracing.cpp
@@ -101,6 +106,7 @@ set(SOURCES
 	${SAMPLER_SOURCES}
 	${FILTER_SOURCES}
 	${MATERIALS_SOURCES}
+	${TEXTURES_SOURCES}
 	)
 
 

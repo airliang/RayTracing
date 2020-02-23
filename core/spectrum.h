@@ -522,6 +522,13 @@ class RGBSpectrum : public CoefficientSpectrum<3>
         *this = s;
     }
 
+    RGBSpectrum(Float r, Float g, Float b)
+    {
+        c[0] = r;
+        c[1] = g;
+        c[2] = b;
+    }
+
     static RGBSpectrum FromRGB(const Float rgb[3],
                                SpectrumType type = SpectrumType::Reflectance) 
 	{
@@ -584,6 +591,12 @@ class RGBSpectrum : public CoefficientSpectrum<3>
         xyz[2] *= scale;
         return FromXYZ(xyz);
     }
+
+    static RGBSpectrum red;
+    static RGBSpectrum green;
+    static RGBSpectrum blue;
+    static RGBSpectrum white;
+    static RGBSpectrum black;
 };
 
 // Spectrum Inline Functions
