@@ -58,6 +58,8 @@ set(CORE_SOURCES
 	core/microfacet.cpp
 	core/interaction.cpp
 	core/texture.cpp
+	core/mipmap.cpp
+	core/parallelism.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h

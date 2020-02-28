@@ -69,4 +69,21 @@ Point2f SphericalMapping2D::Map(const Interaction& si, Vector2f *dstdx, Vector2f
     return st;
 }
 
+//       |` 1         x = 0
+// L(x) =|  asin(πx)sin(πx/a) / (π²x²)  -a ≤ x < a
+//       |, 0         
+Float Lanczos(Float x, Float tau) 
+{
+    //a = 1.0f / tau
+	x = std::abs(x);
+	if (x < 1e-5f) 
+        return 1;
+	if (x > 1.f) 
+        return 0;
+	x *= Pi;
+	Float s = std::sin(x * tau) / (x * tau);
+	Float lanczos = std::sin(x) / x;
+	return s * lanczos;
+}
+
 }

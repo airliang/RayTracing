@@ -143,7 +143,7 @@ public:
     std::list<std::pair<size_t, uint8_t *>> usedBlocks, availableBlocks;
 };
 
-template <typename T, int logBlockSize>
+template <typename T, int logBlockSize = 2>
 class BlockedArray 
 {
   public:
@@ -194,6 +194,6 @@ class BlockedArray
     const int uRes, vRes, uBlocks;
 };
 
-}  // namespace pbrt
+}  // namespace AIR
 
 #endif  // MEMORY_H

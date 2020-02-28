@@ -144,6 +144,22 @@ static constexpr Float MachineEpsilon =
 		return std::log(x) * invLog2;
 	}
 
+	inline int Log2Int(uint32_t v) 
+	{
+#if defined(_MSC_VER)
+		unsigned long lz = 0;
+		if (_BitScanReverse(&lz, v)) 
+			return lz;
+		return 0;
+#else
+		return 31 - __builtin_clz(v);
+#endif
+	}
+
+	inline int Log2Int(int32_t v) 
+	{ 
+		return Log2Int((uint32_t)v); 
+	}
 
 	template <typename T>
 	inline bool IsPowerOf2(T v) {

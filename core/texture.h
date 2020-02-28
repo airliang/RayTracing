@@ -54,4 +54,7 @@ public:
 	virtual T Evaluate(const Interaction &) const = 0;
 	virtual ~Texture() {}
 };
+
+//Lanczos resampling
+Float Lanczos(Float, Float tau = 2);
 }
