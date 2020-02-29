@@ -8,10 +8,12 @@
 #include "geometryparam.h"
 #include "film.h"
 #include "boxfilter.h"
+#include "parallelism.h"
 using namespace std;
 using namespace AIR;
 int main()
 {
+	ParallelInit();
 	cout << "Hello CMake。" << endl;
 	auto forward = Vector3f::forward;
 	forward = forward.Normalize();
@@ -35,6 +37,7 @@ int main()
 	Film film(Point2i(512, 512), Bounds2f(Vector2f(0.0f, 0.0f), Vector2f(512.0f, 512.0f)), std::unique_ptr<Filter>(new BoxFilter(Vector2f::one)), "test.exr");
 	film.WriteImage();
 
+	ParallelCleanup();
 	system("pause");
 	return 0;
 }
