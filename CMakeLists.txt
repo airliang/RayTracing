@@ -60,6 +60,7 @@ set(CORE_SOURCES
 	core/texture.cpp
 	core/mipmap.cpp
 	core/parallelism.cpp
+	core/light.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -96,7 +97,8 @@ set(MATERIALS_SOURCES
 )
 
 set(TEXTURES_SOURCES
-    
+    textures/imagetexture.cpp
+	textures/bilerptexture.cpp
 )
 
 set(SOURCES 

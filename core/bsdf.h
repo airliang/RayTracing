@@ -168,7 +168,7 @@ class BxDF {
                               BxDFType *sampledType = nullptr) const;
 
     //该函数返回的是对wo方向有贡献的半球内入射方向的bxdf的积分值ρhd
-	//实际上是返回总共出射的radiance的光量分布
+	//实际上是返回总共出射的radiance的光量分布(归一化的)
     //ρhd = ∫[H]f(p, wo, wi)|cosθi|dwi
     //wo 出射方向
     //nSamples 样本数量

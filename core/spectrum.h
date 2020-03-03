@@ -1,4 +1,4 @@
-
+﻿
 /*
     pbrt source code is Copyright(c) 1998-2016
                         Matt Pharr, Greg Humphreys, and Wenzel Jakob.
@@ -67,7 +67,21 @@ enum class SpectrumType
 
 extern Float InterpolateSpectrumSamples(const Float *lambda, const Float *vals,
                                         int n, Float l);
+
+//Planck’s law gives the radiance emitted by a blackbody
+//                     2hc²
+// Le(λ,T) = -----------------------
+//            λ^5(e^(hc/λk_bT) - 1)
+//lamda 波长数组
+//n     lamda的长度
+//T     温度
+//Le    各个波长的radiance值数组，长度也是n
 extern void Blackbody(const Float *lambda, int n, Float T, Float *Le);
+
+// Wien’s displacement law
+//         b
+// λmax = --
+//         T
 extern void BlackbodyNormalized(const Float *lambda, int n, Float T,
                                 Float *vals);
 

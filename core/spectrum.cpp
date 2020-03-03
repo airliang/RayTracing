@@ -959,13 +959,13 @@ void Blackbody(const Float *lambda, int n, Float T, Float *Le) {
         for (int i = 0; i < n; ++i) Le[i] = 0.f;
         return;
     }
-    const Float c = 299792458;
-    const Float h = 6.62606957e-34;
-    const Float kb = 1.3806488e-23;
+    const Float c = 299792458;   //the speed of light in vacuu
+    const Float h = 6.62606957e-34;   //Planck¡¯s constant
+    const Float kb = 1.3806488e-23;   //Boltzmann constant
     for (int i = 0; i < n; ++i) 
 	{
         // Compute emitted radiance for blackbody at wavelength _lambda[i]_
-        Float l = lambda[i] * 1e-9;
+        Float l = lambda[i] * 1e-9;   //convert the wavelength from nm to m
         Float lambda5 = (l * l) * (l * l) * l;
         Le[i] = (2 * h * c * c) /
                 (lambda5 * (std::exp((h * c) / (l * kb * T)) - 1));
@@ -976,6 +976,7 @@ void Blackbody(const Float *lambda, int n, Float T, Float *Le) {
 void BlackbodyNormalized(const Float *lambda, int n, Float T, Float *Le) {
     Blackbody(lambda, n, T, Le);
     // Normalize _Le_ values based on maximum blackbody radiance
+    //Wien¡¯s displacement constant  2.8977721e-3
     Float lambdaMax = 2.8977721e-3 / T * 1e9;
     Float maxL;
     Blackbody(&lambdaMax, 1, T, &maxL);

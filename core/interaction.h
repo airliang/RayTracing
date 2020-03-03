@@ -21,6 +21,9 @@ namespace AIR
 			shading.dpdv = dpdv;
 		}
 
+		Interaction(const Point3f& p, Float time)
+			: interactPoint(p), time(time) {}
+
 		~Interaction()
 		{
 

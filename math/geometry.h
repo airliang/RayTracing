@@ -286,6 +286,11 @@ namespace AIR
 			return (v1 - v2).Length();
 		}
 
+		static T DistanceSquare(const Vector3<T>& v1, const Vector3<T>& v2)
+		{
+			return (v1 - v2).LengthSquared();
+		}
+
 		static Vector3<T> Abs(const Vector3<T> &v) 
 		{
 			return Vector3<T>(std::abs(v.x), std::abs(v.y), std::abs(v.z));
