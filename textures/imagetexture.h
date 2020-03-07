@@ -2,6 +2,7 @@
 
 #include "texture.h"
 #include "mipmap.h"
+#include <map>
 
 namespace AIR
 {

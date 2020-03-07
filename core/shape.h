@@ -26,6 +26,9 @@ namespace AIR
 
 		virtual Bounds3f ObjectBound() const = 0;
 
+		//返回该shape的面积
+		virtual Float Area() const = 0;
+
 		//ray is in object space
 		virtual bool IntersectP(const Ray &ray) 
 		{

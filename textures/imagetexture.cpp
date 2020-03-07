@@ -3,6 +3,9 @@
 
 namespace AIR
 {
+template <typename Tmemory, typename Treturn>
+std::map<TexInfo, std::unique_ptr<Mipmap<Tmemory>>> ImageTexture<Tmemory, Treturn>::s_textures;
+
 template <typename Tmemory, typename Treturn> 
 ImageTexture<Tmemory, Treturn>::ImageTexture(std::unique_ptr<TextureMapping2D> m,
                  const std::string &filename, bool doTri, Float maxAniso,
@@ -12,19 +15,9 @@ ImageTexture<Tmemory, Treturn>::ImageTexture(std::unique_ptr<TextureMapping2D> m
     mipmap = GetTexture(m, filename, doTri, maxAniso, wm, scale, gamma);
 }
 
-template <typename Tmemory, typename Treturn>
-Treturn ImageTexture<Tmemory, Treturn>::Evaluate(const Interaction& si) const
-{
-    //¼ÆËã³ödstdx dstdy
-    Vector2f dstdx, dstdy;
-    Point2f st = mapping->Map(si, &dstdx, &dstdy);
-    Tmemory img = mipmap->Lookup(st, dstdx, dstdy);
-    Treturn out;
-    ConvertOut(img, &out);
-    return out;
-}
 
-static Mipmap<Tmemory>* ImageTexture::GetTexture(const std::string& filename, bool doTri, Float maxAniso, ImageWrap wm, Float scale, bool gamma)
+template <typename Tmemory, typename Treturn>
+static Mipmap<Tmemory>* ImageTexture<Tmemory, Treturn>::GetTexture(const std::string& filename, bool doTri, Float maxAniso, ImageWrap wm, Float scale, bool gamma)
 {
     TexInfo texInfo(filename, doTri, maxAniso, wm, scale, gamma);
 

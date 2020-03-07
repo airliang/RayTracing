@@ -101,6 +101,13 @@ set(TEXTURES_SOURCES
 	textures/bilerptexture.cpp
 )
 
+set(LIGHTS_SOURCES
+    lights/pointlight.cpp
+	lights/spotlight.cpp
+	lights/distantlight.cpp
+	lights/diffusearealight.cpp
+	)
+
 set(SOURCES 
     RayTracing.h
 	RayTracing.cpp
@@ -111,6 +118,7 @@ set(SOURCES
 	${FILTER_SOURCES}
 	${MATERIALS_SOURCES}
 	${TEXTURES_SOURCES}
+	${LIGHTS_SOURCES}
 	)
 
 

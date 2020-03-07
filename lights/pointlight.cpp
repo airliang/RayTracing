@@ -9,7 +9,7 @@ namespace AIR
 		*pdf = 1.0f;
 		*vis = VisibilityTester(ref, Interaction(position, ref.time));
 
-		return intensity / DistanceSquare(position, ref.interactPoint);
+		return intensity / Vector3f::DistanceSquare(position, ref.interactPoint);
 	}
 
 	Spectrum PointLight::Power() const
