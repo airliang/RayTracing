@@ -61,6 +61,7 @@ set(CORE_SOURCES
 	core/mipmap.cpp
 	core/parallelism.cpp
 	core/light.cpp
+	core/sampling.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
