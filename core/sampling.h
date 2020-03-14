@@ -31,12 +31,14 @@ namespace AIR
 			{
 				cdf[i] = cdf[i - 1] + func[i] * inverseC / n;
 			}
+			funcInt = cdf[n];
 		}
 
 		//采样对应的随机变量
 		//先求u落在哪个cdf上
 		//然后根据该cdf的斜率求出对应的值
 		//off 第几个cdf
+		//return u在cdf中的反函数对应的随机变量
 		Float SampleContinuous(Float u, Float* pdf, int* off = nullptr) const;
 
 		//采样离散的随机
@@ -65,32 +67,42 @@ namespace AIR
 	//把这个Distribution2D理解成一个函数f(x,y)
 	//那么他的概率密度函数是p(x,y)服从均匀分布
 	//f(x,y)的积分是If
-	//If = ∫∫f(u,v)dudv = 1/(nu*nv)∑[0,nu-1]∑[0,nv-1]f(ui,vi)
-	//p(u,v) = f(u,v) / If
-	//p(v) = ∫[0,v]p(u,v)du = 1/nu * ∑[0,nu-1]f(ui,v) / If
-	//     
-	//由于If是一个固定值，所以构建p(v)并没有把 /If放到里面计算
-	//p(u|v) = p(u,v) / p(v) = f(u,v) / (1/nu * ∑[0,nu-1]f(ui,v))
-	//这里把If给约掉了
 	struct Distribution2D
 	{
 		//func 2D函数
 		//nu nv 长度
 		Distribution2D(const Float* func, int nu, int nv)
 		{
-			//求func的积分
-			Float If = 0;
-			for (int u = 0; u < nu; u++)
+
+			for (int v = 0; v < nv; ++v)
 			{
-				for (int v = 0; v < nv; ++v)
-				{
-					If += func[u * v];
-				}
+				pdfUinV.emplace_back(new Distribution1D(&func[v * nu], nu));
 			}
+
+			//p(v) = ∫[0, v]p(u, v)du = 1 / nu * ∑[0, nu - 1]f(ui, v) / If
+			//刚好是p(u|v)的积分
+			//由于p(v)也是只有nv个，所以采样p(v)用一个distribution1d就可以了
+			std::vector<Float> marginalFunc;
+			for (int v = 0; v < nv; ++v)
+			{
+				marginalFunc.push_back(pdfUinV[v]->funcInt);
+			}
+			pdfMarginV.reset(new Distribution1D(&marginalFunc[0], nv));
 		}
 
+		//返回均匀随机变量u对应的真正的随机变量
+		Point2f SampleContinuous(const Point2f& u, Float* pdf) const;
+
+		//返回随机变量u的pdf
+		Float Pdf(const Point2f& u) const;
+
 		//可以理解成nv个关于v的分段函数
-		std::vector<Float> pdfV;
+		//严格来说并不是pdf函数，后面要改命名
+		//每个分段函数有nu个变量，那么pdfUinV包含了f[ui, vi]的所有数值
+		std::vector<std::unique_ptr<Distribution1D>> pdfUinV;
+
+		//v的边际函数，注意不是概率密度，而是v确定下，每个u的积分
+		std::unique_ptr<Distribution1D> pdfMarginV;
 	};
 
 	//均匀采样单位半球上的立体角

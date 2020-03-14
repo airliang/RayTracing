@@ -44,4 +44,29 @@ namespace AIR
 
 		return offset;
 	}
+
+	Point2f Distribution2D::SampleContinuous(const Point2f& uv, Float* pdf) const
+	{
+		Float pdfs[2];
+		int vi = 0;
+		//先采样v的随机变量
+		//p(v) = ∑f(ui, v~)，这里v~ = floor(u.y * nv);
+		//v确定后采样对应的边际
+		Float v = pdfMarginV->SampleContinuous(uv.y, &pdfs[1], &vi);
+
+		//p(u|v) = p(u,v)/p(v)
+		Float u = pdfUinV[vi]->SampleContinuous(uv.x, &pdfs[0]);
+
+		*pdf = pdfs[0] * pdfs[1];
+		return Point2f(u, v);
+	}
+
+	Float Distribution2D::Pdf(const Point2f& u) const
+	{
+		int ui = Clamp(int(u.x * pdfUinV[0]->Count()), 0, pdfUinV[0]->Count() - 1);
+		int vi = Clamp(int(u.y * pdfMarginV->Count()), 0, pdfMarginV->Count() - 1);
+
+		//pdfMarginV->funcInt 相当于整个函数的积分
+		return pdfUinV[vi]->func[ui] / pdfMarginV->funcInt;
+	}
 }
