@@ -47,6 +47,9 @@ protected:
         : sampleVisibleArea(sampleVisibleArea) {}
 
     // MicrofacetDistribution Protected Data
+    //默认是true,
+    //true的时候采样可见的微表面法线
+    //false的时候只是用于测试，采样整个分布
     const bool sampleVisibleArea;
 };
 
@@ -63,12 +66,21 @@ public:
     }
     BeckmannDistribution(Float alphax, Float alphay, bool samplevis = true)
         : MicrofacetDistribution(samplevis), alphax(alphax), alphay(alphay) {}
+
+    //按各向异性的公式：
+    //         e^(-tan²θh(cos²φh/αx² + sin²φh/αy²))
+    // D(wh) = -----------------------------------------
+    //          παxαy (cosθh)^4
     Float D(const Vector3f &wh) const;
+
+    //采样微表面法线
     Vector3f Sample_wh(const Vector3f &wo, const Point2f &u) const;
     //std::string ToString() const;
 
 private:
     // BeckmannDistribution Private Methods
+    //Λ(w) = 1/2(erf(a) - 1 + e^(-a²)/a·sqrt(π))
+    //a = 1/(αtanθ)
     Float Lambda(const Vector3f &w) const;
 
     // BeckmannDistribution Private Data

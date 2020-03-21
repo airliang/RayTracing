@@ -274,4 +274,23 @@ namespace AIR
 		Float u1 = std::sqrt(u.x);
 		return Point2f(1.0f - u1, u1 * u.y);
 	}
+
+	//用于Multiple Importance Sampling
+	//           ns p(x)
+	// ws(x) = -----------
+	//          ∑inipi(x)
+	//               nf pf(x)
+	// wf(x) = -------------------
+	//         nf pf(x) + ng pg(x)
+	inline Float BalanceHeuristic(int nf, Float fPdf, int ng, Float gPdf) 
+	{
+		return (nf * fPdf) / (nf * fPdf + ng * gPdf);
+	}
+
+
+	inline Float PowerHeuristic(int nf, Float fPdf, int ng, Float gPdf) 
+	{
+		Float f = nf * fPdf, g = ng * gPdf;
+		return (f * f) / (f * f + g * g);
+	}
 }

@@ -133,12 +133,21 @@ Spectrum MicrofacetReflection::Sample_f(const Vector3f &wo, Vector3f *wi,
     // Sample microfacet orientation $\wh$ and reflected direction $\wi$
     if (wo.z == 0) 
         return 0.;
+    //首先根据分布采样法线
     Vector3f wh = distribution->Sample_wh(wo, u);
+    //再由法线计算入射光
     *wi = Reflect(wo, wh);
     if (!SameHemisphere(wo, *wi)) 
         return Spectrum(0.f);
 
     // Compute PDF of _wi_ for microfacet reflection
+    //假设以ωo为法线
+    //φi=φh，从发射来计算θi = 2θh
+    //dωi = sinθidθidφi = sin2θh d2θh dφh
+    // dωh   sinθhdθhdφh          1
+    // ---- = ----------------- = --------
+    // dωi   sin2θhd2θhdφi     4cosθh
+    //推出：p(ωi) = p(ωh) / 4(ωo·ωh)
     *pdf = distribution->Pdf(wo, wh) / (4 * Vector3f::Dot(wo, wh));
     return f(wo, *wi);
 }
@@ -156,10 +165,15 @@ Spectrum MicrofacetTransmission::Sample_f(const Vector3f &wo, Vector3f *wi,
 {
     if (wo.z == 0) 
         return 0.;
+    //在折射中，wh微表面法线的采样和反射一样
     Vector3f wh = distribution->Sample_wh(wo, u);
+    //求折射系数比例
     Float eta = CosTheta(wo) > 0 ? (etaA / etaB) : (etaB / etaA);
+    //eta = ηi/ηt
+    //wt = eta(-wi) + [eta(wi·wh) - cosθt]wh
     if (!Refract(wo, wh, eta, wi)) 
         return 0;
+    //求出射wi的pdf
     *pdf = Pdf(wo, *wi);
     return f(wo, *wi);
 }

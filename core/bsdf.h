@@ -356,6 +356,8 @@ public:
 	// f(ωo,ωi) = ---------------------------
 	//                   4 cosθo cosθi
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
+
+    //随机采样wi，每个微表面都遵循perfect specular
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                       Float *pdf, BxDFType *sampledType) const;
     Float Pdf(const Vector3f &wo, const Vector3f &wi) const;
@@ -385,15 +387,24 @@ public:
     Spectrum f(const Vector3f &wo, const Vector3f &wi) const;
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                       Float *pdf, BxDFType *sampledType) const;
+
+    //Pdf pbrbook并没给出推导
     Float Pdf(const Vector3f &wo, const Vector3f &wi) const;
     //std::string ToString() const;
 
 private:
     // MicrofacetTransmission Private Data
     const Spectrum T;
+    //微表面法线分布
     const MicrofacetDistribution *distribution;
+
+    //etaA：正面(法线.z是正数)那边的折射率
+    //etaB：反面
     const Float etaA, etaB;
+    //计算Fresnel的对象
     const FresnelDielectric fresnel;
+
+    //双向还是单向传输
     const TransportMode mode;
 };
 
