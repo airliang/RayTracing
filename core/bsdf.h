@@ -92,6 +92,9 @@ class Fresnel
 public:
     // Fresnel Interface
     virtual ~Fresnel();
+
+    //根据入射光和法线的夹角，返回反射光的比例
+    //cosI 入射和法线夹角cos值
     virtual Spectrum Evaluate(Float cosI) const = 0;
     //virtual std::string ToString() const = 0;
 };
@@ -250,6 +253,8 @@ private:
     //friend class MixMaterial;
 };
 
+//镜面反射的类
+//δ函数来采样
 class SpecularReflection : public BxDF 
 {
 public:
@@ -262,6 +267,8 @@ public:
     {
         return Spectrum(0.f);
     }
+
+    //镜面反射，wi = wr
     Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &sample,
                       Float *pdf, BxDFType *sampledType) const;
     Float Pdf(const Vector3f &wo, const Vector3f &wi) const 
@@ -272,6 +279,7 @@ public:
 
   private:
     // SpecularReflection Private Data
+    //scale the reflected color
     const Spectrum R;
     const Fresnel *fresnel;
 };
@@ -307,6 +315,32 @@ private:
     const FresnelDielectric fresnel;
     //const TransportMode mode;
 };
+
+//该类既有reflection也有trissmission
+class FresnelSpecular : public BxDF
+{
+public:
+    FresnelSpecular(const Spectrum &R, const Spectrum &T, Float etaA,
+                    Float etaB, TransportMode mode) : 
+                    BxDF(BxDFType(BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_SPECULAR))
+                    ,R(R), T(T), etaA(etaA), etaB(etaB), mode(mode)
+    {}
+
+    Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
+        return Spectrum(0.f);
+    }
+    Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &sample,
+                      Float *pdf, BxDFType *sampledType) const;
+    Float Pdf(const Vector3f &wo, const Vector3f &wi) const 
+    { 
+        return 0; 
+    }
+
+private:
+    const Spectrum R, T;
+    const Float etaA, etaB;
+    const TransportMode mode;
+}
 
 class LambertianReflection : public BxDF {
 public:

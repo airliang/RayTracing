@@ -1,4 +1,5 @@
 #include "bsdf.h"
+#include "fresnelreflection.h"
 
 namespace AIR
 {
@@ -76,8 +77,15 @@ Spectrum SpecularReflection::Sample_f(const Vector3f &wo, Vector3f *wi,
                                       BxDFType *sampledType) const 
 {
     // Compute perfect specular reflection direction
+    //wi = -wo + 2 * Dot(wo, n) * n
+    //n = (0, 0, 1)
     *wi = Vector3f(-wo.x, -wo.y, wo.z);
     *pdf = 1;
+
+    //fr = Fr(wi) / |cosθi|
+    //详细推导看：
+    //http://www.pbr-book.org/3ed-2018/Reflection_Models/Specular_Reflection_and_Transmission.html
+    //8.2.2节
     return fresnel->Evaluate(CosTheta(*wi)) * R / AbsCosTheta(*wi);
 }
 
@@ -103,6 +111,51 @@ Spectrum SpecularTransmission::Sample_f(const Vector3f &wo, Vector3f *wi,
     //if (mode == TransportMode::Radiance) 
         ft *= (etaI * etaI) / (etaT * etaT);
     return ft / AbsCosTheta(*wi);
+}
+
+Spectrum FresnelSpecular::Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &sample,
+                      Float *pdf, BxDFType *sampledType) const
+{
+    //因为cosθo和cosθi相同，所以用wo
+    //先算出Fresnel的反射率
+    Float F = FrDielectric(CosTheta(wo), etaA, etaB);
+
+    //小于反射率的随机数用反射，否则用折射
+    if (sample.x < F)
+    {
+        //先算入射方向
+        *wi = Vector3f(-wo.x, -wo.y, wo.z);
+
+        //
+        if (sampledType)
+            *sampledType = BxDFType(BSDF_SPECULAR | BSDF_REFLECTION);
+        *pdf = F;
+        return F * R / AbsCosTheta(*wi);
+    }
+    else
+    {
+        //判断是否从正面入射
+        bool entering = CosTheta(wo) > 0;
+        Float etaI = entering ? etaA : etaB;
+        Float etaT = entering ? etaB : etaA;
+
+        //求出射方向
+        if (!Refract(wo, Vector3f::FaceForward(Vector3f::forward, wo), etaI / etaT, wi))
+        {
+            return 0;
+        }
+        Spectrum ft = T * (1 - F);
+
+        //为何这样写，还没搞明白？
+        if (mode == TransportMode::Radiance)
+            ft *= (etaI * etaI) / (etaT * etaT);
+
+        if (sampledType)
+            *sampledType = BxDFType(BSDF_SPECULAR | BSDF_TRANSMISSION);
+
+        *pdf = 1 - F;
+        return ft / AbsCosTheta(*wi);
+    }
 }
 
 Spectrum LambertianReflection::f(const Vector3f &wo, const Vector3f &wi) const 
@@ -192,6 +245,17 @@ Float MicrofacetTransmission::Pdf(const Vector3f &wo,
     Float dwh_dwi =
         std::abs((eta * eta * Vector3f::Dot(wi, wh)) / (sqrtDenom * sqrtDenom));
     return distribution->Pdf(wo, wh) * dwh_dwi;
+}
+
+Spectrum FresnelConductor::Evaluate(Float cosThetaI) const
+{
+    //导体没有折射，所以取cosThetaI的绝对值
+    return FrConductor(std::abs(cosThetaI), etaI, etaT, k);
+}
+
+Spectrum FresnelDielectric::Evaluate(Float cosThetaI) const
+{
+    return FrDielectric(cosThetaI, etaI, etaT);
 }
 
 }
