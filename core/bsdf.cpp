@@ -1,5 +1,6 @@
 #include "bsdf.h"
 #include "fresnelreflection.h"
+#include "sampling.h"
 
 namespace AIR
 {
@@ -10,6 +11,53 @@ Spectrum BxDF::Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
     if (wo.z < 0) wi->z *= -1;
     *pdf = Pdf(wo, *wi);
     return f(wo, *wi);
+}
+
+Spectrum BxDF::rho_hd(const Vector3f &wo, int nSamples,
+                         const Point2f *samples) const
+{
+    //¦Ñhd(wo) = ¡ÒHfr(wo, wi)|cos¦Èi|dwi
+    //ÃÉÌØ¿¨Âå¹À¼Æ£º
+    //F = 1/N¡Æfr(wo, wi)|cos¦Èi|/p(¦Øi)
+    Float pdf = 0;
+    Vector3f wi;
+    Spectrum F = 0.f;
+    for (int i = 0; i < nSamples; ++i)
+    {
+        Spectrum f = Sample_f(wo, &wi, samples[i], &pdf, nullptr);
+        if (pdf != 0)
+        {
+            F += f * AbsCosTheta(wi) / pdf;
+        }
+    }
+
+    return F / nSamples;
+}
+
+Spectrum BxDF::rho_hh(int nSamples, const Point2f *samples1,
+                         const Point2f *samples2) const
+{
+    //¦Ñhh = 1/¦Ð¡Ò[H]¡Ò[H]fr(p, wo, wi)|cos¦Èi|dwi|cos¦Èo|dwo
+    //ÃÉÌØ¿¨Âå¹À¼Æ£º
+    //F = 1/(¦ÐN)¡Æfr(wo, wi)|cos¦Èi||cos¦Èo|dwidwo/(p(wi)p(wo))
+
+    Float pdfi = 0;
+    Float pdfo = 0;
+    Vector3f wi, wo;
+    Spectrum F = 0.f;
+
+    for (int i = 0; i < nSamples; ++i)
+    {
+        wo = UniformSampleHemisphere(samples1[i]);
+        pdfo = UniformHemispherePdf();
+        Spectrum f = Sample_f(wo, &wi, samples2[i], &pdfi);
+        if (pdfi > 0)
+        {
+            F += f * AbsCosTheta(wo) * AbsCosTheta(wi) / pdfo * pdfi;
+        }
+    }
+
+    return F / (nSamples * Pi);
 }
 
 Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,

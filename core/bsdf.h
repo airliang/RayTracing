@@ -181,7 +181,7 @@ class BxDF {
     
     //返回的是半球内所有出射方向的ρhd的积分再除以π
     //理解为半球内的平均反射率
-    //ρhd = 1/π∫[H]∫[H]f(p, wo, wi)|cosθi|dwi|cosθo|dwo
+    //ρhh = 1/π∫[H]∫[H]f(p, wo, wi)|cosθi|dwi|cosθo|dwo
     virtual Spectrum rho_hh(int nSamples, const Point2f *samples1,
                          const Point2f *samples2) const;
     virtual Float Pdf(const Vector3f &wo, const Vector3f &wi) const;
