@@ -5,6 +5,7 @@ namespace AIR
 {
 	class RObject;
 	class BSDF;
+	class Shape;
 	class Interaction
 	{
 	public:
@@ -23,6 +24,12 @@ namespace AIR
 
 		Interaction(const Point3f& p, Float time)
 			: interactPoint(p), time(time) {}
+
+		Interaction(const Point3f& p, const Vector3f& pError,
+			const Point2f& uv, const Vector3f& wo,
+			const Vector3f& dpdu, const Vector3f& dpdv,
+			const Vector3f& dndu, const Vector3f& dndv, Float time,
+			const Shape* sh);
 
 		~Interaction()
 		{
@@ -69,6 +76,7 @@ namespace AIR
 
 		const RObject* robject = nullptr;
 		BSDF* bsdf = nullptr;
+		const Shape* shape = nullptr;
 	};
 };
 

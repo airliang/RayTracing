@@ -106,11 +106,14 @@ namespace AIR
 	{
 		//Vector3f oError;
 		Vector3f o = WorldToObjectPoint(ray.o, oError);
-		Vector3f d = WorldToObjectVector(ray.d);
+		Vector3f d = WorldToObjectVector(ray.d, dError);
 		Float tMax = ray.tMax;
 		Float lengthSquared = d.LengthSquared();
 		if (lengthSquared > 0)
 		{
+			//误差的处理：把oError投影到abs(d)，取abs(d)是为了求最大误差，
+			//d全是正数，dot后误差才最大
+			//然后归一化？按道理应该是除以length
 			Float dt = Vector3f::Dot(Vector3f::Abs(d), *oError) / lengthSquared;
 			o += d * dt;
 			tMax -= dt;

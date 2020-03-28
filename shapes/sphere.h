@@ -6,6 +6,8 @@
 
 namespace AIR
 {
+	//按z向上的坐标系来定义球，
+	//方便采样时的计算
 	class Sphere : public Shape
 	{
 	public:
@@ -30,6 +32,11 @@ namespace AIR
 			return Bounds3f(Vector3f(-radius, yMin, -radius),
 				Vector3f(radius, yMax, radius));
 		}
+
+		Interaction Sample(const Point2f& u, Float* pdf) const;
+
+		Interaction Sample(const Interaction& ref, const Point2f& u,
+			Float* pdf) const;
 
 		Float Area() const
 		{

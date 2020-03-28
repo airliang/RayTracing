@@ -10,7 +10,7 @@ namespace AIR
 		{
 			memset(&param, 0, sizeof(param));
 		}
-		~GeometryParam();
+		~GeometryParam() {}
 
 		union
 		{

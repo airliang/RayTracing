@@ -2,6 +2,27 @@
 
 namespace AIR
 {
+	Interaction::Interaction(const Point3f& p, const Vector3f& pError,
+		const Point2f& uv, const Vector3f& wo,
+		const Vector3f& dpdu, const Vector3f& dpdv,
+		const Vector3f& dndu, const Vector3f& dndv, Float time,
+		const Shape* sh) : interactPoint(p), time(time), pError(pError),
+		wo(Vector3f::Normalize(wo)),
+		normal(Vector3f::Normalize(Vector3f::Cross(dpdu, dpdv))),
+		uv(uv),
+		dpdu(dpdu),
+		dpdv(dpdv),
+		dndu(dndu),
+		dndv(dndv),
+		shape(shape)
+	{
+		shading.n = normal;
+		shading.dndu = dndu;
+		shading.dndv = dndv;
+		shading.dpdu = dndu;
+		shading.dpdv = dpdv;
+	}
+
 	void Interaction::SetGeometryShading(const Vector3f &dpdus, const Vector3f &dpdvs, const Vector3f &dndus, const Vector3f &dndvs, bool orientationIsAuthoritative)
 	{
 		shading.dndu = dndus;

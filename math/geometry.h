@@ -876,6 +876,45 @@ namespace AIR
 		return (p < 0) ? (p + 2 * Pi) : p;
 	}
 
-	
+	//生成一个坐标系
+	//v1已经normalized
+	//
+	template <typename T>
+	inline void CoordinateSystem(const Vector3<T>& v1, Vector3<T>* v2,
+		Vector3<T>* v3) 
+	{
+		//构造v2，v2 dot v1 = 0
+		if (std::abs(v1.x) > std::abs(v1.y))
+			*v2 = Vector3<T>(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
+		else
+			*v2 = Vector3<T>(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
+		*v3 = Cross(v1, *v2);
+	}
+
+	//根据误差，移动ray的orig位置
+	//ray是有某表面发射的一条射线
+	//p 原来的ray.orig，也就是表面上点
+	//pError 某交点计算出来的误差(相当于计算机浮点数求出来的点和交点的误差)
+	//n 表面的法线
+	//w 相当于射线的ray.d
+	inline Point3f OffsetRayOrigin(const Point3f& p, const Vector3f& pError,
+		const Vector3f& n, const Vector3f& w) {
+		//误差投影到法线的距离
+		Float d = Vector3f::Dot(Vector3f::Abs(n), pError);
+		//根据距离计算offset
+		Vector3f offset = d * n;
+		if (Vector3f::Dot(w, n) < 0) 
+			offset = -offset;
+		Point3f po = p + offset;
+		// Round offset point _po_ away from _p_
+		for (int i = 0; i < 3; ++i) 
+		{
+			if (offset[i] > 0)
+				po[i] = NextFloatUp(po[i]);
+			else if (offset[i] < 0)
+				po[i] = NextFloatDown(po[i]);
+		}
+		return po;
+	}
 }
 

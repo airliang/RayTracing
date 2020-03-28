@@ -199,12 +199,9 @@ public:
     // BSDF Public Methods
     BSDF(const Interaction &si, Float eta = 1)
         : eta(eta),
-          //ns(si.shading.n),
-		  geometryNormal(si.normal),
-          //ss(Vector3f::Normalize(si.shading.dpdu)),
-          //ts(Vector3f::Cross(ns, ss)) 
-          ns(si.normal),
-          ss(si.dpdu),
+		  ng(si.normal),
+          ns(si.shading.n),
+          ss(Vector3f::Normalize(si.shading.dpdu)),
           ts(Vector3f::Cross(ns, ss)) {}
     void Add(BxDF *b) {
         //CHECK_LT(nBxDFs, MaxBxDFs);
@@ -225,10 +222,10 @@ public:
                  BxDFType flags = BSDF_ALL) const;
     Spectrum rho_hd(const Vector3f &wo, int nSamples, const Point2f *samples,
                  BxDFType flags = BSDF_ALL) const;
-    Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
+    Spectrum Sample_f(const Vector3f &woWorld, Vector3f *wiWorld, const Point2f &u,
                       Float *pdf, BxDFType type = BSDF_ALL,
                       BxDFType *sampledType = nullptr) const;
-    Float Pdf(const Vector3f &wo, const Vector3f &wi,
+    Float Pdf(const Vector3f &woWorld, const Vector3f &wiWorld,
               BxDFType flags = BSDF_ALL) const;
     //std::string ToString() const;
 
@@ -243,7 +240,7 @@ private:
     //const Vector3f ns, ng;
     //const Vector3f ss, ts;
     //is geometry's normal tangent not shading
-	const Vector3f geometryNormal;   
+	const Vector3f ng;   //geometry normal
     const Vector3f ns;   //shading normal (z)
     const Vector3f ss;   //shading s (x)
     const Vector3f ts;   //shading tangent = cross(n, s) (y)
@@ -320,27 +317,27 @@ private:
 class FresnelSpecular : public BxDF
 {
 public:
-    FresnelSpecular(const Spectrum &R, const Spectrum &T, Float etaA,
-                    Float etaB, TransportMode mode) : 
-                    BxDF(BxDFType(BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_SPECULAR))
-                    ,R(R), T(T), etaA(etaA), etaB(etaB), mode(mode)
+    FresnelSpecular(const Spectrum& R, const Spectrum& T, Float etaA,
+        Float etaB, TransportMode mode) :
+        BxDF(BxDFType(BSDF_REFLECTION | BSDF_TRANSMISSION | BSDF_SPECULAR))
+        , R(R), T(T), etaA(etaA), etaB(etaB), mode(mode)
     {}
 
-    Spectrum f(const Vector3f &wo, const Vector3f &wi) const {
+    Spectrum f(const Vector3f& wo, const Vector3f& wi) const {
         return Spectrum(0.f);
     }
-    Spectrum Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &sample,
-                      Float *pdf, BxDFType *sampledType) const;
-    Float Pdf(const Vector3f &wo, const Vector3f &wi) const 
-    { 
-        return 0; 
+    Spectrum Sample_f(const Vector3f& wo, Vector3f* wi, const Point2f& sample,
+        Float* pdf, BxDFType* sampledType) const;
+    Float Pdf(const Vector3f& wo, const Vector3f& wi) const
+    {
+        return 0;
     }
 
 private:
     const Spectrum R, T;
     const Float etaA, etaB;
     const TransportMode mode;
-}
+};
 
 class LambertianReflection : public BxDF {
 public:

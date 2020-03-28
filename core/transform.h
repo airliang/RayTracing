@@ -51,6 +51,10 @@ namespace AIR
 			return det < 0;
 		}
 
+		//世界坐标系下的ray转到object space下
+		//ray world space下的ray
+		//oError ray的o点转换后的误差
+		//dError ray的d向量转换后的误差
 		Ray WorldToObjectRay(const Ray& ray, Vector3f* oError, Vector3f* dError) const;
 		Vector3f WorldToObjectPoint(const Vector3f& point, Vector3f* absError = nullptr) const;
 		Vector3f WorldToObjectVector(const Vector3f& vec, Vector3f* absError = nullptr) const;

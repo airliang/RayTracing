@@ -61,12 +61,16 @@ set(CORE_SOURCES
 	core/mipmap.cpp
 	core/parallelism.cpp
 	core/light.cpp
+	core/sampling.h
 	core/sampling.cpp
+	core/fresnelreflection.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
 					shapes/sphere.h
 					shapes/sphere.cpp
+					shapes/disk.cpp
+					shapes/triangle.cpp
 )
 
 set(SAMPLER_SOURCES  samplers/stratified.h

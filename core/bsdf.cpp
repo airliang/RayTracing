@@ -67,7 +67,7 @@ Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
 	Vector3f wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
 	if (wo.z == 0) 
 		return 0.;
-	bool reflect = Vector3f::Dot(wiW, geometryNormal) * Vector3f::Dot(woW, geometryNormal) > 0;
+	bool reflect = Vector3f::Dot(wiW, ng) * Vector3f::Dot(woW, ng) > 0;
 	Spectrum f(0.f);
 	for (int i = 0; i < nBxDFs; ++i)
 	{
@@ -77,6 +77,73 @@ Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
 			f += bxdfs[i]->f(wo, wi);
 	}
 	return f;
+}
+
+Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2f& u,
+    Float* pdf, BxDFType type, BxDFType* sampledType) const
+{
+    //随机选择一个bxdf
+    int matchingComps = NumComponents(type);
+    if (matchingComps == 0)
+    {
+        return Spectrum(0.0f);
+    }
+    //计算随机bxdf的序号
+    //u[0] = 1的时候就要取 min
+    int comps = std::min((int)std::floor(u[0] * matchingComps), matchingComps - 1);
+
+    BxDF* bxdf = nullptr;
+    int count = comps;
+    for (int i = 0; i < nBxDFs; ++i)
+    {
+        if (bxdfs[i]->MatchesFlags(type) && count-- == 0)
+        {
+            bxdf = bxdfs[i];
+            break;
+        }
+    }
+
+    //remap the u[0]
+    Point2f uRemapped = Point2f(u[0] * matchingComps - 1.0f, u[1]);
+
+    //采样bxdf
+    Vector3f wi;
+    Vector3f wo = WorldToLocal(woWorld);
+
+    if (sampledType != nullptr)
+    {
+        *sampledType = bxdf->type;
+    }
+
+    Spectrum f = bxdf->Sample_f(wo, &wi, uRemapped, pdf, sampledType);
+    if (*pdf == 0)
+    {
+        return 0.0f;
+    }
+    *wiWorld = LocalToWorld(wi);
+
+    //由于specular的pdf非0即1，所以这里不把specular的pdf算进去。
+    //specular的pdf返回的是0
+    if (!(bxdf->type & BSDF_SPECULAR) && matchingComps > 1)
+    {
+        for (int i = 0; i < nBxDFs; ++i)
+            if (bxdfs[i] != bxdf && bxdfs[i]->MatchesFlags(type))
+                *pdf += bxdfs[i]->Pdf(wo, wi);
+    }
+    if (matchingComps > 1) 
+        *pdf /= matchingComps;
+
+    //由于specular的brdf函数(f)返回的是0，所以specular不在这里算
+    if (!(bxdf->type & BSDF_SPECULAR) && matchingComps > 1) {
+        bool reflect = Vector3f::Dot(*wiWorld, ng) * Vector3f::Dot(woWorld, ng) > 0;
+        f = 0.;
+        for (int i = 0; i < nBxDFs; ++i)
+            if (bxdfs[i]->MatchesFlags(type) &&
+                ((reflect && (bxdfs[i]->type & BSDF_REFLECTION)) ||
+                (!reflect && (bxdfs[i]->type & BSDF_TRANSMISSION))))
+                f += bxdfs[i]->f(wo, wi);
+    }
+    return f;
 }
 
 Spectrum BSDF::rho_hh(int nSamples, const Point2f *samples1,
@@ -109,7 +176,30 @@ inline int BSDF::NumComponents(BxDFType flags) const
 	return num;
 }
 
-Float BxDF::Pdf(const Vector3f &wo, const Vector3f &wi) const {
+Float BSDF::Pdf(const Vector3f& woWorld, const Vector3f& wiWorld,
+    BxDFType flags) const
+{
+    if (nBxDFs == 0.f) 
+        return 0.f;
+    Vector3f wo = WorldToLocal(woWorld), wi = WorldToLocal(wiWorld);
+    if (wo.z == 0) 
+        return 0.;
+    Float pdf = 0.f;
+    int matchingComps = 0;
+    for (int i = 0; i < nBxDFs; ++i)
+    {
+        if (bxdfs[i]->MatchesFlags(flags)) 
+        {
+            ++matchingComps;
+            pdf += bxdfs[i]->Pdf(wo, wi);
+        }
+    }
+    Float v = matchingComps > 0 ? pdf / matchingComps : 0.f;
+    return v;
+}
+
+Float BxDF::Pdf(const Vector3f &wo, const Vector3f &wi) const 
+{
     return SameHemisphere(wo, wi) ? AbsCosTheta(wi) * InvPi : 0;
 }
 

@@ -44,7 +44,7 @@ namespace AIR
 		//采样离散的随机
 		int SampleDiscrete(Float u, Float* pdf = nullptr, Float* uRemapped = nullptr) const;
 
-		Float DiscretePDF(int index) const 
+		Float DiscretePDF(int index) const
 		{
 			return funcInt != 0 ? func[index] / (funcInt * Count()) : 0;
 		}
@@ -107,7 +107,7 @@ namespace AIR
 
 	//均匀采样单位半球上的立体角
 	//u 0-1的随机变量
-	Vector3f UniformSampleHemisphere(const Point2f& u)
+	inline Vector3f UniformSampleHemisphere(const Point2f& u)
 	{
 		//∫[hemisphere]p(ω)dω = 1
 		//p(ω)是均匀分布的
@@ -122,7 +122,7 @@ namespace AIR
 		//p(x,y,z) = p(1,θ,φ)/sinθ = p(θ,φ)/sinθ
 		//p(ω) = p(θ,φ)/sinθ
 
-	    //p(θ,φ) = sinθp(ω) = sinθ/2π
+		//p(θ,φ) = sinθp(ω) = sinθ/2π
 		//先计算p(θ)边际概率密度
 		//p(θ) = ∫[0, 2π]p(θ,φ)dφ = sinθ/2π[0, 2π] = sinθ
 		//p(φ|θ) = p(θ,φ)/p(θ) = 1/2π
@@ -134,17 +134,17 @@ namespace AIR
 		Float sintheta = std::sqrt(1 - u.x * u.x);
 		Float phi = 2 * Pi * u.y;
 		Float cosPhi = std::cos(phi);
-		
+
 		return Vector3f(sintheta * cosPhi, sintheta * std::sin(phi), z);
 	}
 
-	Float UniformHemispherePdf() 
+	inline Float UniformHemispherePdf()
 	{
 		return Inv2Pi;
 	}
 
 	//均匀采样单位球上的立体角
-	Vector3f UniformSampleSphere(const Point2f& u)
+	inline Vector3f UniformSampleSphere(const Point2f& u)
 	{
 		//ξ1 = 2 * u.x - 1
 		//ξ2 = 2 * u.y - 1
@@ -168,7 +168,7 @@ namespace AIR
 		return Vector3f(sintheta * cosPhi, sintheta * std::sin(phi), z);
 	}
 
-	Float UniformSpherePdf()
+	inline Float UniformSpherePdf()
 	{
 		return Inv4Pi;
 	}
@@ -183,7 +183,7 @@ namespace AIR
 	//      ∂y/∂r ∂y/∂θ   sinθ  rcosθ
 	//Jt的行列式|Jt| = rcos²θ + rsin²θ = r
 	//p(r,θ) = |Jt|p(x,y) = r/π
-	Point2f UniformSampleDisk(const Point2f& u)
+	inline Point2f UniformSampleDisk(const Point2f& u)
 	{
 		//求边际概率密度p(r) = ∫[0,2π]p(r,θ)dθ = 1/π(r)[0, 2π] = 2r
 		//p(θ) = p(r,θ)/p(r) = 1/2π
@@ -197,7 +197,7 @@ namespace AIR
 	}
 
 	//同心圆盘采样
-	Point2f ConcentricSampleDisk(const Point2f& u)
+	inline Point2f ConcentricSampleDisk(const Point2f& u)
 	{
 		//mapping u to [-1,1]
 		Point2f u1(u.x * 2.0f - 1, u.y * 2.0f - 1);
@@ -231,7 +231,7 @@ namespace AIR
 	//假设p(ω) = kcosθ
 	//∫[Hemisphere]p(ω)dω = ∫[Hemisphere]kcosθsinθdθdφ
 	//= ∫[Hemisphere]ksinθdsinθdφ
-    //= ∫[0, 2π]k/2dφ = kπ= 1
+	//= ∫[0, 2π]k/2dφ = kπ= 1
 	// k = 1/π
 	//p(ω) = cosθ/π
 	//根据∫p(ω)dω = ∫p(θ, φ)dθdφ => p(ω)sinθ = p(θ,φ)
@@ -258,7 +258,8 @@ namespace AIR
 	//u 0-1的均匀随机变量
 	//三角形的重心坐标是u,v,w，由于w = 1 - u -v
 	//直接用(u,v)就能表示整个三角形内的所有点
-	Point2f UniformSampleTriangle(const Point2f& u)
+	//返回三角形的重心坐标
+	inline Point2f UniformSampleTriangle(const Point2f& u)
 	{
 		//三角形面积是1/2，p(u,v) = 1/(1/2) = 2
 		//p(u) = ∫[0, 1-u]p(u,v)dv = 2(1 - u)
@@ -282,13 +283,13 @@ namespace AIR
 	//               nf pf(x)
 	// wf(x) = -------------------
 	//         nf pf(x) + ng pg(x)
-	inline Float BalanceHeuristic(int nf, Float fPdf, int ng, Float gPdf) 
+	inline Float BalanceHeuristic(int nf, Float fPdf, int ng, Float gPdf)
 	{
 		return (nf * fPdf) / (nf * fPdf + ng * gPdf);
 	}
 
 
-	inline Float PowerHeuristic(int nf, Float fPdf, int ng, Float gPdf) 
+	inline Float PowerHeuristic(int nf, Float fPdf, int ng, Float gPdf)
 	{
 		Float f = nf * fPdf, g = ng * gPdf;
 		return (f * f) / (f * f + g * g);
