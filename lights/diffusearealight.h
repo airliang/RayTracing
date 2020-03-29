@@ -21,13 +21,15 @@ namespace AIR
 
 		Spectrum Power() const;
 
+		//evaluate the area light’s emitted radiance
 		Spectrum L(const Interaction& intr, const Vector3f& w) const {
 			return (twoSided || Vector3f::Dot(intr.normal, w) > 0) ? Lemit : Spectrum(0.f);
 		}
 	protected:
+	    //就是radiance，diffuse是各个方向都相同的radiance
 		const Spectrum Lemit;
 		std::shared_ptr<Shape> shape;
-		//���
+		//���
 		const Float area; 
 		const bool twoSided = false;
 	};
