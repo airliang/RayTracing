@@ -6,8 +6,8 @@
 
 namespace AIR
 {
-	//°´zÏòÉÏµÄ×ø±êÏµÀ´¶¨ÒåÇò£¬
-	//·½±ã²ÉÑùÊ±µÄ¼ÆËã
+	//ï¿½ï¿½zï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½Ä¼ï¿½ï¿½ï¿½
 	class Sphere : public Shape
 	{
 	public:
@@ -43,6 +43,9 @@ namespace AIR
 			return phiMax * radius * (yMax - yMin);
 		}
 
+		Float Pdf(const Interaction &ref, const Vector3f &wi) const;
+
+    private:
 		Float radius;
 		Float thetaMin, thetaMax;
 		Float phiMax;

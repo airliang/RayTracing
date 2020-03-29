@@ -867,6 +867,13 @@ namespace AIR
 		return Vector3f(sinTheta * std::cos(phi), sinTheta * std::sin(phi), cosTheta);
 	}
 
+	inline Vector3f SphericalDirection(Float sinTheta, Float cosTheta, Float phi,
+                                   const Vector3f &x, const Vector3f &y,
+                                   const Vector3f &z) {
+    return sinTheta * std::cos(phi) * x + sinTheta * std::sin(phi) * y +
+           cosTheta * z;
+}
+
 	inline Float SphericalTheta(const Vector3f &v) {
 		return std::acos(Clamp(v.z, -1, 1));
 	}

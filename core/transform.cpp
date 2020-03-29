@@ -70,6 +70,13 @@ namespace AIR
 		return TransformPoint(localToWorld, point, absError);
 	}
 
+	Vector3f Transform::ObjectToWorldPoint(const Vector3f& point, const Vector3f& ptError,
+                                Vector3f *pTransError) const
+	{
+		const Matrix4x4& localToWorld = LocalToWorld();
+		return TransformPoint(localToWorld, point, ptError, pTransError);
+	}
+
 	Vector3f Transform::ObjectToWorldVector(const Vector3f& vec, Vector3f* absError) const
 	{
 		const Matrix4x4& localToWorld = LocalToWorld();
@@ -111,9 +118,9 @@ namespace AIR
 		Float lengthSquared = d.LengthSquared();
 		if (lengthSquared > 0)
 		{
-			//Îó²îµÄ´¦Àí£º°ÑoErrorÍ¶Ó°µ½abs(d)£¬È¡abs(d)ÊÇÎªÁËÇó×î´óÎó²î£¬
-			//dÈ«ÊÇÕýÊý£¬dotºóÎó²î²Å×î´ó
-			//È»ºó¹éÒ»»¯£¿°´µÀÀíÓ¦¸ÃÊÇ³ýÒÔlength
+			//ï¿½ï¿½ï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½oErrorÍ¶Ó°ï¿½ï¿½abs(d)ï¿½ï¿½È¡abs(d)ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½î£¬
+			//dÈ«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½dotï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+			//È»ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½Ç³ï¿½ï¿½ï¿½length
 			Float dt = Vector3f::Dot(Vector3f::Abs(d), *oError) / lengthSquared;
 			o += d * dt;
 			tMax -= dt;

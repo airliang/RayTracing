@@ -35,6 +35,7 @@ namespace AIR
 		const Matrix4x4& WorldToLocal() const;
 
 		Vector3f ObjectToWorldPoint(const Vector3f& point, Vector3f* absError = nullptr) const;
+		Vector3f ObjectToWorldPoint(const Vector3f& point, const Vector3f& ptError, Vector3f* absError = nullptr) const;
 		Vector3f ObjectToWorldVector(const Vector3f& vec, Vector3f* absError = nullptr) const;
 		Vector3f ObjectToWorldNormal(const Vector3f& normal) const;
 		Ray ObjectToWorldRay(const Ray& ray) const;
@@ -51,10 +52,10 @@ namespace AIR
 			return det < 0;
 		}
 
-		//ÊÀ½ç×ø±êÏµÏÂµÄray×ªµ½object spaceÏÂ
-		//ray world spaceÏÂµÄray
-		//oError rayµÄoµã×ª»»ºóµÄÎó²î
-		//dError rayµÄdÏòÁ¿×ª»»ºóµÄÎó²î
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½Âµï¿½ray×ªï¿½ï¿½object spaceï¿½ï¿½
+		//ray world spaceï¿½Âµï¿½ray
+		//oError rayï¿½ï¿½oï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+		//dError rayï¿½ï¿½dï¿½ï¿½ï¿½ï¿½×ªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 		Ray WorldToObjectRay(const Ray& ray, Vector3f* oError, Vector3f* dError) const;
 		Vector3f WorldToObjectPoint(const Vector3f& point, Vector3f* absError = nullptr) const;
 		Vector3f WorldToObjectVector(const Vector3f& vec, Vector3f* absError = nullptr) const;

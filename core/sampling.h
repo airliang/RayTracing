@@ -276,6 +276,15 @@ namespace AIR
 		return Point2f(1.0f - u1, u1 * u.y);
 	}
 
+	//cone在球上的面积是：
+	//单位球条带面积：2πsinθdθ
+	//cone的面积：∫[0,θmax]2πsinθdθ = 2π(1 - cosθmax)
+	//所以cone上的p(ω) = 1 / (2π(1 - cosθmax))
+	Float UniformConePdf(Float cosThetaMax)
+	{
+		1.0f / (Pi * 2.0f * (1.0f - cosThetaMax));
+	}
+
 	//用于Multiple Importance Sampling
 	//           ns p(x)
 	// ws(x) = -----------

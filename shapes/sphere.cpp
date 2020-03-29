@@ -1,5 +1,6 @@
 ﻿#include "sphere.h"
 #include "efloat.h"
+#include "sampling.h"
 
 namespace AIR
 {
@@ -190,5 +191,136 @@ namespace AIR
 		*tHit = (Float)tShapeHit;
 		return true;
 	}
+
+	Interaction Sphere::Sample(const Point2f& u, Float* pdf) const
+	{
+		//采样object space中的一点
+		Point3f pObj = Point3f::zero + radius * UniformSampleSphere(u);
+		//
+		Interaction it;
+		//reprojected pobj
+
+		it.normal = Vector3f::Normalize(mTransform->ObjectToWorldNormal(pObj));
+		//repojected
+		pObj *= radius / Vector3f::Distance(pObj, Point3f::zero);
+		Vector3f pObjError = gamma(5) * Vector3f::Abs((Vector3f)pObj);
+        it.interactPoint = mTransform->ObjectToWorldPoint(pObj, pObjError, &it.pError);
+		return it;
+	}
 	
+	Interaction Sphere::Sample(const Interaction& ref, const Point2f& u,
+			Float* pdf) const
+	{
+		
+		Point3f pCenter = mTransform->ObjectToWorldPoint(Point3f::zero);
+        
+
+		//Sample uniformly on sphere if p is inside it
+		Point3f pOrig = OffsetRayOrigin(ref.interactPoint, ref.pError, ref.normal,
+		    pCenter - ref.interactPoint);
+
+        //check is the orig in the sphere 
+		if (Vector3f::DistanceSquare(pOrig, pCenter) <= radius * radius)
+		{
+			Interaction intr = Sample(u, pdf);
+			Vector3f wi = intr.interactPoint - ref.interactPoint;
+			if (wi.LengthSquared() == 0)
+				*pdf = 0;
+			else 
+			{
+				// Convert from area measure returned by Sample() call above to
+				// solid angle measure.
+				wi = Vector3f::Normalize(wi);
+				*pdf *= Vector3f::DistanceSquare(ref.interactPoint, intr.interactPoint) 
+				    / Vector3f::AbsDot(intr.normal, -wi);
+			}
+			if (std::isinf(*pdf)) 
+			    *pdf = 0.f;
+
+			return intr;
+		}
+
+		//转到世界坐标
+		Vector3f wc = Vector3f::Normalize(pCenter - ref.interactPoint);
+		Vector3f wcX, wcY;
+		CoordinateSystem(wc, &wcX, &wcY);
+
+		//sample the cone
+		//dω = sinθdθdφ
+		//∫p(ω)dω = 1
+		//∫∫p(θ, φ)sinθdθdφ = 1
+		//p(θ, φ) = p(φ|θ)p(θ)
+		//由于在单位半球里，p(ω) = 1/2π，半球面积是2π。
+		//根据概率密度函数的转换，单位半球的概率密度
+		//p(θ, φ) = sinθp(ω) = sinθ/2π
+		//根据边际概率密度：
+		//p(θ) = ∫[0, 2π]p(θ, φ)dφ = sinθ
+		//由于在cone是hemisphere的一部分，p(θ)=csinθ，然后求出c
+		//1 = ∫[0, θmax]csinθdθ
+		//= c(1 - cosθmax)
+		//∴ c = 1/(1 - cosθmax)
+		//p(θ) = sinθ / (1 - cosθmax)
+		//1 = ∫[0,2π]∫[0, θmax]p(θ, φ)sinθdθdφ
+		//= c/2π∫[0,2π]∫[0, θmax]sinθsinθdθdφ
+		//cone在球上的面积是：
+		//单位球条带面积：2πsinθdθ
+		//cone的面积：∫[0,θmax]2πsinθdθ = 2π(1 - cosθmax)
+		//所以cone上的p(ω) = 1 / (2π(1 - cosθmax))
+		//p(φ) = 1/2π
+        //首先求出cosθmax
+		Float sinThetaMax2 = radius * radius / Vector3f::DistanceSquare(ref.interactPoint, pCenter);
+		Float cosThetaMax = std::sqrt(std::max((Float)0, 1 - sinThetaMax2));
+		Float cosTheta = (1 - u[0]) + u[0] * cosThetaMax;
+		Float sinTheta = std::sqrt(std::max((Float)0, 1 - cosTheta * cosTheta));
+		Float phi = u[1] * 2 * Pi;
+
+		//http://www.pbr-book.org/3ed-2018/Light_Transport_I_Surface_Reflection/Sampling_Light_Sources.html
+		Float dc = Vector3f::Distance(ref.interactPoint, pCenter);
+		//ds是ref的样本向量和球面的交点
+		//ds = dccosθ - sqrt(r² - dc²sin²θ)
+		Float ds = dc * cosTheta - 
+		std::sqrt(std::max((Float)0, radius * radius - dc * dc * sinTheta * sinTheta));
+
+		//计算alpha夹角，是球心到球面交点的向量和球心到ref的向量的夹角
+		//余弦定理
+		Float cosAlpha = (dc * dc + radius * radius - ds * ds) /
+                 (2 * dc * radius);
+
+		Float sinAlpha = std::sqrt(std::max((Float)0, 1 - cosAlpha * cosAlpha));
+
+		//最后求出交点p，当前的坐标系是以wc为向上方向的坐标系
+		Float phi = u[1] * 2 * Pi;
+
+        // Compute surface normal and sampled point on sphere
+        Vector3f nWorld = SphericalDirection(sinAlpha, cosAlpha, phi,
+                                   -wcX, -wcY, -wc);
+		Point3f pWorld = radius * Point3f(nWorld.x, nWorld.y, nWorld.z);
+
+		Interaction it;
+        it.interactPoint = pWorld;
+        it.pError = gamma(5) * Vector3f::Abs(pWorld);
+        it.normal = nWorld;
+
+		//计算pdf,用cone的方式去计算
+		//单位球条带面积：2πsinθdθ
+		//cone的面积：∫[0,θmax]2πsinθdθ = 2π(1 - cosθmax)
+		//所以cone上的p(ω) = 1 / (2π(1 - cosθmax))
+		*pdf = 1.0f / (Pi * 2.0f * (1.0f - cosThetaMax));
+
+		return it;
+	}
+
+	Float Sphere::Pdf(const Interaction &ref, const Vector3f &wi) const
+	{
+		Point3f pCenter = mTransform->ObjectToWorldPoint(Vector3f::zero);
+		// Return uniform PDF if point is inside sphere
+    	Point3f pOrigin =
+        	OffsetRayOrigin(ref.interactPoint, ref.pError, ref.normal, pCenter - ref.p);
+    	if (Vector3f::DistanceSquare(pOrigin, pCenter) <= radius * radius)
+        	return Shape::Pdf(ref, wi);
+
+		Float sinThetaMax2 = radius * radius / Vector3f::DistanceSquare(ref.p, pCenter);
+		Float cosThetaMax = std::sqrt(std::max((Float)0, 1 - sinThetaMax2));
+		return UniformConePdf(cosThetaMax);
+	}
 }
