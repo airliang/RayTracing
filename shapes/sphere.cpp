@@ -223,6 +223,7 @@ namespace AIR
 		if (Vector3f::DistanceSquare(pOrig, pCenter) <= radius * radius)
 		{
 			Interaction intr = Sample(u, pdf);
+			//这里的pdf = 1/A
 			Vector3f wi = intr.interactPoint - ref.interactPoint;
 			if (wi.LengthSquared() == 0)
 				*pdf = 0;
@@ -231,6 +232,13 @@ namespace AIR
 				// Convert from area measure returned by Sample() call above to
 				// solid angle measure.
 				wi = Vector3f::Normalize(wi);
+				//http://www.pbr-book.org/3ed-2018/Color_and_Radiometry/Working_with_Radiometric_Integrals.html#eq:dw-dA
+				//如果dA和ω方向垂直，那么dA和dω的关系是：dA = r²dω。
+				//A的法线和ω夹角是θ的时候：dAcosθ = r²dω。
+				//1 = ∫p(A)dA = ∫p(A)dA = ∫p(A)r²/cosθdω
+				//由于∫p(ω)dω = 1
+				//p(A)r²/cosθ = p(ω)，p(A) = 1/A
+				//得到：p(ω) = r²/(Acosθ)
 				*pdf *= Vector3f::DistanceSquare(ref.interactPoint, intr.interactPoint) 
 				    / Vector3f::AbsDot(intr.normal, -wi);
 			}
