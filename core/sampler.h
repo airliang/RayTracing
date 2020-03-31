@@ -6,6 +6,8 @@
 
 namespace AIR
 {
+	//该sampler可以理解成一个pixel下的一个sampler
+	//pixel
 	class Sampler
 	{
 	public:
@@ -19,9 +21,16 @@ namespace AIR
 
 		//
 		virtual void StartPixel(const Point2i &p);
+		//获得一个1D的随机[0,1)的变量
 		virtual Float Get1D() = 0;
+		//获得一个2D的随机[0,1)的变量
 		virtual Point2f Get2D() = 0;
 		CameraSample GetCameraSample(const Point2i &pRaster);
+
+		//要搞清楚这个n是什么意思
+		//一般是表示有多少个要采样的对象。
+		//例如场景上有5个light，每个light要采样n个的出射光，
+		//
 		void Request1DArray(int n);
 		void Request2DArray(int n);
 		virtual int RoundCount(int n) const { return n; }
@@ -37,6 +46,7 @@ namespace AIR
 			return currentPixelSampleIndex; 
 		}
 	public:
+		//每个pixel有多少个samples
 		const int64_t samplesPerPixel;
 
 	protected:

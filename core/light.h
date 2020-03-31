@@ -53,12 +53,27 @@ namespace AIR
         virtual Spectrum Sample_Li(const Interaction& ref, const Point2f& u,
             Vector3f* wi, Float* pdf, VisibilityTester* vis) const = 0;
 
+        //返回方向wi到ref的pdf值
+        //ref 受光面的一点
+        //wi  受光点ref到光源上一点的方向
+        //wi方向是从ref指向光源
+        virtual Float Pdf_Li(const Interaction& ref, const Vector3f& wi) const = 0;
+
         //表示发射的光线escapes the scene bounds
         //意思是物体表面的出来的一条ray，不和场景任何模型（和光照）有相交的话，
         //就要采样环境光
         virtual Spectrum LiEnviroment(const RayDifferential& r) const
         {
             return Spectrum(0.0f);
+        }
+
+        //专门为InfiniteAreaLight提供的一个接口
+        //如果ray没和任何light和primitive相交，
+        //那么现在就说明这个ray escape the scenebound
+        //sceneBound就是InfiniteAreaLight
+        virtual Spectrum LiEscape(const RayDifferential& r) const
+        {
+            return Spectrum(0.f);
         }
 
         //返回光源的功率

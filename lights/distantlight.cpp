@@ -1,4 +1,5 @@
 #include "distantlight.h"
+#include "scene.h"
 
 namespace AIR
 {
@@ -22,6 +23,6 @@ namespace AIR
 
 	void DistantLight::Preprocess(const Scene& scene)
 	{
-
+		scene.WorldBound().BoundingSphere(&worldCenter, &worldRadius);
 	}
 }

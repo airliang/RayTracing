@@ -91,6 +91,7 @@ namespace AIR
 		}
 
 		//返回均匀随机变量u对应的真正的随机变量
+		//均匀随机变量的pdf转成distribution的pdf
 		Point2f SampleContinuous(const Point2f& u, Float* pdf) const;
 
 		//返回随机变量u的pdf
