@@ -80,6 +80,10 @@ namespace AIR
         virtual Spectrum Power() const = 0;
     public:
         const int flags;
+
+        //The nSamples parameter is used for area light sources where it 
+        //may be desirable to trace multiple shadow rays to the light to compute soft shadows; 
+        //default value is 1.
         const int nSamples;
     protected:
         Transform LightToWorld;

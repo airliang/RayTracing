@@ -3,6 +3,7 @@
 
 namespace AIR
 {
+	class Light;
 	class Scene
 	{
 	public:
@@ -10,6 +11,8 @@ namespace AIR
 		{ 
 			return worldBound; 
 		}
+
+		std::vector<std::shared_ptr<Light>> lights;
 	private:
 		Bounds3f worldBound;
 	};

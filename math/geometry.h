@@ -550,7 +550,7 @@ namespace AIR
 
 		void BoundingSphere(Vector3<T> *center, Float *radius) const {
 			*center = (pMin + pMax) / 2;
-			*radius = Inside(*center, *this) ? Distance(*center, pMax) : 0;
+			*radius = Inside(*center, *this) ? Vector3<T>::Distance(*center, pMax) : 0;
 		}
 		template <typename U>
 		explicit operator Bounds3<U>() const 
@@ -895,7 +895,7 @@ namespace AIR
 			*v2 = Vector3<T>(-v1.z, 0, v1.x) / std::sqrt(v1.x * v1.x + v1.z * v1.z);
 		else
 			*v2 = Vector3<T>(0, v1.z, -v1.y) / std::sqrt(v1.y * v1.y + v1.z * v1.z);
-		*v3 = Cross(v1, *v2);
+		*v3 = Vector3<T>::Cross(v1, *v2);
 	}
 
 	//根据误差，移动ray的orig位置

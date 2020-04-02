@@ -29,8 +29,9 @@ namespace AIR
 
 		//要搞清楚这个n是什么意思
 		//一般是表示有多少个要采样的对象。
-		//例如场景上有5个light，每个light要采样n个的出射光，
-		//
+		//例如场景上有多个light，那么Request12DArray就要Request light的数量的次数，
+		//每个light有一个nSamples的成员变量，
+		//那么每次采样针对light采样nSamples次，总共采样samplesPerPixel * nSamples的次数
 		void Request1DArray(int n);
 		void Request2DArray(int n);
 		virtual int RoundCount(int n) const { return n; }

@@ -64,6 +64,7 @@ set(CORE_SOURCES
 	core/sampling.h
 	core/sampling.cpp
 	core/fresnelreflection.cpp
+	core/integrator.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -113,6 +114,10 @@ set(LIGHTS_SOURCES
 	lights/diffusearealight.cpp
 	)
 
+set(INTEGRATORS_SOURCES
+    integrators/directlightingintegrator.cpp
+    )
+
 set(SOURCES 
     RayTracing.h
 	RayTracing.cpp
@@ -124,6 +129,7 @@ set(SOURCES
 	${MATERIALS_SOURCES}
 	${TEXTURES_SOURCES}
 	${LIGHTS_SOURCES}
+	${INTEGRATORS_SOURCES}
 	)
 
 

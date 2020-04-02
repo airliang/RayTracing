@@ -297,7 +297,6 @@ namespace AIR
 		Float sinAlpha = std::sqrt(std::max((Float)0, 1 - cosAlpha * cosAlpha));
 
 		//最后求出交点p，当前的坐标系是以wc为向上方向的坐标系
-		Float phi = u[1] * 2 * Pi;
 
         // Compute surface normal and sampled point on sphere
         Vector3f nWorld = SphericalDirection(sinAlpha, cosAlpha, phi,
@@ -323,11 +322,11 @@ namespace AIR
 		Point3f pCenter = mTransform->ObjectToWorldPoint(Vector3f::zero);
 		// Return uniform PDF if point is inside sphere
     	Point3f pOrigin =
-        	OffsetRayOrigin(ref.interactPoint, ref.pError, ref.normal, pCenter - ref.p);
+        	OffsetRayOrigin(ref.interactPoint, ref.pError, ref.normal, pCenter - ref.interactPoint);
     	if (Vector3f::DistanceSquare(pOrigin, pCenter) <= radius * radius)
         	return Shape::Pdf(ref, wi);
 
-		Float sinThetaMax2 = radius * radius / Vector3f::DistanceSquare(ref.p, pCenter);
+		Float sinThetaMax2 = radius * radius / Vector3f::DistanceSquare(ref.interactPoint, pCenter);
 		Float cosThetaMax = std::sqrt(std::max((Float)0, 1 - sinThetaMax2));
 		return UniformConePdf(cosThetaMax);
 	}

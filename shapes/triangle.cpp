@@ -55,7 +55,7 @@ namespace AIR
         const Point3f& p1 = mesh->p[vIndices[1]];
         const Point3f& p2 = mesh->p[vIndices[2]];
 
-        return Bounds3f::Union(Bounds3f(p0, p1), p2));
+        return Bounds3f::Union(Bounds3f(p0, p1), p2);
     }
 
     Bounds3f Triangle::WorldBound() const
@@ -64,7 +64,7 @@ namespace AIR
         const Point3f& p1 = mesh->p[vIndices[1]];
         const Point3f& p2 = mesh->p[vIndices[2]];
 
-        return Bounds3f::Union(Bounds3f(mTransform->ObjectToWorldPoint(p0), mTransform->ObjectToWorldPoint(p1)), mTransform->ObjectToWorldPoint(p2)));
+        return Bounds3f::Union(Bounds3f(mTransform->ObjectToWorldPoint(p0), mTransform->ObjectToWorldPoint(p1)), mTransform->ObjectToWorldPoint(p2));
     }
 
     bool Triangle::Intersect(const Ray& ray, Float* tHit, Interaction* isect) const

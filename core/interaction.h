@@ -53,6 +53,11 @@ namespace AIR
 		//t = (n·p - n·o) / n·d
 		void ComputeDifferentials(const RayDifferential& ray) const;
 
+		bool IsSurfaceInteraction() const
+		{
+			return normal != Vector3f::zero;
+		}
+
 		Vector3f interactPoint;   //交点
 		Float time;        //应该是相交的ray的参数t
 		Vector3f pError;   //floating-point error
