@@ -9,7 +9,7 @@ namespace AIR
 		// StratifiedSampler Public Methods
 		StratifiedSampler(int xPixelSamples, int yPixelSamples, bool jitterSamples,
 			int nSampledDimensions)
-			: PixelSampler(xPixelSamples * yPixelSamples, nSampledDimensions),
+			: PixelSampler((int)xPixelSamples * yPixelSamples, nSampledDimensions),
 			xPixelSamples(xPixelSamples),
 			yPixelSamples(yPixelSamples),
 			jitterSamples(jitterSamples) {}

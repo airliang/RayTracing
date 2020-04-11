@@ -3,6 +3,8 @@
 #include "light.h"
 #include "sampling.h"
 #include "bsdf.h"
+#include "film.h"
+#include "parallelism.h"
 
 namespace AIR
 {
@@ -156,7 +158,7 @@ Spectrum EstimateDirect(const Interaction& it,
 		if (it.IsSurfaceInteraction())
 		{
 			BxDFType sampledType;
-			const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
+			const Interaction &isect = (const Interaction &)it;
 			f = isect.bsdf->Sample_f(isect.wo, &wi, uScattering, &scatteringPdf, bsdfFlags, &sampledType);
 			sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
 		}
@@ -181,7 +183,7 @@ Spectrum EstimateDirect(const Interaction& it,
 			//wi确认后，要检测这个wi和场景的arealight有没相交
 			//假设和场景的某个geometry相交，这个geometry自带了arealight
 			//就需要返回对应的radiance
-			SurfaceInteraction lightIsect;
+			Interaction lightIsect;
 			Ray ray = it.SpawnRay(wi);
 			Spectrum Tr(1.f);
 			bool foundSurfaceInteraction = handleMedia ?
@@ -203,12 +205,93 @@ Spectrum EstimateDirect(const Interaction& it,
 			}
 				
 
-			if (Li.IsBlack()!)
+			if (!Li.IsBlack())
 				Ld += f * Li * weight / scatteringPdf;
 		}
     }
 
 	return Ld;
+}
+
+void SamplerIntegrator::Render(const Scene& scene)
+{
+	Preprocess(scene, *sampler);
+
+	//渲染image tiles
+	//划分image tile
+	//因为输出的图像不一定从film的(0, 0)开始
+	//所以sampleBounds才是film的着色区域
+	Bounds2i sampleBounds = camera->film->GetOutputSampleBounds();
+	//获得image的大小
+	Vector2i sampleExtent = sampleBounds.Diagonal();
+	const int tileSize = 16;
+
+	//nTiles的二维数组
+	//假如图像大小不能被16整除，例如x = 50, y = 50
+	//(int)x/16 = 3，显然数量不够
+	//(int)(x + tileSize - 1)/16 = 4
+	Point2i nTiles((sampleExtent.x + tileSize - 1) / tileSize,
+		(sampleExtent.y + tileSize - 1) / tileSize);
+
+	//tile是第几个tile
+	ParallelFor2D([&](Point2i tile) {
+		MemoryArena arena;
+		int seed = tile.y * nTiles.x + tile.x;
+		std::unique_ptr<Sampler> tileSampler = sampler->Clone(seed);
+
+		//计算这个tile在sampleBound总的位置
+		int x0 = sampleBounds.pMin.x + tile.x * tileSize;
+		int x1 = std::min(x0 + tileSize, sampleBounds.pMax.x);
+		int y0 = sampleBounds.pMin.y + tile.y * tileSize;
+		int y1 = std::min(y0 + tileSize, sampleBounds.pMax.y);
+		Bounds2i tileBounds(Point2i(x0, y0), Point2i(x1, y1));
+
+		std::unique_ptr<FilmTile> filmTile =
+			camera->film->GetFilmTile(tileBounds);
+
+		for (Point2i pixel : tileBounds)
+		{
+			//生成该pixel的samples
+			tileSampler->StartPixel(pixel);
+			do 
+			{
+				//生成当前pixel的cameraSample
+				CameraSample cameraSample = tileSampler->GetCameraSample(pixel);
+				RayDifferential ray;
+				Float rayWeight = camera->GenerateRayDifferential(cameraSample, &ray);
+				ray.ScaleDifferentials(1 / std::sqrt(tileSampler->samplesPerPixel));
+
+
+				Spectrum L(0.f);
+				//下面计算整条路径的radiance arriving at the film
+				if (rayWeight > 0) 
+					L = Li(ray, scene, *tileSampler, arena);
+
+				if (L.HasNaNs()) {
+					//Error("Not-a-number radiance value returned "
+					//	"for image sample.  Setting to black.");
+					L = Spectrum(0.f);
+				}
+				else if (L.y() < -1e-5) {
+					//Error("Negative luminance value, %f, returned "
+					//	"for image sample.  Setting to black.", L.y());
+					L = Spectrum(0.f);
+				}
+				else if (std::isinf(L.y())) {
+					//Error("Infinite luminance value returned "
+					//	"for image sample.  Setting to black.");
+					L = Spectrum(0.f);
+				}
+
+				filmTile->AddSample(cameraSample.pFilm, L, rayWeight);
+				arena.Reset();
+			} while (tileSampler->StartNextSample());
+		}
+
+		camera->film->MergeFilmTile(std::move(filmTile));
+	}, nTiles);
+
+	camera->film->WriteImage();
 }
 
 }

@@ -72,12 +72,12 @@ public:
         }
     }
     Float UniformFloat() {
-#ifndef PBRT_HAVE_HEX_FP_CONSTANTS
+//#ifndef PBRT_HAVE_HEX_FP_CONSTANTS
         return std::min(OneMinusEpsilon,
                         Float(UniformUInt32() * 2.3283064365386963e-10f));
-#else
-        return std::min(OneMinusEpsilon, Float(UniformUInt32() * 0x1p-32f));
-#endif
+//#else
+        //return std::min(OneMinusEpsilon, Float(UniformUInt32() * 0x1p-32f));
+//#endif
     }
     template <typename Iterator>
     void Shuffle(Iterator begin, Iterator end) {

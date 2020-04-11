@@ -15,6 +15,7 @@ namespace AIR
 	CameraSample Sampler::GetCameraSample(const Point2i &pRaster) 
 	{
 		CameraSample cs;
+		//pFilm是一个像素范围内的随机坐标
 		cs.pFilm = (Point2f)pRaster + Get2D();
 		cs.time = Get1D();
 		cs.pLens = Get2D();

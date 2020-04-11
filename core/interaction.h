@@ -58,6 +58,11 @@ namespace AIR
 			return normal != Vector3f::zero;
 		}
 
+		Ray SpawnRay(const Vector3f& d) const {
+			Point3f o = OffsetRayOrigin(interactPoint, pError, normal, d);
+			return Ray(o, d, Infinity, time);
+		}
+
 		Vector3f interactPoint;   //交点
 		Float time;        //应该是相交的ray的参数t
 		Vector3f pError;   //floating-point error

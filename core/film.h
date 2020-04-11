@@ -13,35 +13,56 @@ namespace AIR
 	};
 	class FilmTile;
 
+    //可以理解成相机里的胶片
 	class Film
 	{
 	public:
+		//resolution film的总分辨率
+		//cropWindow NDC[0,1]坐标下的裁剪区域
+		//filter     filter类型，用于抗锯齿
+		//filename   保存的文件名
 		Film(const Point2i &resolution, const Bounds2f &cropWindow,
 			std::unique_ptr<Filter> filt, const std::string &filename);
 
 		//get the whole image output bounds
+		//maybe the output is not (0,0)
+		//so the cropped pixel bounds is the true output area
 		Bounds2i GetOutputSampleBounds() const;
 
 		std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sampleBounds);
+
+		void MergeFilmTile(std::unique_ptr<FilmTile> tile);
 		void Clear();
 
 		void WriteImage(Float splatScale = 1);
 	public:
 		const Point2i fullResolution;
+		//图像过滤器
 		std::unique_ptr<Filter> filter;
 		const std::string filename;
+		//裁剪像素区域
 		Bounds2i croppedPixelBounds;
+
+		//相当于一个filter radius作用到多少个像素上
 		static constexpr int filterTableWidth = 16;
+
+		//相当于卷积核的weight值
+		//filterTableWidth相当于filter的半径
+		//基于性能的考虑，这个filterTable是precompute的
 		Float filterTable[filterTableWidth * filterTableWidth];
 	private:
 		struct Pixel 
 		{
 			Float xyz[3] = { 0, 0, 0 };
+			//filterWeightSum holds the sum of filter weight values 
+			//for the sample contributions to the pixel. 
 			Float filterWeightSum = 0;
+			//splatXYZ holds an (unweighted) sum of sample splats.
 			AtomicFloat splatXYZ[3];
-			Float pad;
+			Float pad;   //把pixel凑够32 bytes 考虑cache line性能
 		};
 		std::unique_ptr<Pixel[]> pixels;
+		std::mutex mutex;
 
 		Pixel &GetPixel(const Point2i &p) 
 		{
@@ -53,7 +74,8 @@ namespace AIR
 		}
 	};
 
-
+	//为了多线程的考虑，Film把整个image划分为多个FilmTile
+	//每个filmTile独立的数据
 	class FilmTile
 	{
 	public:

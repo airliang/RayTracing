@@ -39,7 +39,7 @@ namespace AIR
 		const Point2f *Get2DArray(int n);
 		//同一像素下的下一个sample
 		virtual bool StartNextSample();
-		//virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
+		virtual std::unique_ptr<Sampler> Clone(int seed) = 0;
 		virtual bool SetSampleNumber(int64_t sampleNum);
 
 		int64_t CurrentSampleNumber() const 

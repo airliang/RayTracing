@@ -6,10 +6,26 @@ namespace AIR
 	Film::Film(const Point2i &resolution, const Bounds2f &cropWindow, std::unique_ptr<Filter> filt, const std::string &filename)
 		: fullResolution(resolution),
 		filter(std::move(filt)),
-		croppedPixelBounds(cropWindow),
 		filename(filename)
 	{
+		croppedPixelBounds =
+			Bounds2i(Point2i(std::ceil(fullResolution.x * cropWindow.pMin.x),
+				std::ceil(fullResolution.y * cropWindow.pMin.y)),
+				Point2i(std::ceil(fullResolution.x * cropWindow.pMax.x),
+					std::ceil(fullResolution.y * cropWindow.pMax.y)));
 
+		pixels = std::unique_ptr<Pixel[]>(new Pixel[croppedPixelBounds.Area()]);
+
+		// Precompute filter weight table
+		int offset = 0;
+		for (int y = 0; y < filterTableWidth; ++y) {
+			for (int x = 0; x < filterTableWidth; ++x, ++offset) {
+				Point2f p;
+				p.x = (x + 0.5f) * filter->radius.x / filterTableWidth;
+				p.y = (y + 0.5f) * filter->radius.y / filterTableWidth;
+				filterTable[offset] = filter->Evaluate(p);
+			}
+		}
 	}
 
 	Bounds2i Film::GetOutputSampleBounds() const
@@ -32,6 +48,21 @@ namespace AIR
 		Bounds2i tilePixelBounds = Bounds2i::Intersect(Bounds2i(p0, p1), croppedPixelBounds);
 		return std::unique_ptr<FilmTile>(new FilmTile(
 			tilePixelBounds, filter->radius, filterTable, filterTableWidth));
+	}
+
+	void Film::MergeFilmTile(std::unique_ptr<FilmTile> tile) {
+		//ProfilePhase p(Prof::MergeFilmTile);
+		//VLOG(1) << "Merging film tile " << tile->pixelBounds;
+		std::lock_guard<std::mutex> lock(mutex);
+		for (Point2i pixel : tile->GetPixelBounds()) {
+			// Merge _pixel_ into _Film::pixels_
+			const FilmTilePixel& tilePixel = tile->GetPixel(pixel);
+			Pixel& mergePixel = GetPixel(pixel);
+			Float xyz[3];
+			tilePixel.contribSum.ToXYZ(xyz);
+			for (int i = 0; i < 3; ++i) mergePixel.xyz[i] += xyz[i];
+			mergePixel.filterWeightSum += tilePixel.filterWeightSum;
+		}
 	}
 
 	void Film::WriteImage(Float splatScale)

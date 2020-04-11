@@ -52,7 +52,7 @@ namespace AIR
 		ParallelForLoop(const std::function<void(Point2i)>& f, const Point2i& count,
 			uint64_t profilerState)
 			: func2D(f),
-			maxIndex(count.x * count.y),
+			maxIndex((int)count.x * count.y),
 			chunkSize(1),
 			profilerState(profilerState) 
 		{
@@ -96,6 +96,15 @@ namespace AIR
 	//count = 1024, chunkSize = 32
 	//注意：该函数是在主进程里执行的
 	void ParallelFor(const std::function<void(int)>& func, int count, int chunkSize);
+
+	//并行执行2D循环函数
+	//func 在循环体里的函数
+	//count tile的二维个数
+	//例如 700 x 700的image tileSize = 16
+	//count.x = (700 + 16 - 1) / 16
+	//count.y = (700 + 16 - 1) / 16
+	//由于没有chunkSize，在函数中就是执行一次tileSize * tileSize的2D循环
+	void ParallelFor2D(const std::function<void(Point2i)>& func, const Point2i& count);
 
 	int MaxThreadIndex();
 	//获得cpu的core数量

@@ -50,14 +50,21 @@ namespace AIR
 		MemoryArena& arena, bool handleMedia = false,
 		bool specular = false);
 
+	//积分器基类
+	//pbrt中，到达摄像机的radiance都是通过bsdf计算出来
+	//bsdf生成的出射光radiance也是通过积分入射光求出
+	//因此需要积分器来求积分
 	class Integrator
 	{
 	public:
 		virtual ~Integrator(){}
+		//渲染一个场景
+		//实现他可以是渲染到image里或其他
 		virtual void Render(const Scene& scene) = 0;
 	};
 
-
+	//通过Sampler上的一系列样本（输出image上的点）来求积分
+	//所以命名为SamplerIntegrator
 	class SamplerIntegrator : public Integrator
 	{
 	public:
@@ -67,6 +74,14 @@ namespace AIR
 			: camera(camera), sampler(sampler), pixelBounds(pixelBounds) {}
 		virtual void Preprocess(const Scene& scene, Sampler& sampler) {}
 		void Render(const Scene& scene);
+
+		//the method compute the radiance arriving at the film
+		//ray camera spawn ray
+		//scene the scene to be rendered
+		//sampler 生成0-1随机样本的采样器
+		//arena 内存管理器，只用于当前ray的计算过程，当radiance计算完毕，
+		//由该管理器分配的内存要立即释放 
+		//depth ray的反弹次数
 		virtual Spectrum Li(const RayDifferential& ray, const Scene& scene,
 			Sampler& sampler, MemoryArena& arena,
 			int depth = 0) const = 0;
@@ -77,6 +92,7 @@ namespace AIR
 
 	private:
 		// SamplerIntegrator Private Data
+		//采样器的类型，可以是halton，可以是stratified
 		std::shared_ptr<Sampler> sampler;
 		const Bounds2i pixelBounds;
 
