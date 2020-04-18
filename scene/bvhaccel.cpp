@@ -314,12 +314,41 @@ namespace AIR
 
 	bool BVHAccel::Intersect(const Ray& ray, Interaction* isect) const
 	{
-		return true;
+		bool hit = false;
+		Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
+		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
+		int currentNodeIndex; //当前正在访问的node
+		int nodesToVisit[64]; 
+		while (true)
+		{
+			const LinearBVHNode* node = &linearNodes[currentNodeIndex];
+			if (node->bounds.IntersectP(ray, invDir, dirIsNeg))
+			{
+			}
+		}
+		return hit;
 	}
 
 	int BVHAccel::FlattenBVHTree(BVHBuildNode* node, int* offset)
 	{
 		LinearBVHNode* linearNode = &linearNodes[*offset];
 		linearNode->bounds = node->bounds;
+		int myOffset = (*offset)++;
+		if (node->nPrimitives > 0)
+		{
+			//是一个叶子节点
+			linearNode->nPrimitives = node->nPrimitives;
+			linearNode->primitivesOffset = node->firstPrimOffset;
+		}
+		else
+		{
+			linearNode->axis = node->splitAxis;
+			linearNode->nPrimitives = 0;
+			//这里返回了offset
+			FlattenBVHTree(node->children[0], offset);
+			linearNode->secondChildOffset = FlattenBVHTree(node->children[1], offset);
+		}
+
+		return myOffset;
 	}
 }
