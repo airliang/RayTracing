@@ -1,4 +1,6 @@
 #include "interaction.h"
+#include "robject.h"
+#include "light.h"
 
 namespace AIR
 {
@@ -32,6 +34,15 @@ namespace AIR
 
 		shading.n = Vector3f::Normalize(Vector3f::Cross(shading.dpdu, shading.dpdv));
     }
+
+	void Interaction::ComputeScatteringFunctions(const RayDifferential& ray,
+		MemoryArena& arena,
+		bool allowMultipleLobes,
+		TransportMode mode) {
+		ComputeDifferentials(ray);
+		robject->ComputeScatteringFunctions(this, arena, mode,
+			allowMultipleLobes);
+	}
 
 	void Interaction::ComputeDifferentials(const RayDifferential& ray) const
 	{
@@ -89,5 +100,15 @@ namespace AIR
 			dudx = dvdx = 0;
 		if (!SolveLinearSystem2x2(A, By, &dudy, &dvdy))
 			dudy = dvdy = 0;
+	}
+
+	Spectrum Interaction::Le(const Vector3f& w) const
+	{
+		const AreaLight* pLight = robject->GetAreaLight();
+		if (pLight)
+		{
+			return pLight->L(*this, w);
+		}
+		return Spectrum(0.0f);
 	}
 }

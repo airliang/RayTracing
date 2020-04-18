@@ -1,11 +1,13 @@
 #pragma once
 #include "geometry.h"
+#include "spectrum.h"
 
 namespace AIR
 {
 	class RObject;
 	class BSDF;
 	class Shape;
+	class MemoryArena;
 	class Interaction
 	{
 	public:
@@ -41,6 +43,16 @@ namespace AIR
 			const Vector3f &dndus,
 			const Vector3f &dndvs,
 			bool orientationIsAuthoritative);
+
+		void ComputeScatteringFunctions(
+			const RayDifferential& ray, MemoryArena& arena,
+			bool allowMultipleLobes = false,
+			TransportMode mode = TransportMode::Radiance);
+
+		//如果interaction上带有AreaLight
+		//the surface can emit the radiance
+		//return the emitted radiance in w direction
+		Spectrum Le(const Vector3f& w) const;
 
 		//先求出ray和Interaction point所在的平面的相交
 		//因为这里不知道具体的模型轮廓，所以只能用平面来模拟！

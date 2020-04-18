@@ -2,8 +2,16 @@
 
 namespace AIR
 {
+	Camera* Camera::CreateCamera(const Transform& cameraToWorld, 
+		const Bounds2f& screenWindow, 
+		const Point2i& imageResolution
+		, Film* film, bool orthogonal)
+	{
+		return new Camera(cameraToWorld, screenWindow, imageResolution, film, orthogonal);
+	}
+
 	Camera::Camera(const Transform& transform, const Bounds2f& screenWindow, const Point2i& imageResolution
-		, Film* film, bool orthogonal) : RObject(nullptr), film(film), orthogonal(orthogonal)
+		, Film* film, bool orthogonal) : film(film), orthogonal(orthogonal)
 	{
 		mTransform = transform;
 		ScreenToRaster = Matrix4f::GetScaleMatrix(imageResolution.x,

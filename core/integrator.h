@@ -86,6 +86,11 @@ namespace AIR
 			Sampler& sampler, MemoryArena& arena,
 			int depth = 0) const = 0;
 
+		Spectrum SpecularReflect(const RayDifferential& ray, const Interaction& isect,
+			const Scene& scene, Sampler& sampler, MemoryArena& arena, int depth) const;
+
+		Spectrum SpecularTransmit(const RayDifferential& ray, const Interaction& isect,
+			const Scene& scene, Sampler& sampler, MemoryArena& arena, int depth) const;
 	protected:
 		// SamplerIntegrator Protected Data
 		std::shared_ptr<const Camera> camera;

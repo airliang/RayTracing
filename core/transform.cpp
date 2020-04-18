@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "Transform.h"
 
@@ -118,9 +118,7 @@ namespace AIR
 		Float lengthSquared = d.LengthSquared();
 		if (lengthSquared > 0)
 		{
-			//���Ĵ�������oErrorͶӰ��abs(d)��ȡabs(d)��Ϊ���������
-			//dȫ��������dot���������
-			//Ȼ���һ����������Ӧ���ǳ���length
+			
 			Float dt = Vector3f::Dot(Vector3f::Abs(d), *oError) / lengthSquared;
 			o += d * dt;
 			tMax -= dt;
@@ -276,6 +274,11 @@ namespace AIR
 		ret = Union(ret, TransformPoint(worldToLocal, Vector3f(bound.pMax.x, bound.pMin.y, bound.pMax.z)));
 		ret = Union(ret, TransformPoint(worldToLocal, Vector3f(bound.pMax.x, bound.pMax.y, bound.pMax.z)));
 		return ret;
+	}
+
+	Transform Transform::MakeTransform(const Vector3f& position, const Quaternion& rotation, const Vector3f& scale)
+	{
+		return Transform(position, rotation, scale);
 	}
 };
 

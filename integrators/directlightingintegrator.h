@@ -28,6 +28,9 @@ namespace AIR
 	private:
 		const LightStrategy strategy;
 		const int maxDepth;
+		//每个light已经有了自己的nSamples，
+		//为何这里要额外用一个数组去存放呢？
+		//因为要用RoundCount
 		std::vector<int> nLightSamples;
 	};
 }

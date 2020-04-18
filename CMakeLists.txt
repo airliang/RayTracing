@@ -21,6 +21,11 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/math)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/shapes)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/core)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/filters)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/scene)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/materials)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lights)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/integrators)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Half)
@@ -65,6 +70,7 @@ set(CORE_SOURCES
 	core/sampling.cpp
 	core/fresnelreflection.cpp
 	core/integrator.cpp
+	core/renderer.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -116,7 +122,12 @@ set(LIGHTS_SOURCES
 
 set(INTEGRATORS_SOURCES
     integrators/directlightingintegrator.cpp
+	integrators/pathintegrator.cpp
     )
+
+set(SCENE_SOURCES
+    scene/bvhaccel.cpp
+)
 
 set(SOURCES 
     RayTracing.h
@@ -130,6 +141,7 @@ set(SOURCES
 	${TEXTURES_SOURCES}
 	${LIGHTS_SOURCES}
 	${INTEGRATORS_SOURCES}
+	${SCENE_SOURCES}
 	)
 
 

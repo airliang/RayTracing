@@ -1,5 +1,6 @@
 #include "robject.h"
 #include "sphere.h"
+#include "material.h"
 
 namespace AIR
 {
@@ -10,7 +11,7 @@ namespace AIR
 
 	RObject* RObject::CreateRObject(Shape::ShapeType shapeType, const GeometryParam& param, const Vector3f& position, const Vector3f& scale, const Quaternion& rotation)
 	{
-		Shape* pShape = nullptr;
+		RObject* pRObject = new RObject();
 		Transform transform;
 		transform.SetPosition(position);
 		transform.SetScale(scale); 
@@ -18,31 +19,31 @@ namespace AIR
 		switch (shapeType) 
 		{
 		case AIR::Shape::shape_sphere:
-			pShape = Sphere::CreateSphere(param, &transform).get();
+			pRObject->shape = Sphere::CreateSphere(param, &transform);
 			break;
 		case AIR::Shape::shape_cylinder:
 			break;
 		default:
 			break;
 		}
-		RObject* pRObject = new RObject(pShape);
+		
 		pRObject->mTransform = transform;
 		return pRObject;
 	}
 
 	Bounds3f RObject::WorldBound() const
 	{
-		if (mShape == nullptr)
+		if (shape == nullptr)
 		{
 			return Bounds3f();
 		}
-		return mTransform.ObjectToWorldBound(mShape->ObjectBound());
+		return mTransform.ObjectToWorldBound(shape->ObjectBound());
 	}
 
 	bool RObject::Intersect(const Ray &r, Interaction* pInteract) const
 	{
 		Float tHit = 0;
-		if (!mShape->Intersect(r, &tHit, pInteract))
+		if (!shape->Intersect(r, &tHit, pInteract))
 		{
 			return false;
 		}
@@ -52,6 +53,14 @@ namespace AIR
 
 	bool RObject::IntersectP(const Ray &r) const
 	{
-		return mShape->IntersectP(r);
+		return shape->IntersectP(r);
+	}
+
+	void RObject::ComputeScatteringFunctions(
+		Interaction* isect, MemoryArena& arena, TransportMode mode,
+		bool allowMultipleLobes) const {
+		if (material)
+			material->ComputeScatteringFunctions(isect, arena, mode,
+				allowMultipleLobes);
 	}
 }

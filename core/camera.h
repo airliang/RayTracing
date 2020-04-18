@@ -21,7 +21,8 @@ namespace AIR
 			, Film* film, bool orthogonal);
 		~Camera()
 		{
-
+			if (film)
+				delete film;
 		}
 
 		Float GenerateRay(const CameraSample& sample,
@@ -29,7 +30,8 @@ namespace AIR
 
 		Float GenerateRayDifferential(const CameraSample& sample, RayDifferential* ray) const;
 
-		static std::shared_ptr<Camera> CreateCamera(const Transform& cameraToWorld, const Transform& cameraToScreen);
+		static Camera* CreateCamera(const Transform& cameraToWorld, const Bounds2f& screenWindow, const Point2i& imageResolution
+			, Film* film, bool orthogonal);
 
 		const Transform& CameraToWorld() const
 		{

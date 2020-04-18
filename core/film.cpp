@@ -60,7 +60,8 @@ namespace AIR
 			Pixel& mergePixel = GetPixel(pixel);
 			Float xyz[3];
 			tilePixel.contribSum.ToXYZ(xyz);
-			for (int i = 0; i < 3; ++i) mergePixel.xyz[i] += xyz[i];
+			for (int i = 0; i < 3; ++i) 
+				mergePixel.xyz[i] += xyz[i];
 			mergePixel.filterWeightSum += tilePixel.filterWeightSum;
 		}
 	}
@@ -145,6 +146,7 @@ namespace AIR
 		//This can be done directly by dividing each component of the sample offset by the filter radius in that direction, 
 		//giving a value between 0 and 1, and then multiplying by the table size.
 		
+		//ifx是filterTable中的x方向的索引
 		int *ifx = ALLOCA(int, p1.x - p0.x);
 		for (int x = p0.x; x < p1.x; ++x) 
 		{
@@ -152,6 +154,7 @@ namespace AIR
 				filterTableSize);
 			ifx[x - p0.x] = std::min((int)std::floor(fx), filterTableSize - 1);
 		}
+		//ify是filterTable中的y方向的索引
 		int *ify = ALLOCA(int, p1.y - p0.y);
 		for (int y = p0.y; y < p1.y; ++y) 
 		{

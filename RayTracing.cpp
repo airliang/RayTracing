@@ -9,11 +9,12 @@
 #include "film.h"
 #include "boxfilter.h"
 #include "parallelism.h"
+#include "renderer.h"
 using namespace std;
 using namespace AIR;
-int main()
+int main(int argc, char* argv[])
 {
-	ParallelInit();
+
 	cout << "Hello CMake。" << endl;
 	auto forward = Vector3f::forward;
 	forward = forward.Normalize();
@@ -37,7 +38,11 @@ int main()
 	Film film(Point2i(512, 512), Bounds2f(Vector2f(0.0f, 0.0f), Vector2f(512.0f, 512.0f)), std::unique_ptr<Filter>(new BoxFilter(Vector2f::one)), "test.exr");
 	film.WriteImage();
 
-	ParallelCleanup();
+	//ParallelCleanup();
+	Renderer::GetInstance().Init();
+	Renderer::GetInstance().Run();
+	Renderer::GetInstance().Cleanup();
+
 	system("pause");
 	return 0;
 }

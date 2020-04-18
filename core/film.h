@@ -6,10 +6,17 @@
 
 namespace AIR
 {
+	//先搞清楚一个概念，像素是指我们最后输出到image的有具体颜色值的
+	//sample是给像素提供颜色贡献的样本，能影响filter radius范围内的所有像素
+	//像素最终颜色公式如下：
+	//分子中的w是和真实摄像机相关的
+	//         ∑[i]f(x-xi,y-yi)w L(xi,yi) 
+	//I(x,y) = ------------------------
+	//             ∑[i]f(x-xi,y-yi)
 	struct FilmTilePixel 
 	{
-		Spectrum contribSum = 0.f;
-		Float filterWeightSum = 0.f;   //filter' weight
+		Spectrum contribSum = 0.f;     //对应上式中的分子累加
+		Float filterWeightSum = 0.f;   //filter' weight，对应上式中的分母累加
 	};
 	class FilmTile;
 
@@ -31,6 +38,8 @@ namespace AIR
 
 		std::unique_ptr<FilmTile> GetFilmTile(const Bounds2i &sampleBounds);
 
+		//merge the filmtile into the final image
+		//executing in threads
 		void MergeFilmTile(std::unique_ptr<FilmTile> tile);
 		void Clear();
 

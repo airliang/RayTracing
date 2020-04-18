@@ -534,6 +534,10 @@ namespace AIR
 				AIR::Lerp(t.z, pMin.z, pMax.z));
 		}
 
+		//returns the continuous position of a point relative to the corners of the box,
+		//where a point at the minimum corner has offset(0,0,0),
+		//a point at the maximum corner has offset(1,1,1),
+		//and so forth
 		Vector3<T> Offset(const Vector3<T> &p) const
 		{
 			Vector3<T> o = p - pMin;

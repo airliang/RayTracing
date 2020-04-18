@@ -15,6 +15,12 @@ namespace AIR
 			mScale = Vector3f::one;
 		}
 
+		Transform(const Vector3f& position, const Quaternion& rotation, const Vector3f& scale) : 
+			mPosition(position), mRotation(rotation), mScale(scale), mMatrixDirty(true)
+		{
+
+		}
+
 		void SetPosition(const Vector3f& position);
 
 		Vector3f Position() const
@@ -61,6 +67,8 @@ namespace AIR
 		Vector3f WorldToObjectVector(const Vector3f& vec, Vector3f* absError = nullptr) const;
 		Vector3f WorldToObjectNormal(const Vector3f& normal) const;
 		Bounds3f WorldToObjectBound(const Bounds3f& bound) const;
+
+		static Transform MakeTransform(const Vector3f& position, const Quaternion& rotation, const Vector3f& scale);
 	private:
 		Vector3f TransformPoint(const Matrix4x4& mat, const Vector3f& point, Vector3f* absError = nullptr) const;
 		Vector3f TransformPoint(const Matrix4x4& mat, const Vector3f& point, const Vector3f& ptError, Vector3f* absError = nullptr) const;
