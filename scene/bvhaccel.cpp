@@ -318,15 +318,103 @@ namespace AIR
 		Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
 		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
 		int currentNodeIndex; //当前正在访问的node
+		//下一个要访问的node在nodesToVisit的index
+		int toVisitOffset = 0;
+		//nodesToVisit是一个要访问的node的stack
 		int nodesToVisit[64]; 
 		while (true)
 		{
 			const LinearBVHNode* node = &linearNodes[currentNodeIndex];
 			if (node->bounds.IntersectP(ray, invDir, dirIsNeg))
 			{
+				//如果是叶子节点
+				if (node->nPrimitives > 0)
+				{
+					for (int i = 0; i < node->nPrimitives; i++)
+					{
+						if (primitives[node->primitivesOffset + i]->Intersect(ray, isect))
+						{
+							hit = true;
+						}
+					}
+					if (toVisitOffset == 0) 
+						break;
+					currentNodeIndex = nodesToVisit[--toVisitOffset];
+				}
+				else
+				{
+					//射线方向和沿着轴的方向如果是超过90度
+					//先访问第二个子节点
+					//下一个节点则是第一个子节点(currentNodeIndex + 1)
+					//射线方向和沿着轴的方向 < 90度则相反
+					if (dirIsNeg[node->axis]) 
+					{
+                     	nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
+                     	currentNodeIndex = node->secondChildOffset;
+                  	} 
+					else 
+					{
+                     	nodesToVisit[toVisitOffset++] = node->secondChildOffset;
+                     	currentNodeIndex = currentNodeIndex + 1;
+                  	}
+				}
+				
 			}
 		}
 		return hit;
+	}
+
+	bool BVHAccel::IntersectP(const Ray& ray) const
+	{
+		if (linearNodes == nullptr)
+		    return false;
+		Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
+		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
+		int currentNodeIndex; //当前正在访问的node
+		//下一个要访问的node在nodesToVisit的index
+		int toVisitOffset = 0;
+		//nodesToVisit是一个要访问的node的stack
+		int nodesToVisit[64]; 
+		while (true)
+		{
+			const LinearBVHNode* node = &linearNodes[currentNodeIndex];
+			if (node->bounds.IntersectP(ray, invDir, dirIsNeg))
+			{
+				//如果是叶子节点
+				if (node->nPrimitives > 0)
+				{
+					for (int i = 0; i < node->nPrimitives; i++)
+					{
+						if (primitives[node->primitivesOffset + i]->IntersectP(ray))
+						{
+							return true;
+						}
+					}
+					if (toVisitOffset == 0) 
+						break;
+					currentNodeIndex = nodesToVisit[--toVisitOffset];
+				}
+				else
+				{
+					//射线方向和沿着轴的方向如果是超过90度
+					//先访问第二个子节点
+					//下一个节点则是第一个子节点(currentNodeIndex + 1)
+					//射线方向和沿着轴的方向 < 90度则相反
+					if (dirIsNeg[node->axis]) 
+					{
+                     	nodesToVisit[toVisitOffset++] = currentNodeIndex + 1;
+                     	currentNodeIndex = node->secondChildOffset;
+                  	} 
+					else 
+					{
+                     	nodesToVisit[toVisitOffset++] = node->secondChildOffset;
+                     	currentNodeIndex = currentNodeIndex + 1;
+                  	}
+				}
+				
+			}
+		}
+		return false;
 	}
 
 	int BVHAccel::FlattenBVHTree(BVHBuildNode* node, int* offset)

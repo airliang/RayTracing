@@ -38,8 +38,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Iex)
 set(CORE_SOURCES 
 #    core/transform.h
 	core/transform.cpp
-#	core/shape.h
-#	core/robject.h
+	core/shape.cpp
+	core/scene.cpp
 	core/robject.cpp
 #	core/interaction.h
 #	core/application.h

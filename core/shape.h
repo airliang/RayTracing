@@ -34,6 +34,7 @@ namespace AIR
 		//pdf 该点在shape上的pdf值
 		virtual Interaction Sample(const Point2f& u, Float* pdf) const = 0;
 
+		//在shape上任意采样一点的pdf
 		virtual Float Pdf(const Interaction&) const 
 		{ 
 			return 1 / Area(); 
@@ -46,8 +47,11 @@ namespace AIR
 		virtual Interaction Sample(const Interaction& ref, const Point2f& u,
 			Float* pdf) const;
 
+		//专门为light提供的pdf
 		//由于只有可见立体角内采样，
 		//概率密度函数将从面积转换到立体角范围内
+		//该函数表示某交点ref，方向wi的pdf是什么
+		//由于采样shape的面积的pdf已知，立体角的pdf需要从面积转过去
 		virtual Float Pdf(const Interaction& ref, const Vector3f& wi) const;
 
 		//ray is in object space

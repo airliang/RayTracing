@@ -1,15 +1,19 @@
 #pragma once
 #include "geometry.h"
+#include "spectrum.h"
 
 namespace AIR
 {
 	class Light;
 	class Interaction;
 	class RObject;
+	class Sampler;
+	//class Spectrum;
+
 	class Scene
 	{
 	public:
-		Scene(std::shared_ptr<RObject>& accel, const std::vector<std::shared_ptr<Light>>& lights);
+		Scene(std::shared_ptr<RObject> accel, const std::vector<std::shared_ptr<Light>>& lights);
 		const Bounds3f& WorldBound() const 
 		{ 
 			return worldBound; 
