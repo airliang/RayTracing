@@ -10,6 +10,7 @@
 #include "gaussianfilter.h"
 #include "trianglefilter.h"
 #include "stratified.h"
+#include "sceneparser.h"
 
 namespace AIR
 {
@@ -145,7 +146,7 @@ namespace AIR
 	{
 		return Camera::CreateCamera(Transform(cameraParams.position, cameraParams.rotation, cameraParams.scale),
 			cameraParams.cropBounds,
-			cameraParams.imageResolution, MakeFilm(), false);
+			MakeFilm(), false);
 	}
 
 	Film* RenderOptions::MakeFilm() const
@@ -190,6 +191,11 @@ namespace AIR
 	Renderer::Renderer()
 	{
 		
+	}
+
+	void Renderer::ParseScene(const std::string& filename)
+	{
+
 	}
 
 	void Renderer::Init()

@@ -10,6 +10,7 @@
 #include "boxfilter.h"
 #include "parallelism.h"
 #include "renderer.h"
+#include "runoption.h"
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
@@ -38,7 +39,21 @@ int main(int argc, char* argv[])
 	Film film(Point2i(512, 512), Bounds2f(Vector2f(0.0f, 0.0f), Vector2f(512.0f, 512.0f)), std::unique_ptr<Filter>(new BoxFilter(Vector2f::one)), "test.exr");
 	film.WriteImage();
 
-	//ParallelCleanup();
+	RunOptions options;
+	std::vector<std::string> filenames;
+
+	for (int i = 1; i < argc; ++i)
+	{
+		if (!strncmp(argv[i], "--nthreads=", 11)) 
+		{
+			options.nThreads = atoi(&argv[i][11]);
+		}
+		else
+		{
+			filenames.push_back(argv[i]);
+		}
+	}
+
 	Renderer::GetInstance().Init();
 	Renderer::GetInstance().Run();
 	Renderer::GetInstance().Cleanup();

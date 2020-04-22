@@ -6,8 +6,8 @@
 
 namespace AIR
 {
-	//��z���ϵ�����ϵ��������
-	//�������ʱ�ļ���
+	//按z向上的坐标系来定义球，
+	//方便采样时的计算
 	class Sphere : public Shape
 	{
 	public:

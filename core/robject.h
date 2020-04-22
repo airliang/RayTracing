@@ -47,6 +47,6 @@ namespace AIR
 		std::shared_ptr<AreaLight> areaLight;
 
 	protected:
-		Transform mTransform;
+		//Transform mTransform;
 	};
 }

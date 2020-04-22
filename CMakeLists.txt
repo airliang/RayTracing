@@ -5,7 +5,6 @@ cmake_minimum_required (VERSION 3.8)
 
 project(RayTracing)
 # 将源代码添加到此项目的可执行文件。
-#add_executable (RayTracing "RayTracing.cpp" "RayTracing.h" "shapes/sphere.h" "shapes/sphere.cpp")
 
 # TODO: 如有需要，请添加测试并安装目标。
 # 包含子项目。
@@ -15,7 +14,7 @@ project(RayTracing)
 #add_subdirectory ("filters")
 #add_subdirectory ("samplers")
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
-add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr")
+#add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb")
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/math)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/shapes)
@@ -26,14 +25,15 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/materials)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lights)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/integrators)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Half)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Imath)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/IlmImf)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/config)
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Iex)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Half)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Imath)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/IlmImf)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/config)
+#include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Iex)
 
 set(CORE_SOURCES 
 #    core/transform.h
@@ -127,7 +127,10 @@ set(INTEGRATORS_SOURCES
 
 set(SCENE_SOURCES
     scene/bvhaccel.cpp
+	scene/sceneparser.cpp
 )
+
+
 
 set(SOURCES 
     RayTracing.h
@@ -144,6 +147,10 @@ set(SOURCES
 	${SCENE_SOURCES}
 	)
 
+file(GLOB STB_FILES "thirdparty/stb/*.h" "third/stb/*.c")
+foreach(_file IN ITEMS ${STB_FILES})
+    list(APPEND SOURCES ${_file})
+endforeach()
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
@@ -186,7 +193,7 @@ if (CMAKE_BUILD_TYPE MATCHES Debug)
 #target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/IexMath-2_4_d.lib)
 #target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/IlmThread-2_4_d.lib)
 #target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/Imath-2_4_d.lib)
-target_link_libraries(RayTracing Half IlmImf)
+#target_link_libraries(RayTracing Half IlmImf)
 else ()
 endif()
 add_definitions(/std:c++14)

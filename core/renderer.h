@@ -1,5 +1,5 @@
 #pragma once
-
+#include <string>
 
 namespace AIR
 {
@@ -19,11 +19,10 @@ namespace AIR
 		void Run();
 
 		void Cleanup();
+
+		void ParseScene(const std::string& filename);
 	protected:
 	private:
 		Renderer();
-
-		Integrator* CreateIntegrator();
-		Sampler* CreateSampler();
 	};
 }

@@ -29,7 +29,7 @@ namespace AIR
 	    //就是radiance，diffuse是各个方向都相同的radiance
 		const Spectrum Lemit;
 		std::shared_ptr<Shape> shape;
-		//���
+		//面积
 		const Float area; 
 		const bool twoSided = false;
 	};

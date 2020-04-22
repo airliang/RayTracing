@@ -55,15 +55,15 @@ namespace AIR
 		virtual Float Pdf(const Interaction& ref, const Vector3f& wi) const;
 
 		//ray is in object space
-		//改函数只判断shape是否和ray有相交
+		//函数只判断shape是否和ray有相交
 		virtual bool IntersectP(const Ray &ray) const
 		{
-			Float tHit = ray.tMax;
-			Interaction isect;
-			return false;
-			//return Intersect(ray, &tHit, &isect);
+			return Intersect(ray, nullptr, nullptr);
 		}
 
+		//解释一下这个Transform为何用指针，
+		//假如有一个triangleMesh，有上千个Triangle，
+		//这些Triangle都是共享一个Transform的
 		Transform* mTransform;
 
 		//判断射线是否相交

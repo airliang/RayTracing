@@ -1,4 +1,5 @@
 ﻿#include "disk.h"
+#include "sampling.h"
 
 namespace AIR
 {
@@ -76,5 +77,46 @@ namespace AIR
 		*tHit = (Float)tHitShape;
 
 		return true;
+	}
+
+	bool Disk::IntersectP(const Ray& r) const
+	{
+		// Transform _Ray_ to object space
+		Vector3f oErr, dErr;
+		Ray ray = mTransform->WorldToObjectRay(r, &oErr, &dErr);
+
+		// Compute plane intersection for disk
+
+		// Reject disk intersections for rays parallel to the disk's plane
+		if (ray.d.z == 0) return false;
+		Float tShapeHit = (height - ray.o.z) / ray.d.z;
+		if (tShapeHit <= 0 || tShapeHit >= ray.tMax) 
+			return false;
+
+		// See if hit point is inside disk radii and $\phimax$
+		Point3f pHit = ray(tShapeHit);
+		Float dist2 = pHit.x * pHit.x + pHit.y * pHit.y;
+		if (dist2 > radius* radius || dist2 < innerRadius * innerRadius)
+			return false;
+
+		// Test disk $\phi$ value against $\phimax$
+		Float phi = std::atan2(pHit.y, pHit.x);
+		if (phi < 0) phi += 2 * Pi;
+		if (phi > phiMax) 
+			return false;
+		return true;
+	}
+
+	Interaction Disk::Sample(const Point2f& u, Float* pdf) const
+	{
+		Point2f pd = ConcentricSampleDisk(u);
+		Point3f pObj(pd.x * radius, pd.y * radius, height);
+		Interaction it;
+		it.normal = Vector3f::Normalize(mTransform->ObjectToWorldNormal(Vector3f::forward));
+		//if (reverseOrientation) 
+		//   it.normal *= -1;
+		it.interactPoint = mTransform->ObjectToWorldPoint(pObj, Vector3f(0, 0, 0), &it.pError);
+		*pdf = 1 / Area();
+		return it;
 	}
 }

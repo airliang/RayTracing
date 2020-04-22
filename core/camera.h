@@ -14,11 +14,11 @@ namespace AIR
 	class Film;
 
 	//默认就是一个perspective camera
-	class Camera : public RObject
+	class Camera
 	{
 	public:
-		Camera(const Transform& transform, const Bounds2f& screenWindow, const Point2i& imageResolution
-			, Film* film, bool orthogonal);
+		Camera(const Transform& transform, const Bounds2f& screenWindow, 
+			Film* film, bool orthogonal);
 		~Camera()
 		{
 			if (film)
@@ -30,8 +30,8 @@ namespace AIR
 
 		Float GenerateRayDifferential(const CameraSample& sample, RayDifferential* ray) const;
 
-		static Camera* CreateCamera(const Transform& cameraToWorld, const Bounds2f& screenWindow, const Point2i& imageResolution
-			, Film* film, bool orthogonal);
+		static Camera* CreateCamera(const Transform& cameraToWorld, const Bounds2f& screenWindow,
+			Film* film, bool orthogonal);
 
 		const Transform& CameraToWorld() const
 		{
@@ -45,5 +45,7 @@ namespace AIR
 
 		Vector3f dxCamera, dyCamera;
 		const bool orthogonal = false;
+
+		Transform mTransform;
 	};
 };

@@ -1,19 +1,20 @@
 ﻿#include "camera.h"
+#include "film.h"
 
 namespace AIR
 {
 	Camera* Camera::CreateCamera(const Transform& cameraToWorld, 
 		const Bounds2f& screenWindow, 
-		const Point2i& imageResolution
-		, Film* film, bool orthogonal)
+		Film* film, bool orthogonal)
 	{
-		return new Camera(cameraToWorld, screenWindow, imageResolution, film, orthogonal);
+		return new Camera(cameraToWorld, screenWindow, film, orthogonal);
 	}
 
-	Camera::Camera(const Transform& transform, const Bounds2f& screenWindow, const Point2i& imageResolution
-		, Film* film, bool orthogonal) : film(film), orthogonal(orthogonal)
+	Camera::Camera(const Transform& transform, const Bounds2f& screenWindow,
+		Film* film, bool orthogonal) : film(film), orthogonal(orthogonal)
 	{
 		mTransform = transform;
+		Point2i imageResolution = film->fullResolution;
 		ScreenToRaster = Matrix4f::GetScaleMatrix(imageResolution.x,
 			imageResolution.y, 1) *
 			Matrix4f::GetScaleMatrix(1 / (screenWindow.pMax.x - screenWindow.pMin.x),
