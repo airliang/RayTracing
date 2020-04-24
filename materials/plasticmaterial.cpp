@@ -6,6 +6,7 @@ namespace AIR
 	void PlasticMaterial::ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,
 		TransportMode mode, bool allowMultipleLobes) const
 	{
+		//bumpmapÔÝÊ±²»ÓÃ
 		si->bsdf = ARENA_ALLOC(arena, BSDF)(*si);
 		//evaluate the diffuse spectrum at the current interaction point
 		Spectrum diffuse = kd->Evaluate(*si).Clamp();
