@@ -10,14 +10,20 @@ namespace AIR
 	class MemoryArena;
 	class Material;
 	class AreaLight;
-	class RObject
+	class Primitive
 	{
 	public:
-		RObject()
+		Primitive(const std::shared_ptr<Shape>& shape,
+			const std::shared_ptr<Material>& material,
+			const std::shared_ptr<AreaLight>& areaLight,
+			Transform* pTransform) : shape(shape),
+			material(material),
+			areaLight(areaLight),
+			mTransform(pTransform)
 		{
 
 		}
-		virtual ~RObject();
+		virtual ~Primitive();
 
 		virtual Bounds3f WorldBound() const;
 		virtual bool Intersect(const Ray &r, Interaction *) const;
@@ -29,7 +35,7 @@ namespace AIR
 			MemoryArena& arena, TransportMode mode,
 			bool allowMultipleLobes) const;
 
-		static RObject* CreateRObject(Shape::ShapeType shapeType, const GeometryParam& param, const Vector3f& position, const Vector3f& scale, const Quaternion& rotation);
+		//static Primitive* CreatePrimitive(Shape::ShapeType shapeType, const GeometryParam& param, Transform* pTransform);
 
 		const AreaLight* GetAreaLight() const
 		{
@@ -47,6 +53,6 @@ namespace AIR
 		std::shared_ptr<AreaLight> areaLight;
 
 	protected:
-		//Transform mTransform;
+		Transform* mTransform;
 	};
 }

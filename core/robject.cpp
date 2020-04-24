@@ -4,22 +4,20 @@
 
 namespace AIR
 {
-	RObject::~RObject()
+	Primitive::~Primitive()
 	{
 
 	}
 
-	RObject* RObject::CreateRObject(Shape::ShapeType shapeType, const GeometryParam& param, const Vector3f& position, const Vector3f& scale, const Quaternion& rotation)
+	/*
+	Primitive* Primitive::CreatePrimitive(Shape::ShapeType shapeType, const GeometryParam& param, Transform* pTransform)
 	{
-		RObject* pRObject = new RObject();
-		Transform transform;
-		transform.SetPosition(position);
-		transform.SetScale(scale); 
-		transform.SetRotation(rotation); 
+		Primitive* pRObject = new Primitive();
+
 		switch (shapeType) 
 		{
 		case AIR::Shape::shape_sphere:
-			pRObject->shape = Sphere::CreateSphere(param, &transform);
+			pRObject->shape = Sphere::CreateSphere(param, pTransform);
 			break;
 		case AIR::Shape::shape_cylinder:
 			break;
@@ -27,20 +25,21 @@ namespace AIR
 			break;
 		}
 		
-		pRObject->mTransform = transform;
+		pRObject->mTransform = pTransform;
 		return pRObject;
 	}
+	*/
 
-	Bounds3f RObject::WorldBound() const
+	Bounds3f Primitive::WorldBound() const
 	{
 		if (shape == nullptr)
 		{
 			return Bounds3f();
 		}
-		return mTransform.ObjectToWorldBound(shape->ObjectBound());
+		return mTransform->ObjectToWorldBound(shape->ObjectBound());
 	}
 
-	bool RObject::Intersect(const Ray &r, Interaction* pInteract) const
+	bool Primitive::Intersect(const Ray &r, Interaction* pInteract) const
 	{
 		Float tHit = 0;
 		if (!shape->Intersect(r, &tHit, pInteract))
@@ -51,12 +50,12 @@ namespace AIR
 		return true;
 	}
 
-	bool RObject::IntersectP(const Ray &r) const
+	bool Primitive::IntersectP(const Ray &r) const
 	{
 		return shape->IntersectP(r);
 	}
 
-	void RObject::ComputeScatteringFunctions(
+	void Primitive::ComputeScatteringFunctions(
 		Interaction* isect, MemoryArena& arena, TransportMode mode,
 		bool allowMultipleLobes) const {
 		if (material)

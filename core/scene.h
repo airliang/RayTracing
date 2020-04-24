@@ -6,14 +6,14 @@ namespace AIR
 {
 	class Light;
 	class Interaction;
-	class RObject;
+	class Primitive;
 	class Sampler;
 	//class Spectrum;
 
 	class Scene
 	{
 	public:
-		Scene(std::shared_ptr<RObject> accel, const std::vector<std::shared_ptr<Light>>& lights);
+		Scene(std::shared_ptr<Primitive> accel, const std::vector<std::shared_ptr<Light>>& lights);
 		const Bounds3f& WorldBound() const 
 		{ 
 			return worldBound; 
@@ -26,7 +26,7 @@ namespace AIR
 
 		std::vector<std::shared_ptr<Light>> lights;
 	private:
-		std::shared_ptr<RObject> aggregate;
+		std::shared_ptr<Primitive> aggregate;
 		Bounds3f worldBound;
 	};
 }

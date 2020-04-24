@@ -74,7 +74,7 @@ namespace AIR
 		Bounds3f bounds;
 	};
 
-	std::shared_ptr<RObject> BVHAccel::CreateBVHAccelerator(std::vector<std::shared_ptr<RObject>> prims, int maxPrimsInNode, const std::string& splitName)
+	std::shared_ptr<Primitive> BVHAccel::CreateBVHAccelerator(std::vector<std::shared_ptr<Primitive>> prims, int maxPrimsInNode, const std::string& splitName)
 	{
 		SplitMethod method = SplitMethod::SAH;
 		if (splitName == "middle")
@@ -89,7 +89,7 @@ namespace AIR
 		return std::make_shared<BVHAccel>(std::move(prims), maxPrimsInNode, method);
 	}
 
-	BVHAccel::BVHAccel(std::vector<std::shared_ptr<RObject>> p, int maxPrimsInNode,
+	BVHAccel::BVHAccel(std::vector<std::shared_ptr<Primitive>> p, int maxPrimsInNode,
 		SplitMethod splitMethod)
 		: maxPrimsInNode(std::min(255, maxPrimsInNode)),
 		primitives(std::move(p)),
@@ -101,7 +101,7 @@ namespace AIR
 
 		MemoryArena arena(1024 * 1024);
 		int totalNodes = 0;
-		std::vector<std::shared_ptr<RObject>> orderedPrims;
+		std::vector<std::shared_ptr<Primitive>> orderedPrims;
 		BVHBuildNode* root;
 
 		root = recursiveBuild(arena, primitiveInfo, 0, primitives.size(),
@@ -124,7 +124,7 @@ namespace AIR
 	BVHBuildNode* BVHAccel::recursiveBuild(
 		MemoryArena& arena, std::vector<BVHPrimitiveInfo>& primitiveInfo,
 		int start, int end, int* totalNodes,
-		std::vector<std::shared_ptr<RObject>>& orderedPrims)
+		std::vector<std::shared_ptr<Primitive>>& orderedPrims)
 	{
 		BVHBuildNode* node = arena.Alloc<BVHBuildNode>();
 		(*totalNodes)++;
@@ -224,7 +224,7 @@ namespace AIR
 					// Initialize _BucketInfo_ for SAH partition buckets
 					for (int i = start; i < end; ++i) 
 					{
-						//计算当前的RObject属于哪个bucket
+						//计算当前的Primitive属于哪个bucket
 						int b = nBuckets *
 							centroidBounds.Offset(
 								primitiveInfo[i].centroid)[dim];

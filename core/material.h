@@ -9,6 +9,11 @@ namespace AIR
 	{
 	public:
 		//根据Interaction的属性，生成interaction对应的BSDF
+		//路径追踪ray和Interaction发生相交时，调用该函数来决定bsdf的数据
+		//si material属于哪个表面
+		//arena 在其生命周期内allocate memory for BSDFs
+		//mode 单向还是双向
+		//allowMultipleLobes 
 		virtual void ComputeScatteringFunctions(Interaction *si,
 			MemoryArena &arena, TransportMode mode,
 			bool allowMultipleLobes) const = 0;

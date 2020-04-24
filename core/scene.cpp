@@ -3,7 +3,7 @@
 
 namespace AIR
 {
-	Scene::Scene(std::shared_ptr<RObject> accel, const std::vector<std::shared_ptr<Light>>& lights)
+	Scene::Scene(std::shared_ptr<Primitive> accel, const std::vector<std::shared_ptr<Light>>& lights)
 		: aggregate(accel), lights(lights)
 	{
 		worldBound = aggregate->WorldBound();

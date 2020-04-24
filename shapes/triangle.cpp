@@ -18,28 +18,19 @@ namespace AIR
         if (N != nullptr)
         {
             n.reset(new Vector3f[nVertices]);
-            for (int i = 0; i < nVertices; ++i)
-            {
-                n[i] = N[i];
-            }
+            memcpy(n.get(), N, nVertices * sizeof(Vector3f));
         }
 
         if (S != nullptr)
         {
             s.reset(new Vector3f[nVertices]);
-            for (int i = 0; i < nVertices; ++i)
-            {
-                s[i] = S[i];
-            }
+            memcpy(s.get(), S, nVertices * sizeof(Vector3f));
         }
 
         if (UV != nullptr)
         {
             uv.reset(new Point2f[nVertices]);
-            for (int i = 0; i < nVertices; ++i)
-            {
-                uv[i] = UV[i];
-            }
+            memcpy(uv.get(), UV, nVertices * sizeof(Point2f));
         }
     }
 

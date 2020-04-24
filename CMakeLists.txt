@@ -106,6 +106,8 @@ set(SAMPLERS_SOURCES
 
 set(MATERIALS_SOURCES
     materials/matte.cpp
+	materials/mirrormaterial.cpp
+	materials/plasticmaterial.cpp
 )
 
 set(TEXTURES_SOURCES

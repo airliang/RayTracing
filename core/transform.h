@@ -68,6 +68,15 @@ namespace AIR
 		Vector3f WorldToObjectNormal(const Vector3f& normal) const;
 		Bounds3f WorldToObjectBound(const Bounds3f& bound) const;
 
+		bool operator==(const Transform& t) const 
+		{
+			return t.mPosition == mPosition && t.mScale == mScale && t.mRotation == mRotation;
+		}
+		bool operator!=(const Transform& t) const 
+		{
+			return t.mPosition != mPosition && t.mScale != mScale && t.mRotation != mRotation;
+		}
+
 		static Transform MakeTransform(const Vector3f& position, const Quaternion& rotation, const Vector3f& scale);
 	private:
 		Vector3f TransformPoint(const Matrix4x4& mat, const Vector3f& point, Vector3f* absError = nullptr) const;

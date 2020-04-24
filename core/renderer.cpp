@@ -14,12 +14,108 @@
 
 namespace AIR
 {
-	std::shared_ptr<RObject> MakeAccelerator(
+	static int nTransformCacheLookups = 0;
+	static int nTransformCacheHits = 0;
+	static size_t transformCacheBytes = 0;
+	Transform* TransformCache::Lookup(const Transform& t)
+	{
+		++nTransformCacheLookups;
+
+		int offset = Hash(t) & (hashTable.size() - 1);
+		int step = 1;
+		while (true) 
+		{
+			// Keep looking until we find the Transform or determine that
+			// it's not present.
+			if (!hashTable[offset] || *hashTable[offset] == t)
+				break;
+			// Advance using quadratic probing.
+			offset = (offset + step * step) & (hashTable.size() - 1);
+			++step;
+		}
+		//ReportValue(transformCacheProbes, step);
+		Transform* tCached = hashTable[offset];
+		if (tCached)
+			++nTransformCacheHits;
+		else 
+		{
+			tCached = arena.Alloc<Transform>();
+			*tCached = t;
+			Insert(tCached);
+		}
+		return tCached;
+	}
+
+	void TransformCache::Clear()
+	{
+		transformCacheBytes += arena.TotalAllocated() + hashTable.size() * sizeof(Transform*);
+		hashTable.clear();
+		hashTable.resize(512);
+		hashTableOccupancy = 0;
+		arena.Reset();
+	}
+
+	uint64_t TransformCache::Hash(const Transform& t) 
+	{
+		const char* ptr = (const char*)(&t.LocalToWorld());
+		size_t size = sizeof(Matrix4x4);
+		uint64_t hash = 14695981039346656037ull;
+		while (size > 0) 
+		{
+			hash ^= *ptr;
+			hash *= 1099511628211ull;
+			++ptr;
+			--size;
+		}
+		return hash;
+	}
+
+	void TransformCache::Insert(Transform* tNew) 
+	{
+		if (++hashTableOccupancy == hashTable.size() / 2)
+			Grow();
+
+		int baseOffset = Hash(*tNew) & (hashTable.size() - 1);
+		for (int nProbes = 0;; ++nProbes) 
+		{
+			// Quadratic probing.
+			int offset = (baseOffset + nProbes / 2 + nProbes * nProbes / 2) & (hashTable.size() - 1);
+			if (hashTable[offset] == nullptr) 
+			{
+				hashTable[offset] = tNew;
+				return;
+			}
+		}
+	}
+
+	void TransformCache::Grow() {
+		std::vector<Transform*> newTable(2 * hashTable.size());
+		//LOG(INFO) << "Growing transform cache hash table to " << newTable.size();
+
+		// Insert current elements into newTable.
+		for (Transform* tEntry : hashTable) {
+			if (!tEntry) continue;
+
+			int baseOffset = Hash(*tEntry) & (hashTable.size() - 1);
+			for (int nProbes = 0;; ++nProbes) {
+				// Quadratic probing.
+				int offset = (baseOffset + nProbes / 2 + nProbes * nProbes / 2) & (hashTable.size() - 1);
+				if (newTable[offset] == nullptr) {
+					newTable[offset] = tEntry;
+					break;
+				}
+			}
+		}
+
+		std::swap(hashTable, newTable);
+	}
+
+	std::shared_ptr<Primitive> MakeAccelerator(
 		const std::string& name,
-		std::vector<std::shared_ptr<RObject>> prims
+		std::vector<std::shared_ptr<Primitive>> prims
 		) 
 	{
-		std::shared_ptr<RObject> accel;
+		std::shared_ptr<Primitive> accel;
 		if (name == "bvh")
 			accel = BVHAccel::CreateBVHAccelerator(std::move(prims));
 		else if (name == "kdtree")
@@ -109,7 +205,7 @@ namespace AIR
 		//TransformSet CameraToWorld;
 		//std::map<std::string, std::shared_ptr<Medium>> namedMedia;
 		std::vector<std::shared_ptr<Light>> lights;
-		std::vector<std::shared_ptr<RObject>> primitives;
+		std::vector<std::shared_ptr<Primitive>> primitives;
 		//std::map<std::string, std::vector<std::shared_ptr<Primitive>>> instances;
 		//std::vector<std::shared_ptr<Primitive>>* currentInstance = nullptr;
 		int maxDepth = 5;
@@ -118,7 +214,7 @@ namespace AIR
 
 	Scene* RenderOptions::MakeScene()
 	{
-		std::shared_ptr<RObject> accelerator =
+		std::shared_ptr<Primitive> accelerator =
 			MakeAccelerator(AcceleratorName, std::move(primitives));
 		if (!accelerator) 
 			accelerator = std::make_shared<BVHAccel>(primitives);

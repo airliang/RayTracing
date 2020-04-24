@@ -1,4 +1,4 @@
-#include "diffusearealight.h"
+﻿#include "diffusearealight.h"
 
 namespace AIR
 {
@@ -16,5 +16,27 @@ namespace AIR
         *wi = Vector3f::Normalize(pShape.interactPoint - ref.interactPoint);
         *vis = VisibilityTester(ref, pShape);
         return L(pShape, -*wi);
+    }
+
+	Spectrum DiffuseAreaLight::Power() const 
+    {
+		return (twoSided ? 2 : 1) * Lemit * area * Pi;
+	}
+
+    Float DiffuseAreaLight::Pdf_Li(const Interaction& isect, const Vector3f& wi) const
+    {
+        //dw = dAcosθ/r²
+        //∫1/AdA = ∫1/A r²/cosθdw
+        //pw = 1/A r²/cosθ
+        return shape->Pdf(isect, wi);
+        Ray ray(isect.interactPoint, wi);
+        Float tHit;
+        Interaction it;
+        if (shape->Intersect(ray, &tHit, &it))
+        {
+            Float rSquare = Vector3f::DistanceSquare(isect.interactPoint, it.interactPoint);
+            return rSquare / (Vector3f::AbsDot(it.normal, wi) * area);
+        }
+        return 0;
     }
 }

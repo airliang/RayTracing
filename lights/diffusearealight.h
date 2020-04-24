@@ -21,6 +21,7 @@ namespace AIR
 
 		Spectrum Power() const;
 
+		Float Pdf_Li(const Interaction&, const Vector3f&) const;
 		//evaluate the area light’s emitted radiance
 		Spectrum L(const Interaction& intr, const Vector3f& w) const {
 			return (twoSided || Vector3f::Dot(intr.normal, w) > 0) ? Lemit : Spectrum(0.f);

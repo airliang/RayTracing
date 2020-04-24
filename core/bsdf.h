@@ -121,6 +121,7 @@ private:
     Spectrum etaI, etaT, k;
 };
 
+//电解质的Fresnel实现
 class FresnelDielectric : public Fresnel 
 {
 public:
@@ -277,6 +278,7 @@ public:
   private:
     // SpecularReflection Private Data
     //scale the reflected color
+    //剩下的可能被吸收或折射
     const Spectrum R;
     const Fresnel *fresnel;
 };
@@ -339,6 +341,15 @@ private:
     const TransportMode mode;
 };
 
+//The FresnelNoOp implementation of the Fresnel interface returns 100% reflection for all incoming directions. 
+//Although this is physically implausible, it is a convenient capability to have available.
+class FresnelNoOp : public Fresnel 
+{
+public:
+	Spectrum Evaluate(Float) const { return Spectrum(1.); }
+	std::string ToString() const { return "[ FresnelNoOp ]"; }
+};
+
 class LambertianReflection : public BxDF {
 public:
     // LambertianReflection Public Methods
@@ -369,6 +380,27 @@ public:
 private:
     // LambertianReflection Private Data
     const Spectrum R;
+};
+
+//Oren-Nayar reflection model
+class OrenNayar : public BxDF 
+{
+public:
+	// OrenNayar Public Methods
+	Spectrum f(const Vector3f& wo, const Vector3f& wi) const;
+	OrenNayar(const Spectrum& R, Float sigma)
+		: BxDF(BxDFType(BSDF_REFLECTION | BSDF_DIFFUSE)), R(R) {
+		sigma = Radians(sigma);
+		Float sigma2 = sigma * sigma;
+		A = 1.f - (sigma2 / (2.f * (sigma2 + 0.33f)));
+		B = 0.45f * sigma2 / (sigma2 + 0.09f);
+	}
+	//std::string ToString() const;
+
+private:
+	// OrenNayar Private Data
+	const Spectrum R;
+	Float A, B;
 };
 
 //微表面模型Torrance–Sparrow Model

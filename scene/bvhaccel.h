@@ -9,11 +9,11 @@ namespace AIR
 
 	class Interaction;
 
-	class BVHAccel : public RObject
+	class BVHAccel : public Primitive
 	{
 	public:
 		enum class SplitMethod { SAH, HLBVH, Middle, EqualCounts };
-		BVHAccel(std::vector<std::shared_ptr<RObject>> p,
+		BVHAccel(std::vector<std::shared_ptr<Primitive>> p,
 			int maxPrimsInNode = 1,
 			SplitMethod splitMethod = SplitMethod::SAH);
 		~BVHAccel();
@@ -21,8 +21,8 @@ namespace AIR
 		bool Intersect(const Ray& ray, Interaction* isect) const;
 		bool IntersectP(const Ray& ray) const;
 
-		static std::shared_ptr<RObject> CreateBVHAccelerator(
-			std::vector<std::shared_ptr<RObject>> prims,
+		static std::shared_ptr<Primitive> CreateBVHAccelerator(
+			std::vector<std::shared_ptr<Primitive>> prims,
 			int maxPrimsInNode = 4,
 			const std::string& splitName = "bvh");
 
@@ -37,14 +37,14 @@ namespace AIR
 		BVHBuildNode* recursiveBuild(
 			MemoryArena& arena, std::vector<BVHPrimitiveInfo>& primitiveInfo,
 			int start, int end, int* totalNodes,
-			std::vector<std::shared_ptr<RObject>>& orderedPrims);
+			std::vector<std::shared_ptr<Primitive>>& orderedPrims);
 
 		//把树放置到容易遍历的内存结构上
 		//也是一个递归的方法
 		int FlattenBVHTree(BVHBuildNode* node, int* offset);
 
 		const int maxPrimsInNode;
-		std::vector<std::shared_ptr<RObject>> primitives;
+		std::vector<std::shared_ptr<Primitive>> primitives;
 		const SplitMethod splitMethod;
 		LinearBVHNode* linearNodes = nullptr;
 	};

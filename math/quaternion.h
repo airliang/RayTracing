@@ -90,6 +90,17 @@ struct Quaternion
 		ret.w *= invF;
         return ret;
     }
+
+    bool operator == (const Quaternion& q) const
+    {
+        return w == q.w && v == q.v;
+    }
+
+	bool operator != (const Quaternion& q) const
+	{
+		return w != q.w && v != q.v;
+	}
+
     Matrix4x4 ToMatrix() const;
 	Matrix3x3 ToMatrix3x3() const;
     Quaternion(const Matrix4x4 &m);

@@ -4,7 +4,7 @@
 
 namespace AIR
 {
-	class RObject;
+	class Primitive;
 	class BSDF;
 	class Shape;
 	class MemoryArena;
@@ -96,7 +96,7 @@ namespace AIR
 		mutable Vector3f dpdx, dpdy;
 		mutable Float dudx = 0, dvdx = 0, dudy = 0, dvdy = 0;
 
-		const RObject* robject = nullptr;
+		const Primitive* robject = nullptr;
 		BSDF* bsdf = nullptr;
 		const Shape* shape = nullptr;
 	};
