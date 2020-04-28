@@ -34,6 +34,11 @@ namespace AIR
 		{
 			return mScale;
 		}
+
+		Quaternion Rotation() const
+		{
+			return mRotation;
+		}
 		
 		void SetRotation(const Quaternion& rotation);
 

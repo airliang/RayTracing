@@ -5,6 +5,9 @@
 
 namespace AIR
 {
+	template <typename T>
+	class Texture;
+
 	class Material
 	{
 	public:

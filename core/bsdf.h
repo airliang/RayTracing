@@ -91,7 +91,7 @@ class Fresnel
 {
 public:
     // Fresnel Interface
-    virtual ~Fresnel();
+    virtual ~Fresnel() {}
 
     //根据入射光和法线的夹角，返回反射光的比例
     //cosI 入射和法线夹角cos值

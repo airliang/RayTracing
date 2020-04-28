@@ -3,7 +3,6 @@
 
 namespace AIR
 {
-	class Texture;
 	//a mixture of diffuse and glossy scattering
 	//kd and ks to control the paticular colors and specular highlight size
 	//
@@ -15,7 +14,7 @@ namespace AIR
 			const std::shared_ptr<Texture<Float>>& roughness,
 			const std::shared_ptr<Texture<Float>>& bumpMap,
 			bool remapRoughness)
-			: Kd(Kd), Ks(Ks), roughness(roughness), bumpMap(bumpMap),
+			: kd(Kd), ks(Ks), roughness(roughness), bumpMap(bumpMap),
 			remapRoughness(remapRoughness) { }
 
 		void ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,

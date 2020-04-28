@@ -11,6 +11,7 @@
 #include "parallelism.h"
 #include "renderer.h"
 #include "runoption.h"
+#include "fileutil.h"
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
@@ -27,7 +28,10 @@ int main(int argc, char* argv[])
 	cout << "sizeof(Sphere)=" << sizeof(Sphere) << endl;
 	cout << "sizeof(GeometryParam)=" << sizeof(GeometryParam) << endl;
 	cout << "sizeof(Transform)=" << sizeof(Transform) << endl;
+	cout << "sizeof(RGBSpectrum)=" << sizeof(RGBSpectrum) << endl;
 	cout << "machine epsilon=" << MachineEpsilon << endl;
+
+	std::string directory = DirectoryContaining("scene.rt");
 
 	Transform transform;
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, 0.0f, Pi, 2.0f * Pi, &transform);
@@ -36,8 +40,6 @@ int main(int argc, char* argv[])
 	Float tHit;
 	sphere->Intersect(ray, &tHit, &interaction);
 
-	Film film(Point2i(512, 512), Bounds2f(Vector2f(0.0f, 0.0f), Vector2f(512.0f, 512.0f)), std::unique_ptr<Filter>(new BoxFilter(Vector2f::one)), "test.exr");
-	film.WriteImage();
 
 	RunOptions options;
 	std::vector<std::string> filenames;

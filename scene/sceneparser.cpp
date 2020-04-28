@@ -9,6 +9,11 @@
 #include "disk.h"
 #include "sphere.h"
 #include "triangle.h"
+#include "plasticmaterial.h"
+#include "matte.h"
+#include "mirrormaterial.h"
+#include "constanttexture.h"
+#include "../RayTracing.h"
 
 namespace AIR
 {
@@ -33,9 +38,24 @@ namespace AIR
 
 	enum ShapeType
 	{
-		Type_Sphere,
-		Type_TriangleMesh,
-		Type_Rectangle,
+		ShapeType_Sphere,
+		ShapeType_TriangleMesh,
+		ShapeType_Rectangle,
+	};
+
+	enum MaterialType
+	{
+		MaterialType_Matte,
+		MaterialType_Plastic,
+		MaterialType_Mirror,
+		MaterialType_Metal,
+	};
+
+	enum TextureType
+	{
+		TextureType_Constant,
+		TextureType_Bilerp,
+		TextureType_Image,
 	};
 
 	bool SceneParser::Load(const std::string& file, std::vector<std::shared_ptr<Light>>& lights,
@@ -56,7 +76,7 @@ namespace AIR
 		fs.open(file.c_str(), std::ios::in | std::ios::binary);
 
 		//read the camera's transform
-		cameraTransform = ParseTransform(fs);
+		ParseCamera(fs);
 
 		int lightsNum = 0;
 		fs.read((char*)&lightsNum, sizeof(lightsNum));
@@ -75,6 +95,13 @@ namespace AIR
 
 
 		return false;
+	}
+
+	void SceneParser::ParseCamera(std::ifstream& fs)
+	{
+		cameraTransform = ParseTransform(fs);
+		fs.read((char*)&cameraFOV, sizeof(cameraFOV));
+		fs.read((char*)&cameraOrtho, sizeof(cameraOrtho));
 	}
 
 	Transform* SceneParser::ParseTransform(std::ifstream& fs) const
@@ -131,34 +158,111 @@ namespace AIR
 		return light;
 	}
 
+	std::shared_ptr<Material> SceneParser::ParseMaterial(std::ifstream& fs) const
+	{
+		std::shared_ptr<Material> material;
+		int materialType;
+		fs.read((char*)&materialType, sizeof(materialType));
+
+		
+
+		if (materialType == MaterialType::MaterialType_Matte)
+		{
+			std::shared_ptr <Texture< RGBSpectrum >> textureKd = ParseSpectrumTexture(fs);
+			std::shared_ptr <Texture< Float >> textureSigma = ParseFloatTexture(fs);
+
+			material = std::make_shared<MatteMaterial>(textureKd, textureSigma, nullptr);
+		}
+		else if (materialType == MaterialType::MaterialType_Plastic)
+		{
+			std::shared_ptr <Texture< RGBSpectrum >> textureKd = ParseSpectrumTexture(fs);
+			std::shared_ptr <Texture< RGBSpectrum >> textureKs = ParseSpectrumTexture(fs);
+			std::shared_ptr <Texture< Float >> textureRoughness = ParseFloatTexture(fs);
+
+			material = std::make_shared<PlasticMaterial>(textureKd, textureKs, textureRoughness, nullptr, false);
+		}
+		else if (materialType == MaterialType_Mirror)
+		{
+			std::shared_ptr <Texture< RGBSpectrum >> textureKr = ParseSpectrumTexture(fs);
+			material = std::make_shared<MirrorMaterial>(textureKr, nullptr);
+		}
+
+		return material;
+	}
+
+	std::shared_ptr<Texture<Float>> SceneParser::ParseFloatTexture(std::ifstream& fs) const
+	{
+		int type;
+		
+		std::shared_ptr<Texture<Float>> texture;
+		fs.read((char*)&type, sizeof(type));
+		if (type == TextureType_Constant)
+		{
+			float constant;
+			fs.read((char*)&constant, sizeof(float));
+			texture = std::make_shared<ConstantTexture<float>>(constant);
+		}
+		else if (type == TextureType_Image)
+		{
+			//暂不支持
+		}
+
+		return texture;
+	}
+
+	std::shared_ptr<Texture<RGBSpectrum>> SceneParser::ParseSpectrumTexture(std::ifstream& fs) const
+	{
+		int type;
+		
+		std::shared_ptr<Texture<RGBSpectrum>> texture;
+		fs.read((char*)&type, sizeof(type));
+		if (type == TextureType_Constant)
+		{
+			RGBSpectrum constant;
+			fs.read((char*)&constant, sizeof(RGBSpectrum));
+			texture = std::make_shared<ConstantTexture<RGBSpectrum>>(constant);
+		}
+		else if (type == TextureType_Image)
+		{
+			//暂不支持
+		}
+
+		return texture;
+	}
+
 	void SceneParser::ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives) const
 	{
-		std::shared_ptr<Primitive> primitive;
+
 		int shapeType;
 		fs.read((char*)&shapeType, sizeof(shapeType));
 
 		Transform* pTransform = ParseTransform(fs);
 
-		if (shapeType == ShapeType::Type_Sphere)
+		if (shapeType == ShapeType::ShapeType_Sphere)
 		{
 			float radius;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, 0, Pi, 2.0f * Pi, pTransform);
-			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, , nullptr, pTransform);
+			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform);
+			primitives.push_back(primitive);
 		}
-		else if (shapeType == ShapeType::Type_TriangleMesh)
+		else if (shapeType == ShapeType::ShapeType_TriangleMesh)
 		{
 			int meshIndex;
 			fs.read((char*)&meshIndex, sizeof(meshIndex));
 
+			std::shared_ptr<Material> material = ParseMaterial(fs);
+
 			std::shared_ptr<TriangleMesh> mesh = triangleMeshes[meshIndex];
 
-			for (int )
+  			for (int i = 0; i < mesh->nTriangles; ++i)
 			{
+				std::shared_ptr<Shape> shape = std::make_shared<Triangle>(pTransform, mesh, i);
+				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, nullptr, pTransform);
 			}
 		}
 
-		return primitive;
+		
 	}
 
 	void SceneParser::ParseTriangleMesh(std::ifstream& fs) const

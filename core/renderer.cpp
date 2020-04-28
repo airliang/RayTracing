@@ -136,6 +136,8 @@ namespace AIR
 		Vector3f scale;
 		Bounds2f cropBounds;
 		Point2i  imageResolution;
+		Float    fov;
+		bool     orthogonal;
 	};
 
 	struct FilmParam
@@ -242,7 +244,7 @@ namespace AIR
 	{
 		return Camera::CreateCamera(Transform(cameraParams.position, cameraParams.rotation, cameraParams.scale),
 			cameraParams.cropBounds,
-			MakeFilm(), false);
+			MakeFilm(), cameraParams.fov, cameraParams.orthogonal);
 	}
 
 	Film* RenderOptions::MakeFilm() const
@@ -291,7 +293,16 @@ namespace AIR
 
 	void Renderer::ParseScene(const std::string& filename)
 	{
+		SceneParser parser;
+		parser.Load(filename, g_renderOptions.lights, g_renderOptions.primitives);
 
+		g_renderOptions.cameraParams.cropBounds = Bounds2f(Point2f(0, 0), Point2f(1, 1));
+		g_renderOptions.cameraParams.fov = parser.GetCameraFOV();
+		g_renderOptions.cameraParams.orthogonal = parser.IsCameraOrtho();
+		g_renderOptions.cameraParams.position = parser.GetCameraTransform()->Position();
+		g_renderOptions.cameraParams.rotation = parser.GetCameraTransform()->Rotation();
+		g_renderOptions.cameraParams.scale = Vector3f::one;
+		g_renderOptions.cameraParams.imageResolution = Point2i(800, 600);
 	}
 
 	void Renderer::Init()

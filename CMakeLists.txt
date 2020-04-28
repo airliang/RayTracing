@@ -25,6 +25,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/materials)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lights)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/integrators)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/textures)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
@@ -113,6 +114,7 @@ set(MATERIALS_SOURCES
 set(TEXTURES_SOURCES
     textures/imagetexture.cpp
 	textures/bilerptexture.cpp
+	textures/constanttexture.h
 )
 
 set(LIGHTS_SOURCES
@@ -189,13 +191,12 @@ message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please 
 endif()
 
 add_executable (RayTracing ${SOURCES})
+
+
 if (CMAKE_BUILD_TYPE MATCHES Debug)
-#target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/Half-2_4_d.lib)
-#target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/Iex-2_4_d.lib)
-#target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/IexMath-2_4_d.lib)
-#target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/IlmThread-2_4_d.lib)
-#target_link_libraries(RayTracing ${CMAKE_CURRENT_SOURCE_DIR}/lib/x64/debug/Imath-2_4_d.lib)
-#target_link_libraries(RayTracing Half IlmImf)
+set_target_properties(RayTracing PROPERTIES 
+    VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin/Debug" 
+    VS_DEBUGGER_COMMAND_ARGUMENTS "${CMAKE_CURRENT_SOURCE_DIR}/scenes/scene.rt")
 else ()
 endif()
 add_definitions(/std:c++14)

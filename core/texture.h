@@ -44,10 +44,15 @@ private:
     Matrix4f worldToTexture;
 };
 
+class TextureObj
+{
+public:
+	virtual ~TextureObj() {}
+};
 
 
 template <typename T>
-class Texture 
+class Texture : TextureObj
 {
 public:
 	// Texture Interface

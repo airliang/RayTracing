@@ -18,7 +18,7 @@ namespace AIR
 	{
 	public:
 		Camera(const Transform& transform, const Bounds2f& screenWindow, 
-			Film* film, bool orthogonal);
+			Film* film, Float fov, bool orthogonal);
 		~Camera()
 		{
 			if (film)
@@ -31,7 +31,7 @@ namespace AIR
 		Float GenerateRayDifferential(const CameraSample& sample, RayDifferential* ray) const;
 
 		static Camera* CreateCamera(const Transform& cameraToWorld, const Bounds2f& screenWindow,
-			Film* film, bool orthogonal);
+			Film* film, Float fov, bool orthogonal);
 
 		const Transform& CameraToWorld() const
 		{

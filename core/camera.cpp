@@ -5,13 +5,13 @@ namespace AIR
 {
 	Camera* Camera::CreateCamera(const Transform& cameraToWorld, 
 		const Bounds2f& screenWindow, 
-		Film* film, bool orthogonal)
+		Film* film, Float fov, bool orthogonal)
 	{
-		return new Camera(cameraToWorld, screenWindow, film, orthogonal);
+		return new Camera(cameraToWorld, screenWindow, film, fov, orthogonal);
 	}
 
 	Camera::Camera(const Transform& transform, const Bounds2f& screenWindow,
-		Film* film, bool orthogonal) : film(film), orthogonal(orthogonal)
+		Film* film, Float fov, bool orthogonal) : film(film), orthogonal(orthogonal)
 	{
 		mTransform = transform;
 		Point2i imageResolution = film->fullResolution;

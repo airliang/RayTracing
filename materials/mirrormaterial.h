@@ -1,8 +1,10 @@
 #pragma once
-#include "material.h
+#include "material.h"
 
 namespace AIR
 {
+	template <typename T>
+	class Texture;
 	//modeled with perfect specular reflection
 	class MirrorMaterial : public Material
 	{

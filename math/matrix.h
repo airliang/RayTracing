@@ -626,6 +626,28 @@ namespace AIR
 			translate.z = _M[2][3];
 		}
 
+		//这个是x,y方向不做缩放的正交投影
+		static Matrix4x4 Orthogonal(Float n, Float f)
+		{
+			return Matrix4x4(1, 0, 0, 0,
+				0, 1, 0, 0,
+				0, 0, 1.0f / (f - n), n / (n - f),
+				0, 0, 0, 1);
+		}
+
+		static Matrix4x4 Perspective(Float fov, Float aspect, Float n, Float f)
+		{
+			Float cot_halffov = 1.0f / std::tan(fov * 0.5f);
+	
+			Matrix4x4 persp(cot_halffov / aspect, 0, 0, 0,
+				0, cot_halffov, 0, 0,
+				0, 0, f / (f - n), -n * f / (f - n),
+				0, 0, 1, 0);
+
+			return persp;
+
+		}
+
 		union
 		{
 			struct

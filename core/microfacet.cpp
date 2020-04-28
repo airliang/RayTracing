@@ -160,7 +160,7 @@ namespace AIR
 		Float alpha_y, Float U1, Float U2) {
 		// 1. stretch wi
 		Vector3f wiStretched =
-			Normalize(Vector3f(alpha_x * wi.x, alpha_y * wi.y, wi.z));
+			Vector3f::Normalize(Vector3f(alpha_x * wi.x, alpha_y * wi.y, wi.z));
 
 		// 2. simulate P22_{wi}(x_slope, y_slope, 1, 1)
 		Float slope_x, slope_y;
@@ -176,7 +176,7 @@ namespace AIR
 		slope_y = alpha_y * slope_y;
 
 		// 5. compute normal
-		return Normalize(Vector3f(-slope_x, -slope_y, 1.));
+		return Vector3f::Normalize(Vector3f(-slope_x, -slope_y, 1.));
 	}
 
 	Vector3f TrowbridgeReitzDistribution::Sample_wh(const Vector3f& wo,
