@@ -31,6 +31,7 @@ namespace AIR
     {
         //return PbrtOptions.nThreads == 0 ? NumSystemCores() : PbrtOptions.nThreads;
         //pbrt有个配置使用线程的数量，这里先使用系统cpu数量
+        return 1;   //先用1条线程测试
         return NumSystemCores();
     }
 

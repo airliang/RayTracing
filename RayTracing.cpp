@@ -57,6 +57,7 @@ int main(int argc, char* argv[])
 	}
 
 	Renderer::GetInstance().Init();
+	Renderer::GetInstance().ParseScene(filenames[0]);
 	Renderer::GetInstance().Run();
 	Renderer::GetInstance().Cleanup();
 

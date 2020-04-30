@@ -39,8 +39,8 @@ namespace AIR
 	enum ShapeType
 	{
 		ShapeType_Sphere,
-		ShapeType_TriangleMesh,
 		ShapeType_Rectangle,
+		ShapeType_TriangleMesh,
 	};
 
 	enum MaterialType
@@ -64,7 +64,7 @@ namespace AIR
 		size_t ex = file.find_last_of('.');
 		if (ex >= 0)
 		{
-			std::string meshFile = file.substr(0, ex) + ".mesh";
+			std::string meshFile = file.substr(0, ex) + ".m";
 			std::ifstream fsmesh;
 			fsmesh.open(meshFile.c_str(), std::ios::in | std::ios::binary);
 			ParseTriangleMesh(fsmesh);
@@ -265,7 +265,7 @@ namespace AIR
 		
 	}
 
-	void SceneParser::ParseTriangleMesh(std::ifstream& fs) const
+	void SceneParser::ParseTriangleMesh(std::ifstream& fs)
 	{
 		int meshesNum;
 		fs.read((char*)&meshesNum, sizeof(int));
@@ -307,6 +307,7 @@ namespace AIR
 				std::make_shared<TriangleMesh>(trianglesNum / 3, triangles, vertexCount,
 					vertices, tangents, normals, uv);
 			
+			triangleMeshes.push_back(triangleMesh);
 		}
 	}
 }

@@ -406,9 +406,9 @@ namespace AIR
 		static Matrix4x4 GetTranslateMatrix(Float x, Float y, Float z)
 		{
 			return Matrix4x4(
-				0.0f, 0.0f, 0.0f, x,
-				0.0f, 0.0f, 0.0f, y,
-				0.0f, 0.0f, 0.0f, z,
+				1.0f, 0.0f, 0.0f, x,
+				0.0f, 1.0f, 0.0f, y,
+				0.0f, 0.0f, 1.0f, z,
 				0.0f, 0.0f, 0.0f, 1.0f
 			);
 		}
@@ -626,7 +626,11 @@ namespace AIR
 			translate.z = _M[2][3];
 		}
 
-		//这个是x,y方向不做缩放的正交投影
+		//这个正交投影做了取巧
+		//一般是要缩放到2/(r-l)，
+		//但为了后面变换到Raster下更方便，
+		//这里的正交投影默认不处理screen的宽和高的缩放
+		//为了留在下一步从screentoraster中再做操作
 		static Matrix4x4 Orthogonal(Float n, Float f)
 		{
 			return Matrix4x4(1, 0, 0, 0,

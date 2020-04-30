@@ -17,6 +17,11 @@ namespace AIR
 	class Camera
 	{
 	public:
+		//transform 摄像机的transform
+		//screenWindow 近截面的视口大小
+		//film      成像的胶片
+		//fov       垂直方向的field of view视口角度，只用于perspective
+		//orthogonal 是否是正交投影
 		Camera(const Transform& transform, const Bounds2f& screenWindow, 
 			Film* film, Float fov, bool orthogonal);
 		~Camera()
@@ -40,6 +45,8 @@ namespace AIR
 
 		Film* film;
 	protected:
+		//cameraToScreen就是投影矩阵,投影到x=[-1,1]
+		//y=[-1,1],z=[0,1]的box上
 		Matrix4f CameraToScreen, RasterToCamera;
 		Matrix4f ScreenToRaster, RasterToScreen;
 

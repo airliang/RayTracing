@@ -21,28 +21,26 @@ namespace AIR
 				1 / (screenWindow.pMin.y - screenWindow.pMax.y), 1) *
 			Matrix4f::GetTranslateMatrix(-screenWindow.pMin.x, -screenWindow.pMax.y, 0);
 		RasterToScreen = Matrix4f::Inverse(ScreenToRaster);
-		//����x,y��ͶӰ��z = 1��ƽ���ϣ�������near���ϣ�near��farֻ��Ϊ����z�䵽0-1֮��
-		//
-		float n = 0.1f;
-		float f = 1000.0f;
-		CameraToScreen = Matrix4f(1, 0, 0, 0,
-			0, 1, 0, 0,
-			0, 0, f / (f - n), -f * n / (f - n),
-			0, 0, 1, 0);
+		
+
+		CameraToScreen = orthogonal ? Matrix4f::Orthogonal(1e-2f, 1000.f) : Matrix4f::Perspective(fov, 1.0f, 1e-2f, 1000.f);
 
 		RasterToCamera = Matrix4f::Inverse(CameraToScreen) * RasterToScreen;
-		//����ǳ���֣������RasterToCamera�ļ��㣬�����Ľ����x,y��z = 1�����꣬��z��nearplane������
-		//�������������nearƽ���ϵ�
+		
 
 		dxCamera = (MultiplyPoint(RasterToCamera, Point3f(1, 0, 0)) - MultiplyPoint(RasterToCamera, Point3f(0, 0, 0)));
 		dyCamera = (MultiplyPoint(RasterToCamera, Point3f(0, 1, 0)) - MultiplyPoint(RasterToCamera, Point3f(0, 0, 0)));
 
-		// Compute image plane bounds at $z=1$ for _PerspectiveCamera_
-		Point2i res = imageResolution;
-		Point3f pMin = MultiplyPoint(RasterToCamera, Point3f(0, 0, 0));
-		Point3f pMax = MultiplyPoint(RasterToCamera, Point3f(res.x, res.y, 0));
-		pMin /= pMin.z;
-		pMax /= pMax.z;
+		if (!orthogonal)
+		{
+			// Compute image plane bounds at $z=1$ for _PerspectiveCamera_
+			Point2i res = imageResolution;
+			Point3f pMin = MultiplyPoint(RasterToCamera, Point3f(0, 0, 0));
+			Point3f pMax = MultiplyPoint(RasterToCamera, Point3f(res.x, res.y, 0));
+			pMin /= pMin.z;
+			pMax /= pMax.z;
+		}
+		
 	}
 
 	Float Camera::GenerateRay(const CameraSample &sample, Ray *ray) const

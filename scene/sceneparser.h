@@ -54,7 +54,7 @@ namespace AIR
 		std::shared_ptr<Texture<Float>> ParseFloatTexture(std::ifstream& fs) const;
 		std::shared_ptr<Texture<RGBSpectrum>> ParseSpectrumTexture(std::ifstream& fs) const;
 
-		void ParseTriangleMesh(std::ifstream& fs) const;
+		void ParseTriangleMesh(std::ifstream& fs);
 		Transform* cameraTransform;
 		float cameraFOV;
 		bool  cameraOrtho;

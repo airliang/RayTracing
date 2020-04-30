@@ -144,8 +144,8 @@ namespace AIR
 	{
 		std::string imageFile;
 		
-		Point2i resolution;
-		Bounds2f cropWindow;
+		Point2i resolution = Point2i(800, 600);
+		Bounds2f cropWindow = Bounds2f(Vector2f::zero, Vector2f::one);
 
 	};
 
@@ -178,10 +178,10 @@ namespace AIR
 
 	struct RenderOptions {
 		// RenderOptions Public Methods
-		Integrator* MakeIntegrator() const;
+		Integrator* MakeIntegrator();
 		Scene* MakeScene();
-		Camera* MakeCamera() const;
-		Film* MakeFilm() const;
+		Camera* MakeCamera();
+		Film* MakeFilm();
 		std::unique_ptr<Filter> MakeFilter() const;
 		Sampler* MakeSampler() const;
 
@@ -212,6 +212,8 @@ namespace AIR
 		//std::vector<std::shared_ptr<Primitive>>* currentInstance = nullptr;
 		int maxDepth = 5;
 		bool haveScatteringMedia = false;
+
+		std::string sceneFile;
 	};
 
 	Scene* RenderOptions::MakeScene()
@@ -227,7 +229,7 @@ namespace AIR
 		return scene;
 	}
 
-	Integrator* RenderOptions::MakeIntegrator() const
+	Integrator* RenderOptions::MakeIntegrator()
 	{
 		std::shared_ptr<Camera> camera(MakeCamera());
 		std::shared_ptr<Sampler> sampler(MakeSampler());
@@ -240,15 +242,23 @@ namespace AIR
 		return integrator;
 	}
 
-	Camera* RenderOptions::MakeCamera() const
+	Camera* RenderOptions::MakeCamera()
 	{
 		return Camera::CreateCamera(Transform(cameraParams.position, cameraParams.rotation, cameraParams.scale),
 			cameraParams.cropBounds,
 			MakeFilm(), cameraParams.fov, cameraParams.orthogonal);
 	}
 
-	Film* RenderOptions::MakeFilm() const
+	Film* RenderOptions::MakeFilm()
 	{
+		if (filmParams.imageFile.empty())
+		{
+			size_t ex = sceneFile.find_last_of('.');
+			if (ex >= 0)
+			{
+				filmParams.imageFile = sceneFile.substr(0, ex) + ".png";
+			}
+		}
 		std::unique_ptr<Filter> filter = MakeFilter();
 		return new Film(filmParams.resolution, filmParams.cropWindow, std::move(filter), filmParams.imageFile);
 	}
@@ -280,6 +290,11 @@ namespace AIR
 			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
 				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
 		}
+		else
+		{
+			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
+				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
+		}
 
 		return sampler;
 	}
@@ -296,13 +311,15 @@ namespace AIR
 		SceneParser parser;
 		parser.Load(filename, g_renderOptions.lights, g_renderOptions.primitives);
 
-		g_renderOptions.cameraParams.cropBounds = Bounds2f(Point2f(0, 0), Point2f(1, 1));
+		g_renderOptions.cameraParams.cropBounds = Bounds2f(Point2f(-1, -1), Point2f(1, 1));
 		g_renderOptions.cameraParams.fov = parser.GetCameraFOV();
 		g_renderOptions.cameraParams.orthogonal = parser.IsCameraOrtho();
 		g_renderOptions.cameraParams.position = parser.GetCameraTransform()->Position();
 		g_renderOptions.cameraParams.rotation = parser.GetCameraTransform()->Rotation();
 		g_renderOptions.cameraParams.scale = Vector3f::one;
 		g_renderOptions.cameraParams.imageResolution = Point2i(800, 600);
+
+		g_renderOptions.sceneFile = filename;
 	}
 
 	void Renderer::Init()

@@ -317,7 +317,7 @@ namespace AIR
 		bool hit = false;
 		Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
 		int dirIsNeg[3] = { invDir.x < 0, invDir.y < 0, invDir.z < 0 };
-		int currentNodeIndex; //当前正在访问的node
+		int currentNodeIndex = 0; //当前正在访问的node
 		//下一个要访问的node在nodesToVisit的index
 		int toVisitOffset = 0;
 		//nodesToVisit是一个要访问的node的stack
