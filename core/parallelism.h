@@ -111,4 +111,6 @@ namespace AIR
 	int NumSystemCores();
 	void ParallelInit();
 	void ParallelCleanup();
+
+	void MergeWorkerThreadStats();
 }

@@ -1,5 +1,5 @@
 #pragma once
-
+#include <vector>
 #include <map>
 #include <cfloat>
 #include <chrono>
@@ -28,6 +28,7 @@ namespace AIR
 		static std::vector<std::function<void(StatsAccumulator&)>>* funcs;
 	};
 
+void ReportThreadStats();
 
 	class StatsAccumulator {
 	public:
@@ -95,4 +96,20 @@ namespace AIR
 		std::map<std::string, std::pair<int64_t, int64_t>> percentages;
 		std::map<std::string, std::pair<int64_t, int64_t>> ratios;
 	};
+
+	// Statistics Macros
+#define STAT_COUNTER(title, var)                           \
+    static PBRT_THREAD_LOCAL int64_t var;                  \
+    static void STATS_FUNC##var(StatsAccumulator &accum) { \
+        accum.ReportCounter(title, var);                   \
+        var = 0;                                           \
+    }                                                      \
+    static StatRegisterer STATS_REG##var(STATS_FUNC##var)
+#define STAT_MEMORY_COUNTER(title, var)                    \
+    static PBRT_THREAD_LOCAL int64_t var;                  \
+    static void STATS_FUNC##var(StatsAccumulator &accum) { \
+        accum.ReportMemoryCounter(title, var);             \
+        var = 0;                                           \
+    }                                                      \
+    static StatRegisterer STATS_REG##var(STATS_FUNC##var)
 }

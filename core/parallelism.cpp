@@ -1,5 +1,6 @@
 #pragma once
 #include "parallelism.h"
+#include "stat.h"
 #include <thread>
 #include <vector>
 
@@ -17,6 +18,12 @@ namespace AIR
 	static std::mutex workListMutex;
     //
     static std::condition_variable workListCondition;
+
+    static std::atomic<bool> reportWorkerStats{false};
+// Number of workers that still need to report their stats.
+static std::atomic<int> reporterCount;
+static std::condition_variable reportDoneCondition;
+static std::mutex reportDoneMutex;
 
     thread_local int ThreadIndex;
 
@@ -104,7 +111,7 @@ namespace AIR
         std::unique_lock<std::mutex> lock(workListMutex);
         while (!shutdownThreads) 
         {
-            /*if (reportWorkerStats) 
+            if (reportWorkerStats) 
             {
                 ReportThreadStats();
                 if (--reporterCount == 0)
@@ -114,7 +121,7 @@ namespace AIR
                 // Now sleep again.
                 workListCondition.wait(lock);
             }
-            else*/ if (!workList) {
+            else if (!workList) {
                 // Sleep until there are more tasks to run
                 workListCondition.wait(lock);
             }
@@ -285,5 +292,23 @@ namespace AIR
 			// Update _loop_ to reflect completion of iterations
 			loop.activeWorkers--;
 		}
+    }
+
+    void MergeWorkerThreadStats() 
+    {
+        std::unique_lock<std::mutex> lock(workListMutex);
+        std::unique_lock<std::mutex> doneLock(reportDoneMutex);
+        // Set up state so that the worker threads will know that we would like
+        // them to report their thread-specific stats when they wake up.
+        reportWorkerStats = true;
+        reporterCount = threads.size();
+
+        // Wake up the worker threads.
+        workListCondition.notify_all();
+
+        // Wait for all of them to merge their stats.
+        reportDoneCondition.wait(lock, []() { return reporterCount == 0; });
+
+        reportWorkerStats = false;
     }
 }

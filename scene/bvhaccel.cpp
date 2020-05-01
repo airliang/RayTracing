@@ -1,8 +1,11 @@
 #include "bvhaccel.h"
 #include "memory.h"
+#include "stat.h"
 
 namespace AIR
 {
+	STAT_COUNTER("BVH/Interior nodes", interiorNodes);
+	STAT_COUNTER("BVH/Leaf nodes", leafNodes);
 	struct BVHPrimitiveInfo 
 	{
 		BVHPrimitiveInfo() {}

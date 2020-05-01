@@ -340,5 +340,8 @@ namespace AIR
 
 		if (scene && integrator)
 			integrator->Render(*scene.get());
+
+		MergeWorkerThreadStats();
+        ReportThreadStats();
 	}
 }
