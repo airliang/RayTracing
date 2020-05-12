@@ -32,7 +32,7 @@ namespace AIR
 
 			// Initialize next ray segment or terminate transmittance computation
 			if (!hitSurface) return false;
-			if (isect->robject->GetMaterial() != nullptr)
+			if (isect->primitive->GetMaterial() != nullptr)
 				return true;
 			ray = isect->SpawnRay(ray.d);
 		}

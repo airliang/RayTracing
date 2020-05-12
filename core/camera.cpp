@@ -22,8 +22,9 @@ namespace AIR
 			Matrix4f::GetTranslateMatrix(-screenWindow.pMin.x, -screenWindow.pMax.y, 0);
 		RasterToScreen = Matrix4f::Inverse(ScreenToRaster);
 		
-
-		CameraToScreen = orthogonal ? Matrix4f::Orthogonal(1e-2f, 1000.f) : Matrix4f::Perspective(fov, 1.0f, 1e-2f, 1000.f);
+		Float aspect = (Float)imageResolution.x / imageResolution.y;
+		CameraToScreen = orthogonal ? Matrix4f::Orthogonal(1e-2f, 1000.f) : 
+			Matrix4f::Perspective(fov, aspect, 1e-2f, 1000.f);
 
 		RasterToCamera = Matrix4f::Inverse(CameraToScreen) * RasterToScreen;
 		
@@ -46,6 +47,7 @@ namespace AIR
 	Float Camera::GenerateRay(const CameraSample &sample, Ray *ray) const
 	{
 		Point3f pFilm = Point3f(sample.pFilm.x, sample.pFilm.y, 0);
+		//pCamera是camera近截面上的点
 		Point3f pCamera = MultiplyPoint(RasterToCamera, pFilm);
 
 		*ray = Ray(Point3f(0, 0, 0), Vector3f::Normalize(pCamera));
@@ -59,10 +61,15 @@ namespace AIR
 
 	Float Camera::GenerateRayDifferential(const CameraSample &sample, RayDifferential *ray) const
 	{
-		Point3f pFilm = Point3f(sample.pFilm.x, sample.pFilm.y, 0);
-		Point3f pCamera = MultiplyPoint(RasterToCamera, pFilm);
-		Vector3f dir = Vector3f::Normalize(pCamera);
-		*ray = RayDifferential(Point3f(0, 0, 0), dir);
+		//Point3f pFilm = Point3f(sample.pFilm.x, sample.pFilm.y, 0);
+	 //   //pCamera是camera近截面上的点
+		//Point3f pCamera = MultiplyPoint(RasterToCamera, pFilm);
+		//Vector3f dir = Vector3f::Normalize(pCamera);
+		//*ray = RayDifferential(Point3f(0, 0, 0), dir);
+
+		Float wt = GenerateRay(sample, ray);
+		if (wt == 0)
+			return 0;
 		// Modify ray for depth of field
 		//if (lensRadius > 0) {
 		//	// Sample point on lens
@@ -96,13 +103,44 @@ namespace AIR
 		//	ray->ryDirection = Normalize(pFocus - ray->ryOrigin);
 		//}
 		//else {
-			ray->rxOrigin = ray->ryOrigin = ray->o;
-			ray->rxDirection = Vector3f::Normalize(pCamera + dxCamera);
-			ray->ryDirection = Vector3f::Normalize(pCamera + dyCamera);
+		//	ray->rxOrigin = ray->ryOrigin = ray->o;
+		//	ray->rxDirection = Vector3f::Normalize(pCamera + dxCamera);
+		//	ray->ryDirection = Vector3f::Normalize(pCamera + dyCamera);
 		//}
-		ray->time = 0;// Lerp(sample.time, shutterOpen, shutterClose);
+		//ray->time = 0;// Lerp(sample.time, shutterOpen, shutterClose);
 		//ray->medium = medium;
-		*ray = mTransform.ObjectToWorldRay(*ray);
+		//*ray = mTransform.ObjectToWorldRayDiff(*ray);
+
+		// Find camera ray after shifting a fraction of a pixel in the $x$ direction
+		Float wtx = 0;
+		for (Float eps : { .05, -.05 }) {
+			CameraSample sshift = sample;
+			sshift.pFilm.x += eps;
+			Ray rx;
+			wtx = GenerateRay(sshift, &rx);
+			ray->rxOrigin = ray->o + (rx.o - ray->o) / eps;
+			ray->rxDirection = ray->d + (rx.d - ray->d) / eps;
+			if (wtx != 0)
+				break;
+		}
+		if (wtx == 0)
+			return 0;
+
+		// Find camera ray after shifting a fraction of a pixel in the $y$ direction
+		Float wty = 0;
+		for (Float eps : { .05, -.05 }) {
+			CameraSample sshift = sample;
+			sshift.pFilm.y += eps;
+			Ray ry;
+			wty = GenerateRay(sshift, &ry);
+			ray->ryOrigin = ray->o + (ry.o - ray->o) / eps;
+			ray->ryDirection = ray->d + (ry.d - ray->d) / eps;
+			if (wty != 0)
+				break;
+		}
+		if (wty == 0)
+			return 0;
+
 		ray->hasDifferentials = true;
 		return 1;
 	}

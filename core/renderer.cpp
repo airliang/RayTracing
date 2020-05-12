@@ -11,6 +11,7 @@
 #include "trianglefilter.h"
 #include "stratified.h"
 #include "sceneparser.h"
+#include "stat.h"
 
 namespace AIR
 {
@@ -129,92 +130,7 @@ namespace AIR
 		return accel;
 	}
 
-	struct CameraParam
-	{
-		Vector3f position;
-		Quaternion rotation;
-		Vector3f scale;
-		Bounds2f cropBounds;
-		Point2i  imageResolution;
-		Float    fov;
-		bool     orthogonal;
-	};
-
-	struct FilmParam
-	{
-		std::string imageFile;
-		
-		Point2i resolution = Point2i(800, 600);
-		Bounds2f cropWindow = Bounds2f(Vector2f::zero, Vector2f::one);
-
-	};
-
-	struct FilterParam
-	{
-		std::string filterName;
-		Vector2f radius;
-		Float    gaussianAlpha;
-	};
-
-	struct SamplerParam
-	{
-		std::string samplerName;
-		union 
-		{
-			struct 
-			{
-				int xSamples;
-				int ySamples;
-				int dimension;
-				bool jitter;
-			} stratified;
-
-			struct 
-			{
-
-			} halton;
-		};
-	};
-
-	struct RenderOptions {
-		// RenderOptions Public Methods
-		Integrator* MakeIntegrator();
-		Scene* MakeScene();
-		Camera* MakeCamera();
-		Film* MakeFilm();
-		std::unique_ptr<Filter> MakeFilter() const;
-		Sampler* MakeSampler() const;
-
-		// RenderOptions Public Data
-		Float transformStartTime = 0, transformEndTime = 1;
-		std::string FilterName = "box";
-		//ParamSet FilterParams;
-		std::string FilmName = "image";
-		//ParamSet FilmParams;
-		std::string SamplerName = "halton";
-		//ParamSet SamplerParams;
-		std::string AcceleratorName = "bvh";
-		//ParamSet AcceleratorParams;
-		std::string IntegratorName = "path";
-		//ParamSet IntegratorParams;
-		//std::string CameraName = "perspective";
-		CameraParam cameraParams;
-
-		FilmParam   filmParams;
-		FilterParam filterParams;
-		SamplerParam samplerParams;
-		//ParamSet CameraParams;
-		//TransformSet CameraToWorld;
-		//std::map<std::string, std::shared_ptr<Medium>> namedMedia;
-		std::vector<std::shared_ptr<Light>> lights;
-		std::vector<std::shared_ptr<Primitive>> primitives;
-		//std::map<std::string, std::vector<std::shared_ptr<Primitive>>> instances;
-		//std::vector<std::shared_ptr<Primitive>>* currentInstance = nullptr;
-		int maxDepth = 5;
-		bool haveScatteringMedia = false;
-
-		std::string sceneFile;
-	};
+	
 
 	Scene* RenderOptions::MakeScene()
 	{
@@ -263,7 +179,7 @@ namespace AIR
 		return new Film(filmParams.resolution, filmParams.cropWindow, std::move(filter), filmParams.imageFile);
 	}
 
-	std::unique_ptr<Filter> RenderOptions::MakeFilter() const
+	std::unique_ptr<Filter> RenderOptions::MakeFilter()
 	{
 		Filter* filter = nullptr;
 		if (filterParams.filterName == "gaussian")
@@ -276,22 +192,32 @@ namespace AIR
 		}
 		else
 		{
+			filterParams.radius = Vector2f(0.5f, 0.5f);
 			filter = new BoxFilter(filterParams.radius);
 		}
 
 		return std::unique_ptr<Filter>(filter);
 	}
 
-	Sampler* RenderOptions::MakeSampler() const
+	Sampler* RenderOptions::MakeSampler()
 	{
 		Sampler* sampler = nullptr;
 		if (samplerParams.samplerName == "stratified")
 		{
+			samplerParams.stratified.dimension = 4;
+			samplerParams.stratified.xSamples = 4;
+			samplerParams.stratified.ySamples = 4;
+			samplerParams.stratified.jitter = true;
 			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
 				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
 		}
 		else
 		{
+			samplerParams.stratified.dimension = 4;
+			samplerParams.stratified.xSamples = 4;
+			samplerParams.stratified.ySamples = 4;
+			samplerParams.stratified.jitter = true;
+
 			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
 				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
 		}
@@ -317,7 +243,7 @@ namespace AIR
 		g_renderOptions.cameraParams.position = parser.GetCameraTransform()->Position();
 		g_renderOptions.cameraParams.rotation = parser.GetCameraTransform()->Rotation();
 		g_renderOptions.cameraParams.scale = Vector3f::one;
-		g_renderOptions.cameraParams.imageResolution = Point2i(800, 600);
+		//g_renderOptions.cameraParams.imageResolution = Point2i(800, 600);
 
 		g_renderOptions.sceneFile = filename;
 	}

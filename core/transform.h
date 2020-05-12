@@ -50,6 +50,7 @@ namespace AIR
 		Vector3f ObjectToWorldVector(const Vector3f& vec, Vector3f* absError = nullptr) const;
 		Vector3f ObjectToWorldNormal(const Vector3f& normal) const;
 		Ray ObjectToWorldRay(const Ray& ray) const;
+		RayDifferential ObjectToWorldRayDiff(const RayDifferential& ray) const;
 		Bounds3f ObjectToWorldBound(const Bounds3f& bound) const;
 		//Vector3f ObjectToWorldPoint(const Vector3f& point, const Vector3f& ptError, Vector3f* absError) const;
 		Interaction ObjectToWorldInteraction(const Interaction& isect) const;
@@ -68,6 +69,8 @@ namespace AIR
 		//oError ray的o点转换后的误差
 		//dError ray的d向量转换后的误差
 		Ray WorldToObjectRay(const Ray& ray, Vector3f* oError, Vector3f* dError) const;
+		Ray WorldToObjectRay(const Ray& ray) const;
+		RayDifferential WorldToObjectRayDiff(const RayDifferential& ray) const;
 		Vector3f WorldToObjectPoint(const Vector3f& point, Vector3f* absError = nullptr) const;
 		Vector3f WorldToObjectVector(const Vector3f& vec, Vector3f* absError = nullptr) const;
 		Vector3f WorldToObjectNormal(const Vector3f& normal) const;

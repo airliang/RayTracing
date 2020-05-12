@@ -44,6 +44,7 @@ namespace AIR
         Float SolidAngle(const Point3f& p, int nSamples = 0) const;
 
     private:
+        bool IntersectMoller(const Ray& ray, Float* tHit, Interaction* isect) const;
         // Triangle Private Methods
         void GetUVs(Point2f uv[3]) const 
         {

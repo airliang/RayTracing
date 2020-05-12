@@ -43,7 +43,7 @@ namespace AIR
 		{
 			Matrix4x4 scale = Matrix4x4::GetScaleMatrix(mScale);
 			Matrix4x4 rotation = mRotation.ToMatrix();
-			mat = Matrix4x4::Mul(rotation, scale);
+			mat = Matrix4x4::Mul(scale, rotation);
 			mat.SetTranslation(mPosition);
 			matInv = Matrix4x4::Inverse(mat);
 		}
@@ -109,6 +109,36 @@ namespace AIR
 		return Ray(o, d, tMax, ray.time);
 	}
 
+	RayDifferential Transform::ObjectToWorldRayDiff(const RayDifferential& ray) const
+	{
+		Ray tr = ObjectToWorldRay(Ray(ray));
+		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time);
+		ret.hasDifferentials = ray.hasDifferentials;
+		ret.rxOrigin = ObjectToWorldPoint(ray.rxOrigin);
+		ret.ryOrigin = ObjectToWorldPoint(ray.ryOrigin);
+		ret.rxDirection = ObjectToWorldVector(ray.rxDirection);
+		ret.ryDirection = ObjectToWorldVector(ray.ryDirection);
+		return ret;
+	}
+
+	Ray Transform::WorldToObjectRay(const Ray& ray) const
+	{
+		Vector3f oError;
+		Vector3f o = WorldToObjectPoint(ray.o, &oError);
+		Vector3f d = WorldToObjectVector(ray.d, nullptr);
+		Float tMax = ray.tMax;
+		Float lengthSquared = d.LengthSquared();
+		if (lengthSquared > 0)
+		{
+
+			Float dt = Vector3f::Dot(Vector3f::Abs(d), oError) / lengthSquared;
+			o += d * dt;
+			tMax -= dt;
+		}
+
+		return Ray(o, d, tMax, ray.time);
+	}
+
 	Ray Transform::WorldToObjectRay(const Ray& ray, Vector3f* oError, Vector3f* dError) const
 	{
 		//Vector3f oError;
@@ -125,6 +155,19 @@ namespace AIR
 		}
 
 		return Ray(o, d, tMax, ray.time);
+	}
+
+	RayDifferential Transform::WorldToObjectRayDiff(const RayDifferential& ray) const
+	{
+		Ray tr = WorldToObjectRay(Ray(ray));
+		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time);
+		ret.hasDifferentials = ray.hasDifferentials;
+		ret.rxOrigin = WorldToObjectPoint(ray.rxOrigin);
+		ret.ryOrigin = WorldToObjectPoint(ray.ryOrigin);
+		ret.rxDirection = WorldToObjectVector(ray.rxDirection);
+		ret.ryDirection = WorldToObjectVector(ray.ryDirection);
+
+		return ret;
 	}
 
 	Vector3f Transform::WorldToObjectPoint(const Vector3f& point, Vector3f* absError /* = nullptr */) const

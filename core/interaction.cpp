@@ -40,7 +40,7 @@ namespace AIR
 		bool allowMultipleLobes,
 		TransportMode mode) {
 		ComputeDifferentials(ray);
-		robject->ComputeScatteringFunctions(this, arena, mode,
+		primitive->ComputeScatteringFunctions(this, arena, mode,
 			allowMultipleLobes);
 	}
 
@@ -104,7 +104,7 @@ namespace AIR
 
 	Spectrum Interaction::Le(const Vector3f& w) const
 	{
-		const AreaLight* pLight = robject->GetAreaLight();
+		const AreaLight* pLight = primitive->GetAreaLight();
 		if (pLight)
 		{
 			return pLight->L(*this, w);

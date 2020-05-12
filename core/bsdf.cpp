@@ -1,14 +1,16 @@
 #include "bsdf.h"
 #include "fresnelreflection.h"
 #include "sampling.h"
+#include "rng.h"
 
 namespace AIR
 {
 Spectrum BxDF::Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
                         Float *pdf, BxDFType *sampledType) const {
     // Cosine-sample the hemisphere, flipping the direction if necessary
-    //*wi = CosineSampleHemisphere(u);
-    if (wo.z < 0) wi->z *= -1;
+    *wi = CosineSampleHemisphere(u);
+    if (wo.z < 0) 
+        wi->z *= -1;
     *pdf = Pdf(wo, *wi);
     return f(wo, *wi);
 }
@@ -103,8 +105,8 @@ Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2
         }
     }
 
-    //remap the u[0]
-    Point2f uRemapped = Point2f(u[0] * matchingComps - 1.0f, u[1]);
+    //remap the u[0] to [0,1)
+    Point2f uRemapped = Point2f(std::min(u[0] * matchingComps - comps, OneMinusEpsilon), u[1]);
 
     //²ÉÑùbxdf
     Vector3f wi;

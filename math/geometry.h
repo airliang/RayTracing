@@ -72,6 +72,7 @@ namespace AIR
 			y -= v.y;
 			return *this;
 		}
+
 		bool operator==(const Vector2<T> &v) const { return x == v.x && y == v.y; }
 		bool operator!=(const Vector2<T> &v) const { return x != v.x || y != v.y; }
 		template <typename U>
@@ -315,6 +316,25 @@ namespace AIR
 		{
             //DCHECK(!v1.HasNaNs() && !v2.HasNaNs());
             return std::abs(Dot(v1, v2));
+		}
+
+		static T MinComponent(const Vector3<T>& v) {
+			return std::min(v.x, std::min(v.y, v.z));
+		}
+
+		
+		static T MaxComponent(const Vector3<T>& v) {
+			return std::max(v.x, std::max(v.y, v.z));
+		}
+
+		
+		static int MaxDimension(const Vector3<T>& v) {
+			return (v.x > v.y) ? ((v.x > v.z) ? 0 : 2) : ((v.y > v.z) ? 1 : 2);
+		}
+
+		static Vector3<T> Permute(const Vector3<T>& v, int x, int y, int z) 
+		{
+			return Vector3<T>(v[x], v[y], v[z]);
 		}
 		
 		// Vector3 Public Data
@@ -619,17 +639,53 @@ namespace AIR
 			Float tFar = (pMax[i] - ray.o[i]) * invRayDir;
 
 			// Update parametric interval from slab intersection $t$ values
-			if (tNear > tFar) std::swap(tNear, tFar);
+			if (tNear > tFar) 
+				std::swap(tNear, tFar);
 
 			// Update _tFar_ to ensure robust ray--bounds intersection
 			tFar *= 1 + 2 * gamma(3);
 			t0 = tNear > t0 ? tNear : t0;
 			t1 = tFar < t1 ? tFar : t1;
-			if (t0 > t1) return false;
+			if (t0 > t1) 
+				return false;
 		}
 		if (hitt0) *hitt0 = t0;
 		if (hitt1) *hitt1 = t1;
 		return true;
+	}
+
+	template <typename T>
+	inline bool Bounds3<T>::IntersectP(const Ray& ray, const Vector3f& invDir,
+		const int dirIsNeg[3]) const
+	{
+		const Bounds3f& bounds = *this;
+		// Check for ray intersection against $x$ and $y$ slabs
+		Float tMin = (bounds[dirIsNeg[0]].x - ray.o.x) * invDir.x;
+		Float tMax = (bounds[1 - dirIsNeg[0]].x - ray.o.x) * invDir.x;
+		Float tyMin = (bounds[dirIsNeg[1]].y - ray.o.y) * invDir.y;
+		Float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.o.y) * invDir.y;
+
+		// Update _tMax_ and _tyMax_ to ensure robust bounds intersection
+		tMax *= 1 + 2 * gamma(3);
+		tyMax *= 1 + 2 * gamma(3);
+		if (tMin > tyMax || tyMin > tMax) 
+			return false;
+		if (tyMin > tMin) 
+			tMin = tyMin;
+		if (tyMax < tMax) 
+			tMax = tyMax;
+
+		// Check for ray intersection against $z$ slab
+		Float tzMin = (bounds[dirIsNeg[2]].z - ray.o.z) * invDir.z;
+		Float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.o.z) * invDir.z;
+
+		// Update _tzMax_ to ensure robust bounds intersection
+		tzMax *= 1 + 2 * gamma(3);
+		if (tMin > tzMax || tzMin > tMax)
+			return false;
+		if (tzMin > tMin) tMin = tzMin;
+		if (tzMax < tMax) tMax = tzMax;
+		return (tMin < ray.tMax) && (tMax > 0);
 	}
 
 	template <typename T>
@@ -805,36 +861,7 @@ namespace AIR
 		return Bounds2iIterator(b, pEnd);
 	}
 
-	template <typename T>
-	inline bool Bounds3<T>::IntersectP(const Ray &ray, const Vector3f &invDir,
-		const int dirIsNeg[3]) const 
-	{
-		const Bounds3f &bounds = *this;
-		// Check for ray intersection against $x$ and $y$ slabs
-		Float tMin = (bounds[dirIsNeg[0]].x - ray.o.x) * invDir.x;
-		Float tMax = (bounds[1 - dirIsNeg[0]].x - ray.o.x) * invDir.x;
-		Float tyMin = (bounds[dirIsNeg[1]].y - ray.o.y) * invDir.y;
-		Float tyMax = (bounds[1 - dirIsNeg[1]].y - ray.o.y) * invDir.y;
-
-		// Update _tMax_ and _tyMax_ to ensure robust bounds intersection
-		tMax *= 1 + 2 * gamma(3);
-		tyMax *= 1 + 2 * gamma(3);
-		if (tMin > tyMax || tyMin > tMax) return false;
-		if (tyMin > tMin) tMin = tyMin;
-		if (tyMax < tMax) tMax = tyMax;
-
-		// Check for ray intersection against $z$ slab
-		Float tzMin = (bounds[dirIsNeg[2]].z - ray.o.z) * invDir.z;
-		Float tzMax = (bounds[1 - dirIsNeg[2]].z - ray.o.z) * invDir.z;
-
-		// Update _tzMax_ to ensure robust bounds intersection
-		tzMax *= 1 + 2 * gamma(3);
-		if (tMin > tzMax || tzMin > tMax) 
-			return false;
-		if (tzMin > tMin) tMin = tzMin;
-		if (tzMax < tMax) tMax = tzMax;
-		return (tMin < ray.tMax) && (tMax > 0);
-	}
+	
 
 	template <typename T>
 	Bounds3<T> Union(const Bounds3<T> &b, const Vector3<T> &p) {

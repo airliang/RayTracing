@@ -25,7 +25,7 @@ Matrix4x4 Quaternion::ToMatrix() const {
     m._M[2][2] = 1 - 2 * (xx + yy);
 
     // Transpose since we are left-handed.  Ugh.
-    return m;
+    return Matrix4x4::Transposed(m);
 }
 
 Matrix3x3 Quaternion::ToMatrix3x3() const {

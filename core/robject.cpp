@@ -47,6 +47,7 @@ namespace AIR
 			return false;
 		}
 		r.tMax = tHit;
+		pInteract->primitive = this;
 		return true;
 	}
 

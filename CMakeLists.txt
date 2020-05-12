@@ -72,6 +72,10 @@ set(CORE_SOURCES
 	core/fresnelreflection.cpp
 	core/integrator.cpp
 	core/renderer.cpp
+	core/renderer.h
+	core/stat.h
+	core/stat.cpp
+	core/runoption.h
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -93,11 +97,11 @@ set(FILTER_SOURCES  filters/boxfilter.h
 )
 
 set(MATH_SOURCES 
-#    math/geometry.h
-#	math/matrix.h
+    math/geometry.h
+	math/matrix.h
 	math/matrix.cpp
-#	math/mathdef.h
-#	math/quaternion.h
+	math/mathdef.h
+	math/quaternion.h
 	math/quaternion.cpp
 )
 

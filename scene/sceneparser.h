@@ -47,7 +47,7 @@ namespace AIR
 		void ParseCamera(std::ifstream& fs);
 
 		std::shared_ptr<Light> ParseLight(std::ifstream& fs) const;
-		void ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives) const;
+		void ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives, std::vector<std::shared_ptr<Light>>& lights) const;
 
 		std::shared_ptr<Material> ParseMaterial(std::ifstream& fs) const;
 

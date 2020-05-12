@@ -132,6 +132,11 @@ namespace AIR
 
 	void FilmTile::AddSample(const Point2f &pFilm, Spectrum L, Float sampleWeight /* = 1. */)
 	{
+		if (!L.IsBlack())
+		{
+			int a = 0;
+		}
+		
 		//计算出受这个sample影响的像素，因为int坐标都是减0.5，相当于整体全部偏移0.5来计算。
 		Point2f pFilmDiscrete = pFilm - Vector2f(0.5f, 0.5f);
 		Point2i p0 = (Point2i)Point2f::Ceil(pFilmDiscrete - filterRadius);

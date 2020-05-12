@@ -19,28 +19,17 @@ namespace AIR
 {
 	enum LightType
 	{
-		Spot = 0,
-
-		//     The light is a directional light.
-		Directional = 1,
-
-		//     The light is a point light.
-		Point = 2,
-		Area = 3,
-
-		//     The light is a rectangle shaped area light. It affects only baked lightmaps and
-		//     lightprobes.
-		Rectangle = 3,
-
-		//     The light is a disc shaped area light. It affects only baked lightmaps and lightprobes.
-		Disc = 4
+		delta_distant,
+		delta_point,
+		area,
 	};
 
 	enum ShapeType
 	{
 		ShapeType_Sphere,
-		ShapeType_Rectangle,
+		ShapeType_Disk,
 		ShapeType_TriangleMesh,
+		ShapeType_Rectangle,
 	};
 
 	enum MaterialType
@@ -82,14 +71,16 @@ namespace AIR
 		fs.read((char*)&lightsNum, sizeof(lightsNum));
 		for (int i = 0; i < lightsNum; ++i)
 		{
-			lights.push_back(ParseLight(fs));
+			std::shared_ptr<Light> light = ParseLight(fs);
+			if (light != NULL)
+				lights.push_back(light);
 		}
 
 		int shapesNum = 0;
 		fs.read((char*)&shapesNum, sizeof(shapesNum));
 		for (int i = 0; i < shapesNum; ++i)
 		{
-			ParsePrimitive(fs, primitives);
+			ParsePrimitive(fs, primitives, lights);
 		}
 
 
@@ -119,12 +110,13 @@ namespace AIR
 		}
 
 		Transform transform = Transform::MakeTransform(pos, rotation, scale);
+		const Matrix4x4& local2world = transform.LocalToWorld();
 		return TransformCache::GetInstance().Lookup(transform);
 	}
 
 	std::shared_ptr<Light> SceneParser::ParseLight(std::ifstream& fs) const
 	{
-		std::shared_ptr<Light> light;
+		std::shared_ptr<Light> light = nullptr;
 		Transform* pTransform = ParseTransform(fs);
 		int lightType;
 		fs.read((char*)&lightType, sizeof(lightType));
@@ -134,26 +126,24 @@ namespace AIR
 		fs.read((char*)&intensity, sizeof(intensity));
 		Spectrum I(intensity);
 
-		if (lightType == LightType::Directional)
+		if (lightType == LightType::delta_distant)
 		{
 			Vector3f dir;
 			fs.read((char*)&dir, sizeof(Vector3f));
 			light = std::make_shared<DistantLight>(*pTransform, color * I, dir);
 		}
-		else if (lightType == LightType::Point)
+		else if (lightType == LightType::delta_point)
 		{
 			light = std::make_shared<PointLight>(*pTransform, color * I);
 		}
-		else if (lightType == LightType::Disc)
+		else if (lightType == LightType::area)
 		{
 			float radius = 0;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Disk> disk = std::make_shared<Disk>(pTransform, 0, radius, 0, 2.0f * Pi);
 			light = std::make_shared<DiffuseAreaLight>(*pTransform, color * I, 1, disk);
 		}
-		else if (lightType == LightType::Rectangle)
-		{
-		}
+
 
 		return light;
 	}
@@ -230,13 +220,24 @@ namespace AIR
 		return texture;
 	}
 
-	void SceneParser::ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives) const
+	void SceneParser::ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives
+		, std::vector<std::shared_ptr<Light>>& lights) const
 	{
 
 		int shapeType;
 		fs.read((char*)&shapeType, sizeof(shapeType));
 
 		Transform* pTransform = ParseTransform(fs);
+
+		bool isAreaLight = false;
+		fs.read((char*)&isAreaLight, sizeof(isAreaLight));
+		RGBSpectrum lightSpectrum;
+		float I = 1.0f;
+		if (isAreaLight)
+		{
+			fs.read((char*)&lightSpectrum, sizeof(lightSpectrum));
+			fs.read((char*)&I, sizeof(float));
+		}
 
 		if (shapeType == ShapeType::ShapeType_Sphere)
 		{
@@ -245,8 +246,14 @@ namespace AIR
 			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, 0, Pi, 2.0f * Pi, pTransform);
 			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform);
 			primitives.push_back(primitive);
+
+			if (isAreaLight)
+			{
+				std::shared_ptr<Light> light = std::make_shared<DiffuseAreaLight>(*pTransform, lightSpectrum * I, 1, shape);
+				lights.push_back(light);
+			}
 		}
-		else if (shapeType == ShapeType::ShapeType_TriangleMesh)
+		else if (shapeType == ShapeType::ShapeType_TriangleMesh || shapeType == ShapeType::ShapeType_Rectangle)
 		{
 			int meshIndex;
 			fs.read((char*)&meshIndex, sizeof(meshIndex));
@@ -257,8 +264,17 @@ namespace AIR
 
   			for (int i = 0; i < mesh->nTriangles; ++i)
 			{
+				std::shared_ptr<Light> light = nullptr;
 				std::shared_ptr<Shape> shape = std::make_shared<Triangle>(pTransform, mesh, i);
-				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, nullptr, pTransform);
+				if (isAreaLight)
+				{
+					light = std::make_shared<DiffuseAreaLight>(*pTransform, lightSpectrum * I, 1, shape);
+					lights.push_back(light);
+				}
+				
+				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, std::dynamic_pointer_cast<AreaLight>(light), pTransform);
+				primitives.push_back(primitive);
+				
 			}
 		}
 

@@ -75,6 +75,13 @@ namespace AIR
 			return Ray(o, d, Infinity, time);
 		}
 
+		Ray SpawnRayTo(const Interaction& it) const {
+			Point3f origin = OffsetRayOrigin(interactPoint, pError, normal, it.interactPoint - interactPoint);
+			Point3f target = OffsetRayOrigin(it.interactPoint, it.pError, it.normal, origin - it.interactPoint);
+			Vector3f d = target - origin;
+			return Ray(origin, d, 1 - ShadowEpsilon, time);
+		}
+
 		Vector3f interactPoint;   //交点
 		Float time;        //应该是相交的ray的参数t
 		Vector3f pError;   //floating-point error
@@ -96,7 +103,7 @@ namespace AIR
 		mutable Vector3f dpdx, dpdy;
 		mutable Float dudx = 0, dvdx = 0, dudy = 0, dvdy = 0;
 
-		const Primitive* robject = nullptr;
+		const Primitive* primitive = nullptr;
 		BSDF* bsdf = nullptr;
 		const Shape* shape = nullptr;
 	};

@@ -6,6 +6,7 @@
 #include <string>
 #include <functional>
 #include <mutex>
+#include <algorithm>
 
 namespace AIR
 {
@@ -99,14 +100,14 @@ void ReportThreadStats();
 
 	// Statistics Macros
 #define STAT_COUNTER(title, var)                           \
-    static PBRT_THREAD_LOCAL int64_t var;                  \
+    static thread_local int64_t var;                  \
     static void STATS_FUNC##var(StatsAccumulator &accum) { \
         accum.ReportCounter(title, var);                   \
         var = 0;                                           \
     }                                                      \
     static StatRegisterer STATS_REG##var(STATS_FUNC##var)
 #define STAT_MEMORY_COUNTER(title, var)                    \
-    static PBRT_THREAD_LOCAL int64_t var;                  \
+    static thread_local int64_t var;                  \
     static void STATS_FUNC##var(StatsAccumulator &accum) { \
         accum.ReportMemoryCounter(title, var);             \
         var = 0;                                           \

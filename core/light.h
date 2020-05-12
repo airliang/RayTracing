@@ -99,7 +99,11 @@ namespace AIR
             : p0(p0), p1(p1) {}
         const Interaction& P0() const { return p0; }
         const Interaction& P1() const { return p1; }
+        //判断p0到p1是否被遮挡
         bool Unoccluded(const Scene& scene) const;
+        //computes the beam transmittance, Equation (11.1), 
+        //the fraction of radiance transmitted along the segment between the two points. 
+        //光线和medium也会有相交，当和medium相交时，发生折射后的计算函数
         Spectrum Tr(const Scene& scene, Sampler& sampler) const;
 
     private:
