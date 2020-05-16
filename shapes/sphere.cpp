@@ -118,10 +118,11 @@ namespace AIR
 		//               = (θmax - θmin)r∂(cosθ)/∂(θ - θmin)
 		//               = -(θmax - θmin)rsinθ
 
-		//∂pz/∂v = ∂(rsinθcosφ)/∂v 
+		//∂pz/∂v = ∂(rsinθsinφ)/∂v 
 		//               = ∂(rsinθsinφ)/∂((θ - θmin) / (θmax - θmin))
 		//               = (θmax - θmin)rsinφ∂(sinθ)/∂(θ - θmin)
-		//               = (θmax - θmin)rsinφsinθ = (θmax - θmin)ysinφ
+		//               = (θmax - θmin)rsinφcosθ = (θmax - θmin)rcosθsinφ
+		int xx = 0;
 		Vector3f dpdv = (thetaMax - thetaMin) * Vector3f(pHit.y * cosPhi, -radius * std::sin(theta), pHit.y * sinPhi);
 
 		//计算法线的变化
@@ -167,8 +168,12 @@ namespace AIR
 		//         = -(θmax - θmin)²∂(rsinθ)/∂(θ)
 		//         = -(θmax - θmin)²rcosθ
 		//         = -(θmax - θmin)²y
+
+		//∂²pz/∂v² = ∂(-(θmax - θmin)rcosθsinφ)/∂((θ - θmin) / (θmax - θmin))
+		//         = -(θmax - θmin)²∂(rcosθsinφ)/∂(θ - θmin)
+		//         = (θmax - θmin)²rsinθsinφ
 		Vector3f d2Pdvv = -(thetaMax - thetaMin) * (thetaMax - thetaMin) *
-			Vector3f(pHit.x, pHit.y, pHit.z);
+			Vector3f(pHit.x, pHit.y, -pHit.z);
 
 		Float E = Vector3f::Dot(dpdu, dpdu);
 		Float F = Vector3f::Dot(dpdu, dpdv);
@@ -189,6 +194,76 @@ namespace AIR
 		//把interaction转回世界坐标
 		*isect = mTransform->ObjectToWorldInteraction(Interaction(pHit, Vector3f::Normalize(Vector3f::Cross(dpdu, dpdv)), Vector2f(u, v), pError, -ray.d, dpdu, dpdv, dndu, dndv, ray.time));
 		*tHit = (Float)tShapeHit;
+		return true;
+	}
+
+	bool Sphere::IntersectP(const Ray& r) const
+	{
+		Float phi;
+		Point3f pHit;
+		// Transform _Ray_ to object space
+		Vector3f oErr, dErr;
+		Ray ray = mTransform->WorldToObjectRay(r, &oErr, &dErr);//(*WorldToObject)(r, &oErr, &dErr);
+
+		// Compute quadratic sphere coefficients
+
+		// Initialize _EFloat_ ray coordinate values
+		EFloat ox(ray.o.x, oErr.x), oy(ray.o.y, oErr.y), oz(ray.o.z, oErr.z);
+		EFloat dx(ray.d.x, dErr.x), dy(ray.d.y, dErr.y), dz(ray.d.z, dErr.z);
+		EFloat a = dx * dx + dy * dy + dz * dz;
+		EFloat b = 2 * (dx * ox + dy * oy + dz * oz);
+		EFloat c = ox * ox + oy * oy + oz * oz - EFloat(radius) * EFloat(radius);
+
+		// Solve quadratic equation for _t_ values
+		EFloat t0, t1;
+		if (!Quadratic(a, b, c, &t0, &t1)) 
+			return false;
+
+		// Check quadric shape _t0_ and _t1_ for nearest intersection
+		if (t0.UpperBound() > ray.tMax || t1.LowerBound() <= 0) 
+			return false;
+		EFloat tShapeHit = t0;
+		if (tShapeHit.LowerBound() <= 0) 
+		{
+			tShapeHit = t1;
+			if (tShapeHit.UpperBound() > ray.tMax) 
+				return false;
+		}
+
+		// Compute sphere hit position and $\phi$
+		pHit = ray((Float)tShapeHit);
+
+		// Refine sphere intersection point
+		pHit *= radius / Point3f::Distance(pHit, Point3f(0, 0, 0));
+		if (pHit.x == 0 && pHit.z == 0) 
+			pHit.x = 1e-5f * radius;
+		phi = std::atan2(pHit.z, pHit.x);
+		if (phi < 0) 
+			phi += 2 * Pi;
+
+		// Test sphere intersection against clipping parameters
+		if ((yMin > -radius && pHit.y < yMin) || (yMax < radius && pHit.y > yMax) ||
+			phi > phiMax) 
+		{
+			if (tShapeHit == t1) 
+				return false;
+			if (t1.UpperBound() > ray.tMax) 
+				return false;
+			tShapeHit = t1;
+			// Compute sphere hit position and $\phi$
+			pHit = ray((Float)tShapeHit);
+
+			// Refine sphere intersection point
+			pHit *= radius / Point3f::Distance(pHit, Point3f(0, 0, 0));
+			if (pHit.x == 0 && pHit.z == 0) 
+				pHit.x = 1e-5f * radius;
+			phi = std::atan2(pHit.z, pHit.x);
+			if (phi < 0) 
+				phi += 2 * Pi;
+			if ((yMin > -radius && pHit.y < yMin) ||
+				(yMax < radius && pHit.y > yMax) || phi > phiMax)
+				return false;
+		}
 		return true;
 	}
 

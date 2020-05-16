@@ -6,6 +6,7 @@
 
 namespace AIR
 {
+	class Integrator;
 	//按z向上的坐标系来定义球，
 	//方便采样时的计算
 	class Sphere : public Shape
@@ -44,7 +45,8 @@ namespace AIR
 		}
 
 		Float Pdf(const Interaction &ref, const Vector3f &wi) const;
-
+		bool Intersect(const Ray& ray, Float* tHit, Interaction* isect) const;
+		bool IntersectP(const Ray& ray) const;
     private:
 		Float radius;
 		Float thetaMin, thetaMax;
@@ -54,8 +56,5 @@ namespace AIR
 
 	public:
 		static std::shared_ptr<Sphere> CreateSphere(const GeometryParam& param, Transform* pTransform);
-
-	//protected:
-		bool Intersect(const Ray &r, Float *tHit, Interaction *isect) const;
 	};
 }
