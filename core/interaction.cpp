@@ -49,7 +49,7 @@ namespace AIR
 		if (ray.hasDifferentials)
 		{
 			//计算rayx的交点
-			Float d = -Vector3f::Dot(normal, interactPoint);
+			Float d = Vector3f::Dot(normal, interactPoint);
 			float ndo_x = Vector3f::Dot(normal, ray.rxOrigin);
 			float ndd_x = Vector3f::Dot(normal, ray.rxDirection);
 			float tx = (d - ndo_x) / ndd_x;
