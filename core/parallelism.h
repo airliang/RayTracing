@@ -4,10 +4,11 @@
 #include <atomic>
 #include <functional>
 #include <mutex>
+#include "renderer.h"
 
 namespace AIR
 {
-
+	extern GlobalOptions g_globalOptions;
 	// Simple one-use barrier; ensures that multiple threads all reach a
 // particular point of execution before allowing any of them to proceed
 // past it.
@@ -87,6 +88,8 @@ namespace AIR
 
 		int nX = -1;
 	};
+
+	extern thread_local int ThreadIndex;
 
 	//并行执行一段循环体函数
 	//func 在循环体里的函数

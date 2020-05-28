@@ -1,4 +1,4 @@
-#include "bsdf.h"
+ï»¿#include "bsdf.h"
 #include "fresnelreflection.h"
 #include "sampling.h"
 #include "rng.h"
@@ -18,9 +18,9 @@ Spectrum BxDF::Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &u,
 Spectrum BxDF::rho_hd(const Vector3f &wo, int nSamples,
                          const Point2f *samples) const
 {
-    //¦Ñhd(wo) = ¡ÒHfr(wo, wi)|cos¦Èi|dwi
-    //ÃÉÌØ¿¨Âå¹À¼Æ£º
-    //F = 1/N¡Æfr(wo, wi)|cos¦Èi|/p(¦Øi)
+    //Ïhd(wo) = âˆ«Hfr(wo, wi)|cosÎ¸i|dwi
+    //è’™ç‰¹å¡æ´›ä¼°è®¡ï¼š
+    //F = 1/Nâˆ‘fr(wo, wi)|cosÎ¸i|/p(Ï‰i)
     Float pdf = 0;
     Vector3f wi;
     Spectrum F = 0.f;
@@ -39,9 +39,9 @@ Spectrum BxDF::rho_hd(const Vector3f &wo, int nSamples,
 Spectrum BxDF::rho_hh(int nSamples, const Point2f *samples1,
                          const Point2f *samples2) const
 {
-    //¦Ñhh = 1/¦Ğ¡Ò[H]¡Ò[H]fr(p, wo, wi)|cos¦Èi|dwi|cos¦Èo|dwo
-    //ÃÉÌØ¿¨Âå¹À¼Æ£º
-    //F = 1/(¦ĞN)¡Æfr(wo, wi)|cos¦Èi||cos¦Èo|dwidwo/(p(wi)p(wo))
+    //Ïhh = 1/Ï€âˆ«[H]âˆ«[H]fr(p, wo, wi)|cosÎ¸i|dwi|cosÎ¸o|dwo
+    //è’™ç‰¹å¡æ´›ä¼°è®¡ï¼š
+    //F = 1/(Ï€N)âˆ‘fr(wo, wi)|cosÎ¸i||cosÎ¸o|dwidwo/(p(wi)p(wo))
 
     Float pdfi = 0;
     Float pdfo = 0;
@@ -65,7 +65,7 @@ Spectrum BxDF::rho_hh(int nSamples, const Point2f *samples1,
 Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
 	BxDFType flags) const {
 	//ProfilePhase pp(Prof::BSDFEvaluation);
-	//×ª³Élocal×ø±ê£¨Í³Ò»zÏòÉÏµÄ×óÊÖ×ø±êÏµ£©
+	//è½¬æˆlocalåæ ‡ï¼ˆç»Ÿä¸€zå‘ä¸Šçš„å·¦æ‰‹åæ ‡ç³»ï¼‰
 	Vector3f wi = WorldToLocal(wiW), wo = WorldToLocal(woW);
 	if (wo.z == 0) 
 		return 0.;
@@ -84,14 +84,14 @@ Spectrum BSDF::f(const Vector3f &woW, const Vector3f &wiW,
 Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2f& u,
     Float* pdf, BxDFType type, BxDFType* sampledType) const
 {
-    //Ëæ»úÑ¡ÔñÒ»¸öbxdf
+    //éšæœºé€‰æ‹©ä¸€ä¸ªbxdf
     int matchingComps = NumComponents(type);
     if (matchingComps == 0)
     {
         return Spectrum(0.0f);
     }
-    //¼ÆËãËæ»úbxdfµÄĞòºÅ
-    //u[0] = 1µÄÊ±ºò¾ÍÒªÈ¡ min
+    //è®¡ç®—éšæœºbxdfçš„åºå·
+    //u[0] = 1çš„æ—¶å€™å°±è¦å– min
     int comps = std::min((int)std::floor(u[0] * matchingComps), matchingComps - 1);
 
     BxDF* bxdf = nullptr;
@@ -108,7 +108,7 @@ Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2
     //remap the u[0] to [0,1)
     Point2f uRemapped = Point2f(std::min(u[0] * matchingComps - comps, OneMinusEpsilon), u[1]);
 
-    //²ÉÑùbxdf
+    //é‡‡æ ·bxdf
     Vector3f wi;
     Vector3f wo = WorldToLocal(woWorld);
 
@@ -124,8 +124,8 @@ Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2
     }
     *wiWorld = LocalToWorld(wi);
 
-    //ÓÉÓÚspecularµÄpdf·Ç0¼´1£¬ËùÒÔÕâÀï²»°ÑspecularµÄpdfËã½øÈ¥¡£
-    //specularµÄpdf·µ»ØµÄÊÇ0
+    //ç”±äºspecularçš„pdfé0å³1ï¼Œæ‰€ä»¥è¿™é‡Œä¸æŠŠspecularçš„pdfç®—è¿›å»ã€‚
+    //specularçš„pdfè¿”å›çš„æ˜¯0
     if (!(bxdf->type & BSDF_SPECULAR) && matchingComps > 1)
     {
         for (int i = 0; i < nBxDFs; ++i)
@@ -135,7 +135,7 @@ Spectrum BSDF::Sample_f(const Vector3f& woWorld, Vector3f* wiWorld, const Point2
     if (matchingComps > 1) 
         *pdf /= matchingComps;
 
-    //ÓÉÓÚspecularµÄbrdfº¯Êı(f)·µ»ØµÄÊÇ0£¬ËùÒÔspecular²»ÔÚÕâÀïËã
+    //ç”±äºspecularçš„brdfå‡½æ•°(f)è¿”å›çš„æ˜¯0ï¼Œæ‰€ä»¥specularä¸åœ¨è¿™é‡Œç®—
     if (!(bxdf->type & BSDF_SPECULAR) && matchingComps > 1) {
         bool reflect = Vector3f::Dot(*wiWorld, ng) * Vector3f::Dot(woWorld, ng) > 0;
         f = 0.;
@@ -222,10 +222,10 @@ Spectrum SpecularReflection::Sample_f(const Vector3f &wo, Vector3f *wi,
     *wi = Vector3f(-wo.x, -wo.y, wo.z);
     *pdf = 1;
 
-    //fr = Fr(wi) / |cos¦Èi|
-    //ÏêÏ¸ÍÆµ¼¿´£º
+    //fr = Fr(wi) / |cosÎ¸i|
+    //è¯¦ç»†æ¨å¯¼çœ‹ï¼š
     //http://www.pbr-book.org/3ed-2018/Reflection_Models/Specular_Reflection_and_Transmission.html
-    //8.2.2½Ú
+    //8.2.2èŠ‚
     return fresnel->Evaluate(CosTheta(*wi)) * R / AbsCosTheta(*wi);
 }
 
@@ -256,14 +256,14 @@ Spectrum SpecularTransmission::Sample_f(const Vector3f &wo, Vector3f *wi,
 Spectrum FresnelSpecular::Sample_f(const Vector3f &wo, Vector3f *wi, const Point2f &sample,
                       Float *pdf, BxDFType *sampledType) const
 {
-    //ÒòÎªcos¦ÈoºÍcos¦ÈiÏàÍ¬£¬ËùÒÔÓÃwo
-    //ÏÈËã³öFresnelµÄ·´ÉäÂÊ
+    //å› ä¸ºcosÎ¸oå’ŒcosÎ¸iç›¸åŒï¼Œæ‰€ä»¥ç”¨wo
+    //å…ˆç®—å‡ºFresnelçš„åå°„ç‡
     Float F = FrDielectric(CosTheta(wo), etaA, etaB);
 
-    //Ğ¡ÓÚ·´ÉäÂÊµÄËæ»úÊıÓÃ·´Éä£¬·ñÔòÓÃÕÛÉä
+    //å°äºåå°„ç‡çš„éšæœºæ•°ç”¨åå°„ï¼Œå¦åˆ™ç”¨æŠ˜å°„
     if (sample.x < F)
     {
-        //ÏÈËãÈëÉä·½Ïò
+        //å…ˆç®—å…¥å°„æ–¹å‘
         *wi = Vector3f(-wo.x, -wo.y, wo.z);
 
         //
@@ -274,19 +274,19 @@ Spectrum FresnelSpecular::Sample_f(const Vector3f &wo, Vector3f *wi, const Point
     }
     else
     {
-        //ÅĞ¶ÏÊÇ·ñ´ÓÕıÃæÈëÉä
+        //åˆ¤æ–­æ˜¯å¦ä»æ­£é¢å…¥å°„
         bool entering = CosTheta(wo) > 0;
         Float etaI = entering ? etaA : etaB;
         Float etaT = entering ? etaB : etaA;
 
-        //Çó³öÉä·½Ïò
+        //æ±‚å‡ºå°„æ–¹å‘
         if (!Refract(wo, Vector3f::FaceForward(Vector3f::forward, wo), etaI / etaT, wi))
         {
             return 0;
         }
         Spectrum ft = T * (1 - F);
 
-        //ÎªºÎÕâÑùĞ´£¬»¹Ã»¸ãÃ÷°×£¿
+        //ä¸ºä½•è¿™æ ·å†™ï¼Œè¿˜æ²¡ææ˜ç™½ï¼Ÿ
         if (mode == TransportMode::Radiance)
             ft *= (etaI * etaI) / (etaT * etaT);
 
@@ -351,21 +351,21 @@ Spectrum MicrofacetReflection::Sample_f(const Vector3f &wo, Vector3f *wi,
     // Sample microfacet orientation $\wh$ and reflected direction $\wi$
     if (wo.z == 0) 
         return 0.;
-    //Ê×ÏÈ¸ù¾İ·Ö²¼²ÉÑù·¨Ïß
+    //é¦–å…ˆæ ¹æ®åˆ†å¸ƒé‡‡æ ·æ³•çº¿
     Vector3f wh = distribution->Sample_wh(wo, u);
-    //ÔÙÓÉ·¨Ïß¼ÆËãÈëÉä¹â
+    //å†ç”±æ³•çº¿è®¡ç®—å…¥å°„å…‰
     *wi = Reflect(wo, wh);
     if (!SameHemisphere(wo, *wi)) 
         return Spectrum(0.f);
 
     // Compute PDF of _wi_ for microfacet reflection
-    //¼ÙÉèÒÔ¦ØoÎª·¨Ïß
-    //¦Õi=¦Õh£¬´Ó·¢ÉäÀ´¼ÆËã¦Èi = 2¦Èh
-    //d¦Øi = sin¦Èid¦Èid¦Õi = sin2¦Èh d2¦Èh d¦Õh
-    // d¦Øh   sin¦Èhd¦Èhd¦Õh          1
+    //å‡è®¾ä»¥Ï‰oä¸ºæ³•çº¿
+    //Ï†i=Ï†hï¼Œä»å‘å°„æ¥è®¡ç®—Î¸i = 2Î¸h
+    //dÏ‰i = sinÎ¸idÎ¸idÏ†i = sin2Î¸h d2Î¸h dÏ†h
+    // dÏ‰h   sinÎ¸hdÎ¸hdÏ†h          1
     // ---- = ----------------- = --------
-    // d¦Øi   sin2¦Èhd2¦Èhd¦Õi     4cos¦Èh
-    //ÍÆ³ö£ºp(¦Øi) = p(¦Øh) / 4(¦Øo¡¤¦Øh)
+    // dÏ‰i   sin2Î¸hd2Î¸hdÏ†i     4cosÎ¸h
+    //æ¨å‡ºï¼šp(Ï‰i) = p(Ï‰h) / 4(Ï‰oÂ·Ï‰h)
     *pdf = distribution->Pdf(wo, wh) / (4 * Vector3f::Dot(wo, wh));
     return f(wo, *wi);
 }
@@ -377,21 +377,43 @@ Float MicrofacetReflection::Pdf(const Vector3f &wo, const Vector3f &wi) const {
     return distribution->Pdf(wo, wh) / (4 * Vector3f::Dot(wo, wh));
 }
 
+Spectrum MicrofacetTransmission::f(const Vector3f& wo, const Vector3f& wi) const
+{
+    //     D(wh)G(wo,wi)(1 - Fr(wo)) |wiÂ·wh||woÂ·wh|
+    //fr = ------------------------- ----------------
+    //      ((woÂ·wh) + Î·(wiÂ·wo))Â²  cosÎ¸o cosÎ¸h
+    if (SameHemisphere(wo, wi)) 
+        return 0;  // transmission only
+
+    Float eta = CosTheta(wo) > 0 ? (etaB / etaA) : (etaA / etaB);
+	Vector3f wh = Vector3f::Normalize(wo + wi * eta);
+	if (wh.z < 0) 
+        wh = -wh;
+
+    
+    Float dotWiWh = Vector3f::Dot(wi, wh);
+    Float dotWoWh = Vector3f::Dot(wo, wh);
+    Spectrum F = fresnel.Evaluate(dotWoWh);
+    Float sqrtDenom = dotWoWh + eta * dotWiWh;
+    return  distribution->D(wi) * distribution->G(wo, wi) * (Spectrum(1.0f) - F) *
+        std::abs(dotWiWh) * std::abs(dotWoWh) / (sqrtDenom * sqrtDenom * CosTheta(wo) * CosTheta(wi));
+}
+
 Spectrum MicrofacetTransmission::Sample_f(const Vector3f &wo, Vector3f *wi,
                                           const Point2f &u, Float *pdf,
                                           BxDFType *sampledType) const 
 {
     if (wo.z == 0) 
         return 0.;
-    //ÔÚÕÛÉäÖĞ£¬whÎ¢±íÃæ·¨ÏßµÄ²ÉÑùºÍ·´ÉäÒ»Ñù
+    //åœ¨æŠ˜å°„ä¸­ï¼Œwhå¾®è¡¨é¢æ³•çº¿çš„é‡‡æ ·å’Œåå°„ä¸€æ ·
     Vector3f wh = distribution->Sample_wh(wo, u);
-    //ÇóÕÛÉäÏµÊı±ÈÀı
+    //æ±‚æŠ˜å°„ç³»æ•°æ¯”ä¾‹
     Float eta = CosTheta(wo) > 0 ? (etaA / etaB) : (etaB / etaA);
-    //eta = ¦Çi/¦Çt
-    //wt = eta(-wi) + [eta(wi¡¤wh) - cos¦Èt]wh
+    //eta = Î·i/Î·t
+    //wt = eta(-wi) + [eta(wiÂ·wh) - cosÎ¸t]wh
     if (!Refract(wo, wh, eta, wi)) 
         return 0;
-    //Çó³öÉäwiµÄpdf
+    //æ±‚å‡ºå°„wiçš„pdf
     *pdf = Pdf(wo, *wi);
     return f(wo, *wi);
 }
@@ -414,7 +436,7 @@ Float MicrofacetTransmission::Pdf(const Vector3f &wo,
 
 Spectrum FresnelConductor::Evaluate(Float cosThetaI) const
 {
-    //µ¼ÌåÃ»ÓĞÕÛÉä£¬ËùÒÔÈ¡cosThetaIµÄ¾ø¶ÔÖµ
+    //å¯¼ä½“æ²¡æœ‰æŠ˜å°„ï¼Œæ‰€ä»¥å–cosThetaIçš„ç»å¯¹å€¼
     return FrConductor(std::abs(cosThetaI), etaI, etaT, k);
 }
 

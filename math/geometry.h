@@ -914,6 +914,15 @@ namespace AIR
 		return (p < 0) ? (p + 2 * Pi) : p;
 	}
 
+	inline Float SphericalThetaYup(const Vector3f& v) {
+		return std::acos(Clamp(v.y, -1, 1));
+	}
+
+	inline Float SphericalPhiYup(const Vector3f& v) {
+		Float p = std::atan2(v.z, v.x);
+		return (p < 0) ? (p + 2 * Pi) : p;
+	}
+
 	//生成一个坐标系
 	//v1已经normalized
 	//

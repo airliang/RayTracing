@@ -204,6 +204,7 @@ namespace AIR
 		ret.wo = TransformVector(localToWorld, isect.wo);
 		ret.time = isect.time;
 		ret.uv = isect.uv;
+		ret.shape = isect.shape;
 		ret.dpdu = TransformVector(localToWorld, isect.dpdu);
 		ret.dpdv = TransformVector(localToWorld, isect.dpdv);
 		ret.dndu = TransformVector(localToWorld, isect.dndu);
@@ -215,6 +216,14 @@ namespace AIR
 		ret.dvdy = isect.dvdy;
 		ret.dpdx = TransformVector(localToWorld, isect.dpdx);
 		ret.dpdy = TransformVector(localToWorld, isect.dpdy);
+
+		ret.shading.n = Vector3f::Normalize(ObjectToWorldNormal(isect.shading.n));
+		ret.shading.dpdu = TransformVector(localToWorld, isect.shading.dpdu);
+		ret.shading.dpdv = TransformVector(localToWorld, isect.shading.dpdv);
+		ret.shading.dndu = TransformVector(localToWorld, isect.shading.dndu);
+		ret.shading.dndv = TransformVector(localToWorld, isect.shading.dndv);
+		ret.primitive = isect.primitive;
+		ret.bsdf = isect.bsdf;
 
 		return ret;
 	}

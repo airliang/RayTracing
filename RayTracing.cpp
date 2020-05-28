@@ -12,6 +12,9 @@
 #include "renderer.h"
 #include "runoption.h"
 #include "fileutil.h"
+#include "log.h"
+#include "imageio.h"
+#include <filesystem>
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
@@ -33,15 +36,21 @@ int main(int argc, char* argv[])
 
 	std::string directory = DirectoryContaining("scene.rt");
 
+	//这里获取全路径
+	std::filesystem::path path = std::filesystem::current_path();
+	std::string rootPath = path.string();
+	int index = rootPath.find("bin");
+	rootPath = rootPath.substr(0, index);
+
 	Transform transform;
-	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, 0.0f, Pi, 2.0f * Pi, &transform);
-	Ray ray(Vector3f(0, 0, -2.0f), Vector3f::forward);
+	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, -1.0f, 1.0f, 2.0f * Pi, &transform);
+	Ray ray(Vector3f(0, 0, 2.0f), -Vector3f::forward);
 	Interaction interaction;
 	Float tHit;
 	sphere->Intersect(ray, &tHit, &interaction);
 
 
-	RunOptions options;
+	GlobalOptions options;
 	std::vector<std::string> filenames;
 
 	for (int i = 1; i < argc; ++i)
@@ -50,17 +59,42 @@ int main(int argc, char* argv[])
 		{
 			options.nThreads = atoi(&argv[i][11]);
 		}
+		else if (!strncmp(argv[i], "-w", 2))
+		{
+			options.filmWidth = atoi(argv[++i]);
+		}
+		else if (!strncmp(argv[i], "-h", 2))
+		{
+			options.filmHeight = atoi(argv[++i]);
+		}
+		else if (!strncmp(argv[i], "-filter", 7))
+		{
+			options.FilterName = argv[++i];
+		}
+		else if (!strncmp(argv[i], "-sampler", 8))
+		{
+			options.SamplerName = argv[++i];
+		}
+		else if (!strncmp(argv[i], "-accelerator", 12))
+		{
+			options.AcceleratorName = argv[++i];
+		}
+		else if (!strncmp(argv[i], "-integrator", 11))
+		{
+			options.IntegratorName = argv[++i];
+		}
 		else
 		{
 			filenames.push_back(argv[i]);
 		}
 	}
+	ImageIO::InitPath(rootPath);
 
-	Renderer::GetInstance().Init();
+	Renderer::GetInstance().Init(options);
 	Renderer::GetInstance().ParseScene(filenames[0]);
 	Renderer::GetInstance().Run();
 	Renderer::GetInstance().Cleanup();
-
+	LOG << "render completed!" << endl;
 	system("pause");
 	return 0;
 }

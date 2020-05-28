@@ -51,6 +51,7 @@ namespace AIR
 
 	struct CameraParam
 	{
+		CameraParam() {}
 		Vector3f position;
 		Quaternion rotation;
 		Vector3f scale;
@@ -62,6 +63,7 @@ namespace AIR
 
 	struct FilmParam
 	{
+		FilmParam() {}
 		std::string imageFile;
 
 		Point2i resolution = Point2i(512, 512);
@@ -71,24 +73,26 @@ namespace AIR
 
 	struct FilterParam
 	{
+		FilterParam() {}
 		std::string filterName;
 		//filter的半径
-		Vector2f radius;
+		Vector2f radius = Vector2f::one;
 		//gaussian filter要用的参数
-		Float    gaussianAlpha;
+		Float    gaussianAlpha = 0.0f;
 	};
 
 	struct SamplerParam
 	{
+		SamplerParam() {}
 		std::string samplerName;
 		union
 		{
 			struct
 			{
-				int xSamples;
-				int ySamples;
-				int dimension;
-				bool jitter;
+				int xSamples = 0;
+				int ySamples = 0;
+				int dimension = 0;
+				bool jitter = false;
 			} stratified;
 
 			struct
@@ -98,7 +102,25 @@ namespace AIR
 		};
 	};
 
-	struct RenderOptions {
+	struct GlobalOptions
+	{
+		int nThreads = 1;
+		int filmWidth = 512;
+		int filmHeight = 512;
+		std::string FilterName = "box";
+		//ParamSet FilterParams;
+		std::string FilmName = "image";
+		//ParamSet FilmParams;
+		std::string SamplerName = "stratified";
+		//ParamSet SamplerParams;
+		std::string AcceleratorName = "bvh";
+		//ParamSet AcceleratorParams;
+		std::string IntegratorName = "path";
+	};
+
+	struct RenderOptions 
+	{
+		RenderOptions() {}
 		// RenderOptions Public Methods
 		Integrator* MakeIntegrator();
 		Scene* MakeScene();
@@ -109,11 +131,11 @@ namespace AIR
 
 		// RenderOptions Public Data
 		Float transformStartTime = 0, transformEndTime = 1;
-		std::string FilterName = "box";
+		//std::string FilterName = "box";
 		//ParamSet FilterParams;
-		std::string FilmName = "image";
+		//std::string FilmName = "image";
 		//ParamSet FilmParams;
-		std::string SamplerName = "halton";
+		//std::string SamplerName = "halton";
 		//ParamSet SamplerParams;
 		std::string AcceleratorName = "bvh";
 		//ParamSet AcceleratorParams;
@@ -147,7 +169,7 @@ namespace AIR
 			return instance;
 		}
 
-		void Init();
+		void Init(const GlobalOptions& options);
 
 		void Run();
 

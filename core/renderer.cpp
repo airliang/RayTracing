@@ -12,9 +12,11 @@
 #include "stratified.h"
 #include "sceneparser.h"
 #include "stat.h"
+#include "log.h"
 
 namespace AIR
 {
+	GlobalOptions g_globalOptions;
 	static int nTransformCacheLookups = 0;
 	static int nTransformCacheHits = 0;
 	static size_t transformCacheBytes = 0;
@@ -248,8 +250,15 @@ namespace AIR
 		g_renderOptions.sceneFile = filename;
 	}
 
-	void Renderer::Init()
+	void Renderer::Init(const GlobalOptions& options)
 	{
+		g_globalOptions = options;
+		g_renderOptions.filterParams.filterName = options.FilterName;
+		g_renderOptions.samplerParams.samplerName = options.SamplerName;
+		g_renderOptions.AcceleratorName = options.AcceleratorName;
+		g_renderOptions.IntegratorName = options.IntegratorName;
+		g_renderOptions.filmParams.resolution = Point2i(options.filmWidth, options.filmHeight);
+
 		SampledSpectrum::Init();
 		ParallelInit();
 	}
@@ -266,6 +275,8 @@ namespace AIR
 
 		if (scene && integrator)
 			integrator->Render(*scene.get());
+		
+		LOG << "integrator->Render done!" << std::endl;
 
 		MergeWorkerThreadStats();
         ReportThreadStats();

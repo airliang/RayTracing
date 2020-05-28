@@ -78,14 +78,14 @@ namespace AIR
 				return false;
 
 			Float u = phi / phiMax;
-			Float theta = std::acos(Clamp(pHit.z / radius, -1, 1));
+			Float theta = std::acos(Clamp(pHit.y / radius, -1, 1));
 			Float v = (theta - thetaMin) / (thetaMax - thetaMin);
 		}
 
 
 		//compute dpdu dpdv，p对u的偏导数
 		Float u = phi / phiMax;
-		Float theta = std::acos(Clamp(pHit.z / radius, -1, 1));
+		Float theta = std::acos(Clamp(pHit.y / radius, -1, 1));
 		Float v = (theta - thetaMin) / (thetaMax - thetaMin);
 
 		Float yRadius = std::sqrt(pHit.x * pHit.x + pHit.z * pHit.z);

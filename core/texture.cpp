@@ -1,4 +1,5 @@
 #include "texture.h"
+#include "robject.h"
 
 namespace AIR
 {
@@ -44,15 +45,27 @@ Point2f SphericalMapping2D::Sphere(const Vector3f& p) const
     return Point2f(theta * InvPi, phi * Inv2Pi);
 }
 
+Point2f SphericalMapping2D::Sphere(const Vector3f& p, const Matrix4f& w2t) const
+{
+	Vector3f vec = Vector3f::Normalize(MultiplyPoint(w2t, p) - Vector3f::zero);
+	//Float theta = SphericalTheta(vec);
+	//Float phi = SphericalPhi(vec);
+	//由于我这里的球面定义不是按z向上的，所以不能用SphericalTheta和SphericalPhi
+	//定义了y向上
+	Float theta = SphericalThetaYup(vec);
+	Float phi = SphericalPhiYup(vec);
+	return Point2f(theta * InvPi, phi * Inv2Pi);
+}
+
 Point2f SphericalMapping2D::Map(const Interaction& si, Vector2f *dstdx, Vector2f* dstdy) const
 {
     // ∂s   sphere(p + Δ∂p/∂x) - sphere(p)
     // -- = ------------------------------
     // ∂x                Δ
     Float delta = 0.1f;
-    Point2f st = Sphere(si.interactPoint);
-    Point2f deltaX = Sphere(si.interactPoint + si.dpdx);
-    Point2f deltaY = Sphere(si.interactPoint + si.dpdy);
+    Point2f st = Sphere(si.interactPoint, si.primitive->GetTransform()->WorldToLocal());
+    Point2f deltaX = Sphere(si.interactPoint + delta * si.dpdx, si.primitive->GetTransform()->WorldToLocal());
+    Point2f deltaY = Sphere(si.interactPoint + delta * si.dpdy, si.primitive->GetTransform()->WorldToLocal());
 
     *dstdx = (deltaX - st) / delta;
     *dstdy = (deltaY - st) / delta;

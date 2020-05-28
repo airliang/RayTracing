@@ -13,7 +13,10 @@
 #include "matte.h"
 #include "mirrormaterial.h"
 #include "constanttexture.h"
+#include "glassmaterial.h"
 #include "../RayTracing.h"
+#include "imageio.h"
+#include "imagetexture.h"
 
 namespace AIR
 {
@@ -38,6 +41,7 @@ namespace AIR
 		MaterialType_Plastic,
 		MaterialType_Mirror,
 		MaterialType_Metal,
+		MaterialType_Glass,
 	};
 
 	enum TextureType
@@ -45,6 +49,30 @@ namespace AIR
 		TextureType_Constant,
 		TextureType_Bilerp,
 		TextureType_Image,
+	};
+
+	enum ImageWrapMode
+	{
+		Wrap_Repeat = 0,
+		//
+		// 摘要:
+		//     Clamps the texture to the last pixel at the edge.
+		Wrap_Clamp = 1,
+		//
+		// 摘要:
+		//     Tiles the texture, creating a repeating pattern by mirroring it at every integer
+		//     boundary.
+		Wrap_Mirror = 2,
+		//
+		// 摘要:
+		//     Mirrors the texture once, then clamps to edge pixels.
+		Wrap_MirrorOnce = 3
+	};
+
+	enum ImageMapping
+	{
+		ImageMapping_UVMapping2D,
+		ImageMapping_Spherical,
 	};
 
 	bool SceneParser::Load(const std::string& file, std::vector<std::shared_ptr<Light>>& lights,
@@ -176,6 +204,18 @@ namespace AIR
 			std::shared_ptr <Texture< RGBSpectrum >> textureKr = ParseSpectrumTexture(fs);
 			material = std::make_shared<MirrorMaterial>(textureKr, nullptr);
 		}
+		else if (materialType == MaterialType_Metal)
+		{
+		}
+		else if (materialType == MaterialType_Glass)
+		{
+			std::shared_ptr <Texture< RGBSpectrum >> textureKr = ParseSpectrumTexture(fs);
+			std::shared_ptr <Texture< RGBSpectrum >> textureKs = ParseSpectrumTexture(fs);
+			std::shared_ptr <Texture< Float >> uRougness = ParseFloatTexture(fs);
+			std::shared_ptr <Texture< Float >> vRougness = ParseFloatTexture(fs);
+			std::shared_ptr <Texture< Float >> index = ParseFloatTexture(fs);
+			material = std::make_shared<GlassMaterial>(textureKr, textureKs, uRougness, vRougness, index, nullptr, true);
+		}
 
 		return material;
 	}
@@ -195,6 +235,39 @@ namespace AIR
 		else if (type == TextureType_Image)
 		{
 			//暂不支持
+			char szFilename[256] = { 0 };
+			fs.read(szFilename, 256);
+			bool doTri = true;
+
+			bool gamma = false;
+			fs.read((char*)&gamma, sizeof(gamma));
+
+			int wrap = (int)ImageWrapMode::Wrap_Repeat;
+			fs.read((char*)&wrap, sizeof(wrap));
+			ImageWrap imWrap = ImageWrap::Repeat;
+			if (wrap == (int)ImageWrapMode::Wrap_Clamp)
+			{
+				imWrap = ImageWrap::Clamp;
+			}
+
+			int mapping = (int)ImageMapping::ImageMapping_UVMapping2D;
+			fs.read((char*)&mapping, sizeof(mapping));
+			std::unique_ptr<TextureMapping2D> m(new UVMapping2D());
+			if (mapping == (int)ImageMapping::ImageMapping_UVMapping2D)
+			{
+				float su, sv, du, dv;
+				fs.read((char*)&su, sizeof(su));
+				fs.read((char*)&sv, sizeof(sv));
+				fs.read((char*)&du, sizeof(du));
+				fs.read((char*)&dv, sizeof(dv));
+				m.reset(new UVMapping2D(su, sv, du, dv));
+			}
+			else if (mapping == (int)ImageMapping_Spherical)
+			{
+				m.reset(new SphericalMapping2D(Matrix4f::IDENTITY));
+			}
+
+			texture = std::make_shared<ImageTexture<Float, Float>>(std::move(m), szFilename, doTri, 8.0f, imWrap, 1.0f, gamma);
 		}
 
 		return texture;
@@ -214,7 +287,42 @@ namespace AIR
 		}
 		else if (type == TextureType_Image)
 		{
+			char szFilename[256] = { 0 };
+			fs.read(szFilename, 256);
 			//暂不支持
+			//Point2i resolution;
+			//std::unique_ptr<RGBSpectrum[]> rgbImage = ImageIO::ReadImage(szFilename, resolution);
+			bool doTri = true;
+
+			bool gamma = false;
+			fs.read((char*)&gamma, sizeof(gamma));
+
+			int wrap = (int)ImageWrapMode::Wrap_Repeat;
+			fs.read((char*)&wrap, sizeof(wrap));
+			ImageWrap imWrap = ImageWrap::Repeat;
+			if (wrap == (int)ImageWrapMode::Wrap_Clamp)
+			{
+				imWrap = ImageWrap::Clamp;
+			}
+
+			int mapping = (int)ImageMapping::ImageMapping_UVMapping2D;
+			fs.read((char*)&mapping, sizeof(mapping));
+			std::unique_ptr<TextureMapping2D> m(new UVMapping2D());
+			if (mapping == (int)ImageMapping::ImageMapping_UVMapping2D)
+			{
+				float su, sv, du, dv;
+				fs.read((char*)&su, sizeof(su));
+				fs.read((char*)&sv, sizeof(sv));
+				fs.read((char*)&du, sizeof(du));
+				fs.read((char*)&dv, sizeof(dv));
+				m.reset(new UVMapping2D(su, sv, du, dv));
+			}
+			else if (mapping == (int)ImageMapping_Spherical)
+			{
+				m.reset(new SphericalMapping2D(Matrix4f::IDENTITY));
+			}
+
+			texture = std::make_shared<ImageTexture<RGBSpectrum, Spectrum>>(std::move(m), szFilename, doTri, 8.0f, imWrap, 1.0f, gamma);
 		}
 
 		return texture;
@@ -243,7 +351,7 @@ namespace AIR
 		{
 			float radius;
 			fs.read((char*)&radius, sizeof(radius));
-			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, 0, Pi, 2.0f * Pi, pTransform);
+			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, -radius, radius, 2.0f * Pi, pTransform);
 			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform);
 			primitives.push_back(primitive);
 

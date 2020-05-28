@@ -12,13 +12,13 @@ namespace AIR
 	class Sphere : public Shape
 	{
 	public:
-		Sphere(Float radius, Float thetaMin, Float thetaMax, Float phiMax, Transform* pTransform) : Shape(pTransform)
+		Sphere(Float radius, Float yMin, Float yMax, Float phiMax, Transform* pTransform) : Shape(pTransform)
 			, radius(radius)
-			, thetaMin(thetaMin)
-			, thetaMax(thetaMax)
+			, yMin(Clamp(std::min(yMin, yMax), -radius, radius))
+			, yMax(Clamp(std::max(yMin, yMax), -radius, radius))
 			, phiMax(phiMax)
-			, yMax(std::cos(thetaMin) * radius)
-			, yMin(std::cos(thetaMax) * radius)
+			, thetaMax(std::acos(Clamp(std::min(yMin, yMax) / radius, -1, 1)))
+			, thetaMin(std::acos(Clamp(std::max(yMin, yMax) / radius, -1, 1)))
 		{
 
 		}

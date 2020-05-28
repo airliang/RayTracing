@@ -3,7 +3,7 @@
 #include "stat.h"
 #include <thread>
 #include <vector>
-
+#include "log.h"
 
 namespace AIR
 {
@@ -36,7 +36,7 @@ static std::mutex reportDoneMutex;
 
     int MaxThreadIndex() 
     {
-        //return PbrtOptions.nThreads == 0 ? NumSystemCores() : PbrtOptions.nThreads;
+        //return g_globalOptions.nThreads == 0 ? NumSystemCores() : g_globalOptions.nThreads;
         //pbrt有个配置使用线程的数量，这里先使用系统cpu数量
         return 1;   //先用1条线程测试
         return NumSystemCores();
@@ -92,7 +92,7 @@ static std::mutex reportDoneMutex;
 
     static void workerThreadFunc(int tIndex, std::shared_ptr<Barrier> barrier) 
     {
-        //LOG(INFO) << "Started execution in worker thread " << tIndex;
+        LOG << "Started execution in worker thread " << tIndex << std::endl;
         ThreadIndex = tIndex;
 
         // Give the profiler a chance to do per-thread initialization for
@@ -162,10 +162,11 @@ static std::mutex reportDoneMutex;
 
                 // Update _loop_ to reflect completion of iterations
                 loop.activeWorkers--;
-                if (loop.Finished()) workListCondition.notify_all();
+                if (loop.Finished()) 
+                    workListCondition.notify_all();
             }
         }
-        //LOG(INFO) << "Exiting worker thread " << tIndex;
+        LOG << "Exiting worker thread " << tIndex<<std::endl;
     }
 
     
@@ -258,6 +259,7 @@ static std::mutex reportDoneMutex;
 		std::unique_lock<std::mutex> lock(workListMutex);
 		workListCondition.notify_all();
 
+        //下面代码可以理解成在主线程执行
 		// Help out with parallel loop iterations in the current thread
 		while (!loop.Finished()) {
 			// Run a chunk of loop iterations for _loop_
@@ -292,6 +294,7 @@ static std::mutex reportDoneMutex;
 			// Update _loop_ to reflect completion of iterations
 			loop.activeWorkers--;
 		}
+        
     }
 
     void MergeWorkerThreadStats() 

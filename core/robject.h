@@ -48,6 +48,11 @@ namespace AIR
 		{
 			return material.get();
 		}
+
+		const Transform* GetTransform() const
+		{
+			return mTransform;
+		}
 	private:
 		
 		std::shared_ptr<Shape> shape;

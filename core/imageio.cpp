@@ -1,14 +1,18 @@
 #include "imageio.h"
 #include "fileutil.h"
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
-
+#include "spectrum.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+
+
 //#include "../thirdparty/openexr/OpenEXR/IlmImf/ImfRgba.h"
 //#include "../thirdparty/openexr/OpenEXR/IlmImf/ImfRgbaFile.h"
 
 namespace AIR
 {
+	std::string ImageIO::imageLoadPath;
 	/*
 	static void WriteImageEXR(const std::string &name, const Float *pixels,
 		int xRes, int yRes, int totalXRes, int totalYRes,
@@ -45,6 +49,11 @@ namespace AIR
 		stbi_write_png(name.c_str(), width, height, 3, pixel, 3 * width);
 	}
 
+	void ImageIO::InitPath(const std::string& root)
+	{
+		imageLoadPath = root + "resources\\images\\";
+	}
+
 	void ImageIO::WriteImage(const std::string &name, const Float *rgb, const Bounds2i &outputBounds, const Point2i &totalResolution)
 	{
 		Vector2i resolution = outputBounds.Diagonal();
@@ -70,5 +79,38 @@ namespace AIR
 			}
 			WriteImagePNG(name, rgb8.get(), outputBounds.Diagonal().x, outputBounds.Diagonal().y);
 		}
+	}
+
+	std::unique_ptr<RGBSpectrum[]> ImageIO::ReadImage(const std::string& filename, Point2i& resolution)
+	{
+		unsigned char* rgb;
+		int w, h;
+		int channel;
+
+		// 用stb库加载图片
+		rgb = stbi_load((imageLoadPath + filename).c_str(), &w, &h, &channel, 4);
+		if (!rgb) {
+			throw std::runtime_error(filename + " load fail");
+		}
+		resolution.x = w;
+		resolution.y = h;
+		// 将rgb值转换为RGB光谱
+		RGBSpectrum* ret = new RGBSpectrum[w * h];
+		unsigned char* src = rgb;
+		for (unsigned int y = 0; y < h; ++y) {
+			for (unsigned int x = 0; x < w; ++x, src += 4) {
+				Float c[3];
+				c[0] = src[0] / 255.f;
+				c[1] = src[1] / 255.f;
+				c[2] = src[2] / 255.f;
+				if (channel == 4) {
+					// todo
+				}
+				ret[y * w + x] = RGBSpectrum::FromRGB(c);
+			}
+		}
+		free(rgb);
+		//VLOG(2) << StringPrintf("Read image %s (%d x %d)", name.c_str(), *width, *height);
+		return std::unique_ptr<RGBSpectrum[]>(ret);
 	}
 }

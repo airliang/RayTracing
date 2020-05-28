@@ -37,7 +37,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Iex)
 
 set(CORE_SOURCES 
-#    core/transform.h
+    core/transform.h
 	core/transform.cpp
 	core/shape.cpp
 	core/scene.cpp
@@ -48,22 +48,26 @@ set(CORE_SOURCES
 	core/efloat.cpp
 	core/main.cpp
 	core/spectrum.cpp
-#	core/spectrum.h
+	core/spectrum.h
 	core/camera.h
 	core/camera.cpp
 #	core/sampler.h
 	core/sampler.cpp
 #	core/rng.h
 #	core/filter.h
+	core/texture.h
 	core/atomicfloat.h
 	core/film.cpp
 	core/imageio.cpp
 	core/fileutil.cpp
+	core/bsdf.h
 	core/bsdf.cpp
 	core/memory.cpp
+	core/microfacet.h
 	core/microfacet.cpp
 	core/interaction.cpp
 	core/texture.cpp
+	core/mipmap.h
 	core/mipmap.cpp
 	core/parallelism.cpp
 	core/light.cpp
@@ -76,6 +80,8 @@ set(CORE_SOURCES
 	core/stat.h
 	core/stat.cpp
 	core/runoption.h
+	core/log.h
+	
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -113,9 +119,11 @@ set(MATERIALS_SOURCES
     materials/matte.cpp
 	materials/mirrormaterial.cpp
 	materials/plasticmaterial.cpp
+	materials/glassmaterial.cpp
 )
 
 set(TEXTURES_SOURCES
+    textures/imagetexture.h
     textures/imagetexture.cpp
 	textures/bilerptexture.cpp
 	textures/constanttexture.h
@@ -137,7 +145,6 @@ set(SCENE_SOURCES
     scene/bvhaccel.cpp
 	scene/sceneparser.cpp
 )
-
 
 
 set(SOURCES 
@@ -182,11 +189,25 @@ endif()
 
 # 检查c++编译器标志，设置c++11支持变量
 include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("/std:c++17" COMPILER_SUPPORTS_CXX17)
 CHECK_CXX_COMPILER_FLAG("/std:c++11" COMPILER_SUPPORTS_CXX11)
 CHECK_CXX_COMPILER_FLAG("/std:c++0x" COMPILER_SUPPORTS_CXX0X)
 
 # 使用变量设置编译标志
-if(COMPILER_SUPPORTS_CXX11)
+if (COMPILER_SUPPORTS_CXX17)
+set(CMAKE_CXX_STANDARD 17)
+if (MSVC)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc::__cplusplus /std:c++17")
+#add_compile_options("/wd4819")
+
+
+message("MSVC set c++ 17 compiler.")
+else()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+endif()
+
+message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++17 support.")
+elseif(COMPILER_SUPPORTS_CXX11)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++11")
 elseif(COMPILER_SUPPORTS_CXX0X)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++0x")

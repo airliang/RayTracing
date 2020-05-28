@@ -2,6 +2,8 @@
 
 namespace AIR
 {
+
+    thread_local uint64_t ProfilerState;
 std::vector<std::function<void(StatsAccumulator&)>>* StatRegisterer::funcs;
 static StatsAccumulator statsAccumulator;
 

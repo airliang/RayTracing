@@ -54,5 +54,7 @@ namespace AIR
 		const bool orthogonal = false;
 
 		Transform mTransform;
+		Float lensRadius = 0;
+		Float focalDistance = 0;
 	};
 };

@@ -10,6 +10,7 @@
 
 namespace AIR
 {
+	extern thread_local uint64_t ProfilerState;
 	class StatsAccumulator;
 	class StatRegisterer 
 	{
