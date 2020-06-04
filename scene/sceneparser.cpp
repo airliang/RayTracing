@@ -17,6 +17,7 @@
 #include "../RayTracing.h"
 #include "imageio.h"
 #include "imagetexture.h"
+#include "robject.h"
 
 namespace AIR
 {
@@ -162,14 +163,14 @@ namespace AIR
 		}
 		else if (lightType == LightType::delta_point)
 		{
-			light = std::make_shared<PointLight>(*pTransform, color * I);
+			light = std::make_shared<PointLight>(*pTransform, MediumInterface(), color * I);
 		}
 		else if (lightType == LightType::area)
 		{
 			float radius = 0;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Disk> disk = std::make_shared<Disk>(pTransform, 0, radius, 0, 2.0f * Pi);
-			light = std::make_shared<DiffuseAreaLight>(*pTransform, color * I, 1, disk);
+			light = std::make_shared<DiffuseAreaLight>(*pTransform, MediumInterface(), color * I, 1, disk);
 		}
 
 
@@ -349,20 +350,22 @@ namespace AIR
 
 		if (shapeType == ShapeType::ShapeType_Sphere)
 		{
+			MediumInterface medium;
 			float radius;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, -radius, radius, 2.0f * Pi, pTransform);
-			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform);
+			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform, medium);
 			primitives.push_back(primitive);
 
 			if (isAreaLight)
 			{
-				std::shared_ptr<Light> light = std::make_shared<DiffuseAreaLight>(*pTransform, lightSpectrum * I, 1, shape);
+				std::shared_ptr<Light> light = std::make_shared<DiffuseAreaLight>(*pTransform, medium, lightSpectrum * I, 1, shape);
 				lights.push_back(light);
 			}
 		}
 		else if (shapeType == ShapeType::ShapeType_TriangleMesh || shapeType == ShapeType::ShapeType_Rectangle)
 		{
+			MediumInterface medium;
 			int meshIndex;
 			fs.read((char*)&meshIndex, sizeof(meshIndex));
 
@@ -376,11 +379,11 @@ namespace AIR
 				std::shared_ptr<Shape> shape = std::make_shared<Triangle>(pTransform, mesh, i);
 				if (isAreaLight)
 				{
-					light = std::make_shared<DiffuseAreaLight>(*pTransform, lightSpectrum * I, 1, shape);
+					light = std::make_shared<DiffuseAreaLight>(*pTransform, medium, lightSpectrum * I, 1, shape);
 					lights.push_back(light);
 				}
 				
-				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, std::dynamic_pointer_cast<AreaLight>(light), pTransform);
+				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, std::dynamic_pointer_cast<AreaLight>(light), pTransform, medium);
 				primitives.push_back(primitive);
 				
 			}

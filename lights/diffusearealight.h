@@ -3,18 +3,14 @@
 
 namespace AIR
 {
+	class Shape;
+	class Transform;
 	class DiffuseAreaLight : public AreaLight
 	{
 	public:
 		DiffuseAreaLight(const Transform& LightToWorld,
-			const Spectrum& Lemit, int nSamples, const std::shared_ptr<Shape>& shape) :
-			AreaLight(LightToWorld, nSamples)
-			, Lemit(Lemit)
-			, shape(shape)
-			, area(shape->Area())
-		{
-
-		}
+			const MediumInterface& mediumInterface,
+			const Spectrum& Lemit, int nSamples, const std::shared_ptr<Shape>& shape);
 
 		Spectrum Sample_Li(const Interaction& ref, const Point2f& u,
 			Vector3f* wi, Float* pdf, VisibilityTester* vis) const;

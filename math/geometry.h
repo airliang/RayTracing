@@ -5,6 +5,7 @@
 
 namespace AIR
 {
+	class Medium;
 	class Ray;
 
 	template <typename T>
@@ -412,10 +413,10 @@ namespace AIR
 	class Ray
 	{
 	public:
-		Ray() : tMax(Infinity), time(0.f) { }
+		Ray() : tMax(Infinity), time(0.f), medium(nullptr) { }
 		Ray(const Vector3f &o, const Vector3f &d, Float tMax = Infinity,
-			Float time = 0.f)
-			: o(o), d(d), tMax(tMax), time(time) 
+			Float time = 0.f, const Medium* medium = nullptr)
+			: o(o), d(d), tMax(tMax), time(time) , medium(medium)
 		{ 
 		
 		}
@@ -434,6 +435,7 @@ namespace AIR
 		Vector3f d;
 		mutable Float tMax;
 		Float time;
+		const Medium* medium;
 	};
 
 	class RayDifferential : public Ray 

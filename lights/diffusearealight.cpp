@@ -1,7 +1,20 @@
 ﻿#include "diffusearealight.h"
+#include "transform.h"
+#include "shape.h"
 
 namespace AIR
 {
+	DiffuseAreaLight::DiffuseAreaLight(const Transform& LightToWorld,
+		const MediumInterface& mediumInterface,
+		const Spectrum& Lemit, int nSamples, const std::shared_ptr<Shape>& shape) :
+		AreaLight(LightToWorld, mediumInterface, nSamples)
+		, Lemit(Lemit)
+		, shape(shape)
+		, area(shape->Area())
+	{
+
+	}
+
 	Spectrum DiffuseAreaLight::Sample_Li(const Interaction &ref,
         const Point2f &u, Vector3f *wi, Float *pdf,
         VisibilityTester *vis) const

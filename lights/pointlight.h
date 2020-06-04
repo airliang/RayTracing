@@ -6,8 +6,9 @@ namespace AIR
 	class PointLight : public Light
 	{
 	public:
-		PointLight(const Transform& LightToWorld, const Spectrum& intensity)
-			: Light((int)LightFlags::DeltaPosition, LightToWorld)
+		PointLight(const Transform& LightToWorld,
+			const MediumInterface& mediumInterface, const Spectrum& intensity)
+			: Light((int)LightFlags::DeltaPosition, LightToWorld, mediumInterface)
 			, position(LightToWorld.ObjectToWorldPoint(Point3f::zero))
 			, intensity(intensity)
 		{

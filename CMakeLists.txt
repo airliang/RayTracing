@@ -81,7 +81,8 @@ set(CORE_SOURCES
 	core/stat.cpp
 	core/runoption.h
 	core/log.h
-	
+	core/medium.h
+	core/medium.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h

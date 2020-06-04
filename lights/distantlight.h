@@ -8,7 +8,7 @@ namespace AIR
 	public:
 		DistantLight(const Transform& LightToWorld, const Spectrum& L,
 			const Vector3f& lightDirection)
-			: Light((int)LightFlags::DeltaDirection, LightToWorld)
+			: Light((int)LightFlags::DeltaDirection, LightToWorld, MediumInterface())
 			, L(L)
 			, wLight(LightToWorld.ObjectToWorldVector(lightDirection))
 		{
