@@ -21,7 +21,7 @@ namespace AIR
 		shading.n = normal;
 		shading.dndu = dndu;
 		shading.dndv = dndv;
-		shading.dpdu = dndu;
+		shading.dpdu = dpdu;
 		shading.dpdv = dpdv;
 	}
 

@@ -1,10 +1,10 @@
 #pragma once
 #include "geometry.h"
 #include "interaction.h"
-#include "transform.h"
 
 namespace AIR
 {
+	class Transform;
 
 	class Shape
 	{

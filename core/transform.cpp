@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "Transform.h"
+#include "interaction.h"
 
 namespace AIR
 {

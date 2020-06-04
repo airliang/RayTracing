@@ -1,5 +1,6 @@
 #include "light.h"
 #include "scene.h"
+#include "robject.h"
 
 namespace AIR
 {

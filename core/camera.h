@@ -1,6 +1,8 @@
 ﻿//a perspective camera implementation
 #pragma once
-#include "robject.h"
+//#include "robject.h"
+#include "geometry.h"
+#include "transform.h"
 
 namespace AIR
 {
@@ -12,6 +14,7 @@ namespace AIR
 		Float time;
 	};
 	class Film;
+	class Medium;
 
 	//默认就是一个perspective camera
 	class Camera
@@ -23,7 +26,7 @@ namespace AIR
 		//fov       垂直方向的field of view视口角度，只用于perspective
 		//orthogonal 是否是正交投影
 		Camera(const Transform& transform, const Bounds2f& screenWindow, 
-			Film* film, Float fov, bool orthogonal);
+			Film* film, Float fov, bool orthogonal, const Medium* medium);
 		~Camera()
 		{
 			if (film)
@@ -36,7 +39,7 @@ namespace AIR
 		Float GenerateRayDifferential(const CameraSample& sample, RayDifferential* ray) const;
 
 		static Camera* CreateCamera(const Transform& cameraToWorld, const Bounds2f& screenWindow,
-			Film* film, Float fov, bool orthogonal);
+			Film* film, Float fov, bool orthogonal, const Medium* medium);
 
 		const Transform& CameraToWorld() const
 		{
@@ -56,5 +59,8 @@ namespace AIR
 		Transform mTransform;
 		Float lensRadius = 0;
 		Float focalDistance = 0;
+		//摄像机所处环境的medium，
+		//在camera生成的ray需要携带这个medium
+		const Medium* medium;
 	};
 };

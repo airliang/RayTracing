@@ -2,6 +2,8 @@
 #include "transform.h"
 #include "spectrum.h"
 #include "sampler.h"
+#include "interaction.h"
+#include "medium.h"
 
 namespace AIR
 {
@@ -19,7 +21,7 @@ namespace AIR
 	public:
         virtual ~Light() {}
         Light(int flags, const Transform& LightToWorld,
-            /*const MediumInterface& mediumInterface, */int nSamples = 1)
+            const MediumInterface& mediumInterface, int nSamples = 1)
             : flags(flags), nSamples(std::max(1, nSamples)),
             //mediumInterface(mediumInterface), 
             LightToWorld(LightToWorld)
@@ -85,6 +87,8 @@ namespace AIR
         //may be desirable to trace multiple shadow rays to the light to compute soft shadows; 
         //default value is 1.
         const int nSamples;
+
+        const MediumInterface mediumInterface;
     protected:
         Transform LightToWorld;
 
@@ -113,8 +117,8 @@ namespace AIR
     class AreaLight : public Light
     {
     public:
-        AreaLight(const Transform& LightToWorld, int nSamples) :
-            Light((int)LightFlags::Area, LightToWorld, nSamples)
+        AreaLight(const Transform& LightToWorld, const MediumInterface& medium, int nSamples) :
+            Light((int)LightFlags::Area, LightToWorld, medium, nSamples)
         {
 
         }

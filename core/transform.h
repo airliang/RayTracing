@@ -1,10 +1,11 @@
 #pragma once
 
 #include "matrix.h"
-#include "interaction.h"
+
 
 namespace AIR
 {
+	class Interaction;
 
 	class Transform
 	{

@@ -48,6 +48,12 @@ namespace AIR
 		}
 		r.tMax = tHit;
 		pInteract->primitive = this;
+
+		if (mediumInterface.IsMediumTransition())
+			pInteract->mediumInterface = mediumInterface;
+		else
+			pInteract->mediumInterface = MediumInterface(r.medium);
+
 		return true;
 	}
 

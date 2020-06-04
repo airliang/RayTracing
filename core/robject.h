@@ -4,6 +4,7 @@
 #include "transform.h"
 #include "shape.h"
 #include "geometryparam.h"
+#include "medium.h"
 namespace AIR
 {
 	class Interaction;
@@ -18,10 +19,12 @@ namespace AIR
 		Primitive(const std::shared_ptr<Shape>& shape,
 			const std::shared_ptr<Material>& material,
 			const std::shared_ptr<AreaLight>& areaLight,
-			Transform* pTransform) : shape(shape),
+			Transform* pTransform,
+			const MediumInterface& mediumInterface) : shape(shape),
 			material(material),
 			areaLight(areaLight),
-			mTransform(pTransform)
+			mTransform(pTransform),
+			mediumInterface(mediumInterface)
 		{
 
 		}
@@ -58,7 +61,7 @@ namespace AIR
 		std::shared_ptr<Shape> shape;
 		std::shared_ptr<Material> material;
 		std::shared_ptr<AreaLight> areaLight;
-
+		MediumInterface mediumInterface;
 	protected:
 		Transform* mTransform;
 	};

@@ -164,7 +164,7 @@ namespace AIR
 	{
 		return Camera::CreateCamera(Transform(cameraParams.position, cameraParams.rotation, cameraParams.scale),
 			cameraParams.cropBounds,
-			MakeFilm(), cameraParams.fov, cameraParams.orthogonal);
+			MakeFilm(), cameraParams.fov, cameraParams.orthogonal, nullptr);
 	}
 
 	Film* RenderOptions::MakeFilm()

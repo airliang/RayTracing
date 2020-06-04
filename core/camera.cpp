@@ -1,18 +1,21 @@
 ﻿#include "camera.h"
 #include "film.h"
 #include "sampling.h"
+#include "medium.h"
 
 namespace AIR
 {
 	Camera* Camera::CreateCamera(const Transform& cameraToWorld, 
 		const Bounds2f& screenWindow, 
-		Film* film, Float fov, bool orthogonal)
+		Film* film, Float fov, bool orthogonal,
+		const Medium* medium)
 	{
-		return new Camera(cameraToWorld, screenWindow, film, fov, orthogonal);
+		return new Camera(cameraToWorld, screenWindow, film, fov, orthogonal, medium);
 	}
 
 	Camera::Camera(const Transform& transform, const Bounds2f& screenWindow,
-		Film* film, Float fov, bool orthogonal) : film(film), orthogonal(orthogonal)
+		Film* film, Float fov, bool orthogonal, const Medium* medium) : film(film), orthogonal(orthogonal)
+		, medium(medium)
 	{
 		mTransform = transform;
 		Point2i imageResolution = film->fullResolution;
@@ -54,7 +57,7 @@ namespace AIR
 		*ray = Ray(Point3f(0, 0, 0), Vector3f::Normalize(pCamera));
 
 		ray->time = 0.0f;//Lerp(sample.time, shutterOpen, shutterClose);
-		//ray->medium = medium;
+		ray->medium = medium;
 		*ray = mTransform.ObjectToWorldRay(*ray);
 
 		return 1;
@@ -111,7 +114,7 @@ namespace AIR
 			ray->ryDirection = Vector3f::Normalize(pCamera + dyCamera);
 		}
 		ray->time = 0;// Lerp(sample.time, shutterOpen, shutterClose);
-		//ray->medium = medium;
+		ray->medium = medium;
 		*ray = mTransform.ObjectToWorldRayDiff(*ray);
 
 		/*

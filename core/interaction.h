@@ -1,6 +1,7 @@
 #pragma once
 #include "geometry.h"
 #include "spectrum.h"
+#include "medium.h"
 
 namespace AIR
 {
@@ -20,7 +21,7 @@ namespace AIR
 			shading.n = n;
 			shading.dndu = dndu;
 			shading.dndv = dndv;
-			shading.dpdu = dndu;
+			shading.dpdu = dpdu;
 			shading.dpdv = dpdv;
 		}
 
@@ -106,6 +107,8 @@ namespace AIR
 		const Primitive* primitive = nullptr;
 		BSDF* bsdf = nullptr;
 		const Shape* shape = nullptr;
+
+		MediumInterface mediumInterface;
 	};
 };
 
