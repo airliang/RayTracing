@@ -29,7 +29,7 @@ namespace AIR
 		//一次bounce要把该次bounce的radiance贡献加到上次的贡献里
 		for (int bounces = 0; ; ++bounces)
 		{
-			Interaction isect;
+			SurfaceInteraction isect;
 			bool foundIntersection = scene.Intersect(ray, &isect);
 
 			//bounces == 0时，

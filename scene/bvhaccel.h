@@ -7,7 +7,7 @@ namespace AIR
 	struct BVHPrimitiveInfo;
 	struct LinearBVHNode;
 
-	class Interaction;
+	class SurfaceInteraction;
 
 	class BVHAccel : public Primitive
 	{
@@ -18,7 +18,7 @@ namespace AIR
 			SplitMethod splitMethod = SplitMethod::SAH);
 		~BVHAccel();
 
-		bool Intersect(const Ray& ray, Interaction* isect) const;
+		bool Intersect(const Ray& ray, SurfaceInteraction* isect) const;
 		bool IntersectP(const Ray& ray) const;
 
 		static std::shared_ptr<Primitive> CreateBVHAccelerator(

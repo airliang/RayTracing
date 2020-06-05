@@ -15,7 +15,7 @@ namespace AIR
 		return phiMax * (radius * radius - innerRadius * innerRadius) * 0.5f;
 	}
 
-	bool Disk::Intersect(const Ray& r, Float* tHit, Interaction* isect) const
+	bool Disk::Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect) const
 	{
 		//把ray 转换到object space
 		Vector3f oErr, dErr;
@@ -70,7 +70,7 @@ namespace AIR
 		Vector3f dndu = Vector3f::zero;
 		Vector3f dndv = Vector3f::zero;
 		Vector3f pError(0, 0, 0);
-		*isect = mTransform->ObjectToWorldInteraction(Interaction(pHit, pError, Point2f(u, v),
+		*isect = mTransform->ObjectToWorldInteraction(SurfaceInteraction(pHit, pError, Point2f(u, v),
 			-rayObject.d, dpdu, dpdv, dndu, dndv,
 			rayObject.time, this));
 

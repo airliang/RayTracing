@@ -35,7 +35,7 @@ namespace AIR
 		virtual Interaction Sample(const Point2f& u, Float* pdf) const = 0;
 
 		//在shape上任意采样一点的pdf
-		virtual Float Pdf(const Interaction&) const 
+		virtual Float Pdf(const Interaction&) const
 		{ 
 			return 1 / Area(); 
 		}
@@ -70,7 +70,7 @@ namespace AIR
 		//r 世界坐标系下的射线
 		//tHit 相交后的射线到交点的距离
 		//isect 相交后返回的交点信息
-		virtual bool Intersect(const Ray &r, Float *tHit, Interaction *isect) const = 0;
+		virtual bool Intersect(const Ray &r, Float *tHit, SurfaceInteraction *isect) const = 0;
 	protected:
 		
 	};

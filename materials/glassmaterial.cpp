@@ -21,7 +21,7 @@ namespace AIR
 
 	}
 
-	void GlassMaterial::ComputeScatteringFunctions(Interaction* si,
+	void GlassMaterial::ComputeScatteringFunctions(SurfaceInteraction* si,
 		MemoryArena& arena, TransportMode mode,
 		bool allowMultipleLobes) const
 	{

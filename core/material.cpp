@@ -2,7 +2,7 @@
 
 namespace AIR
 {
-	void Material::Bump(const std::shared_ptr<Texture<Float>> &d, Interaction *si)
+	void Material::Bump(const std::shared_ptr<Texture<Float>> &d, SurfaceInteraction *si)
 	{
 		//p'(u,v) = p(u,v) + d(u,v)n(u,v)   1式
 		//对1式求u偏导
@@ -12,8 +12,8 @@ namespace AIR
 
 		float displace = d->Evaluate(*si);
 
-		//因为很多方法和Interaction耦合起来，所以必须这样做
-		Interaction deltaSi = *si;
+		//因为很多方法和SurfaceInteraction耦合起来，所以必须这样做
+		SurfaceInteraction deltaSi = *si;
 		//delta u
 		float du = 0.5f * (std::abs(si->dudx) + std::abs(si->dudy));
 		if (du == 0)
@@ -23,7 +23,7 @@ namespace AIR
 		deltaSi.normal = Vector3f::Normalize(Vector3f::Cross(si->shading.dpdu, si->shading.dpdv) + du * si->dndu);
 		float uDisplace = d->Evaluate(deltaSi);
 
-		//Interaction deltaVsi = *si;
+		//SurfaceInteraction deltaVsi = *si;
 		float dv = 0.5f * (std::abs(si->dvdx) + std::abs(si->dvdy)); //delta v
 		if (dv == 0)
 			dv = 0.01f;

@@ -11,7 +11,7 @@ UVMapping2D::UVMapping2D(Float su, Float sv, Float du, Float dv) : su(su)
 
 }
 
-Point2f UVMapping2D::Map(const Interaction& si, Vector2f *dstdx, Vector2f* dstdy) const
+Point2f UVMapping2D::Map(const SurfaceInteraction& si, Vector2f *dstdx, Vector2f* dstdy) const
 {
     //u = u(x, y), s = s(u, v)
     //多元复合函数求导
@@ -57,7 +57,7 @@ Point2f SphericalMapping2D::Sphere(const Vector3f& p, const Matrix4f& w2t) const
 	return Point2f(theta * InvPi, phi * Inv2Pi);
 }
 
-Point2f SphericalMapping2D::Map(const Interaction& si, Vector2f *dstdx, Vector2f* dstdy) const
+Point2f SphericalMapping2D::Map(const SurfaceInteraction& si, Vector2f *dstdx, Vector2f* dstdy) const
 {
     // ∂s   sphere(p + Δ∂p/∂x) - sphere(p)
     // -- = ------------------------------

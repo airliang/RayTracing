@@ -14,7 +14,7 @@ namespace AIR
 			const std::shared_ptr<Texture<Float>>& bumpMap,
 			bool remapRoughness);
 
-		void ComputeScatteringFunctions(Interaction* si,
+		void ComputeScatteringFunctions(SurfaceInteraction* si,
 			MemoryArena& arena, TransportMode mode,
 			bool allowMultipleLobes) const;
 	private:

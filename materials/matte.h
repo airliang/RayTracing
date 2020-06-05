@@ -12,7 +12,7 @@ namespace AIR
 			const std::shared_ptr<Texture<Float>>& sigma,
 			const std::shared_ptr<Texture<Float>>& bumpMap)
 			: Kd(Kd), sigma(sigma), bumpMap(bumpMap) { }
-		void ComputeScatteringFunctions(Interaction *si,
+		void ComputeScatteringFunctions(SurfaceInteraction *si,
 			MemoryArena &arena, TransportMode mode,
 			bool allowMultipleLobes) const;
 

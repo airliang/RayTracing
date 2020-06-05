@@ -14,7 +14,7 @@ namespace AIR
 		Ray ray(p0.SpawnRayTo(p1));
 		Spectrum Tr(1.f);
 		while (true) {
-			Interaction isect;
+			SurfaceInteraction isect;
 			bool hitSurface = scene.Intersect(ray, &isect);
 			// Handle opaque surface along ray's path
 			if (hitSurface && isect.primitive->GetMaterial() != nullptr)

@@ -29,7 +29,7 @@ namespace AIR
 
         Bounds3f ObjectBound() const;
         Bounds3f WorldBound() const;
-        bool Intersect(const Ray& ray, Float* tHit, Interaction* isect) const;
+        bool Intersect(const Ray& ray, Float* tHit, SurfaceInteraction* isect) const;
         bool IntersectP(const Ray& ray) const;
 
         //返回三角形的面积
@@ -44,7 +44,7 @@ namespace AIR
         Float SolidAngle(const Point3f& p, int nSamples = 0) const;
 
     private:
-        bool IntersectMoller(const Ray& ray, Float* tHit, Interaction* isect) const;
+        bool IntersectMoller(const Ray& ray, Float* tHit, SurfaceInteraction* isect) const;
         // Triangle Private Methods
         void GetUVs(Point2f uv[3]) const 
         {

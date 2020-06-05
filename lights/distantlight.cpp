@@ -11,7 +11,7 @@ namespace AIR
 
 		//在worldbound的外面来模拟该光源的位置
 		Point3f lightPos = ref.interactPoint + wLight * (2 * worldRadius);
-		*vis = VisibilityTester(ref, Interaction(lightPos, ref.time));
+		*vis = VisibilityTester(ref, Interaction(lightPos, ref.time, mediumInterface));
 
 		return L;
 	}

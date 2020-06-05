@@ -44,8 +44,8 @@ namespace AIR
 			return phiMax * radius * (yMax - yMin);
 		}
 
-		Float Pdf(const Interaction &ref, const Vector3f &wi) const;
-		bool Intersect(const Ray& ray, Float* tHit, Interaction* isect) const;
+		Float Pdf(const Interaction& ref, const Vector3f &wi) const;
+		bool Intersect(const Ray& ray, Float* tHit, SurfaceInteraction* isect) const;
 		bool IntersectP(const Ray& ray) const;
     private:
 		Float radius;

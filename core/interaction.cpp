@@ -4,13 +4,12 @@
 
 namespace AIR
 {
-	Interaction::Interaction(const Point3f& p, const Vector3f& pError,
+	SurfaceInteraction::SurfaceInteraction(const Point3f& p, const Vector3f& pError,
 		const Point2f& uv, const Vector3f& wo,
 		const Vector3f& dpdu, const Vector3f& dpdv,
 		const Vector3f& dndu, const Vector3f& dndv, Float time,
-		const Shape* sh) : interactPoint(p), time(time), pError(pError),
-		wo(Vector3f::Normalize(wo)),
-		normal(Vector3f::Normalize(Vector3f::Cross(dpdu, dpdv))),
+		const Shape* sh) : Interaction(p, Vector3f::Normalize(Vector3f::Cross(dpdu, dpdv)), pError, wo, time,
+			nullptr),
 		uv(uv),
 		dpdu(dpdu),
 		dpdv(dpdv),
@@ -19,13 +18,13 @@ namespace AIR
 		shape(shape)
 	{
 		shading.n = normal;
-		shading.dndu = dndu;
-		shading.dndv = dndv;
 		shading.dpdu = dpdu;
 		shading.dpdv = dpdv;
+		shading.dndu = dndu;
+		shading.dndv = dndv;
 	}
 
-	void Interaction::SetGeometryShading(const Vector3f &dpdus, const Vector3f &dpdvs, const Vector3f &dndus, const Vector3f &dndvs, bool orientationIsAuthoritative)
+	void SurfaceInteraction::SetGeometryShading(const Vector3f &dpdus, const Vector3f &dpdvs, const Vector3f &dndus, const Vector3f &dndvs, bool orientationIsAuthoritative)
 	{
 		shading.dndu = dndus;
 		shading.dndv = dndvs;
@@ -35,7 +34,7 @@ namespace AIR
 		shading.n = Vector3f::Normalize(Vector3f::Cross(shading.dpdu, shading.dpdv));
     }
 
-	void Interaction::ComputeScatteringFunctions(const RayDifferential& ray,
+	void SurfaceInteraction::ComputeScatteringFunctions(const RayDifferential& ray,
 		MemoryArena& arena,
 		bool allowMultipleLobes,
 		TransportMode mode) {
@@ -44,7 +43,7 @@ namespace AIR
 			allowMultipleLobes);
 	}
 
-	void Interaction::ComputeDifferentials(const RayDifferential& ray) const
+	void SurfaceInteraction::ComputeDifferentials(const RayDifferential& ray) const
 	{
 		if (ray.hasDifferentials)
 		{
@@ -119,7 +118,7 @@ namespace AIR
 	
 	}
 
-	Spectrum Interaction::Le(const Vector3f& w) const
+	Spectrum SurfaceInteraction::Le(const Vector3f& w) const
 	{
 		const AreaLight* pLight = primitive->GetAreaLight();
 		if (pLight)

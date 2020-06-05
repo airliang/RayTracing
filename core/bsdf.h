@@ -198,7 +198,7 @@ class BSDF
 {
 public:
     // BSDF Public Methods
-    BSDF(const Interaction &si, Float eta = 1)
+    BSDF(const SurfaceInteraction &si, Float eta = 1)
         : eta(eta),
 		  ng(si.normal),
           ns(si.shading.n),

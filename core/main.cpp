@@ -60,7 +60,7 @@ int main(int argc, char *argv[]) {
 	Transform transform;
 	Sphere sphere(1.0f, 0, Pi, 2.0f * Pi, &transform);
 	Ray ray(Vector3f(0, 0, -2.0f), Vector3f::forward);
-	Interaction interaction;
+	SurfaceInteraction interaction;
 	Float tHit;
 	sphere.Intersect(ray, &tHit, &interaction);
 

@@ -19,7 +19,7 @@ namespace AIR
 
 		Float Area() const;
 
-		bool Intersect(const Ray& r, Float* tHit, Interaction* isect) const;
+		bool Intersect(const Ray& r, Float* tHit, SurfaceInteraction* isect) const;
 
 		virtual Interaction Sample(const Point2f& u, Float* pdf) const;
 

@@ -59,7 +59,7 @@ namespace AIR
         return Bounds3f::Union(Bounds3f(mTransform->ObjectToWorldPoint(p0), mTransform->ObjectToWorldPoint(p1)), mTransform->ObjectToWorldPoint(p2));
     }
 
-    bool Triangle::Intersect(const Ray& ray, Float* tHit, Interaction* isect) const
+    bool Triangle::Intersect(const Ray& ray, Float* tHit, SurfaceInteraction* isect) const
     {
 		//ProfilePhase p(Prof::TriIntersect);
 		//++nTests;
@@ -221,7 +221,7 @@ namespace AIR
 		//}
 
 		// Fill in _SurfaceInteraction_ from triangle hit
-		*isect = Interaction(pHit, pError, uvHit, -ray.d, dpdu, dpdv,
+		*isect = SurfaceInteraction(pHit, pError, uvHit, -ray.d, dpdu, dpdv,
 			Vector3f(0, 0, 0), Vector3f(0, 0, 0), ray.time,
 			this);
 
@@ -324,7 +324,7 @@ namespace AIR
 		return true;
     }
 
-    bool Triangle::IntersectMoller(const Ray& ray, Float* tHit, Interaction* isect) const
+    bool Triangle::IntersectMoller(const Ray& ray, Float* tHit, SurfaceInteraction* isect) const
     {
 		//这里和pbrt有所不同，用的是Möller-Trumbore algorithm
 		//
@@ -439,7 +439,7 @@ namespace AIR
 		Point3f pHit = w * A + u * B + v * C;
 		Point2f uvHit = w * uv[0] + u * uv[1] + v * uv[2];
 
-		*isect = Interaction(pHit, pError, uvHit, -ray.d, dpdu, dpdv,
+		*isect = SurfaceInteraction(pHit, pError, uvHit, -ray.d, dpdu, dpdv,
 			Vector3f(0, 0, 0), Vector3f(0, 0, 0), ray.time, this);
 
 		//isect的normal由dpdu dpdv的纹理坐标cross求得，但实质上并不是由纹理坐标决定normal的
@@ -619,7 +619,7 @@ namespace AIR
         Point3f p1w = mTransform->ObjectToWorldPoint(p1);
         Point3f p2w = mTransform->ObjectToWorldPoint(p2);
 
-        Interaction it;
+		Interaction it;
         Float w = 1.0f - b.x - b.y;
         //既然是均匀采样，那么u,v,w如何分配都不重要了，因为最后都是三角形内均匀分布的一点。
         it.interactPoint = p0w * w + p1w * b.x + p2w * b.y;

@@ -16,7 +16,7 @@ public:
     //temp1 = (1 - s)v00 + s·v01
     //temp2 = (1 - s)v10 + s·v11
     //result = (1 - t)temp1 + t·temp2
-    virtual T Evaluate(const Interaction &si) const
+    virtual T Evaluate(const SurfaceInteraction &si) const
     {
         Vector2f dstdx, dstdy;
         Point2f st = mapping->Map(si, &dstdx, &dstdy);

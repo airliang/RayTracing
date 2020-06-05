@@ -16,7 +16,7 @@ namespace AIR
 
 		}
 
-		void ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,
+		void ComputeScatteringFunctions(SurfaceInteraction* si, MemoryArena& arena,
 			TransportMode mode,
 			bool allowMultipleLobes) const;
 	protected:

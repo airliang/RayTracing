@@ -196,10 +196,10 @@ namespace AIR
 			localToWorld._M[0][2] * x + localToWorld._M[1][2] * y + localToWorld._M[2][2] * z);
 	}
 
-	Interaction Transform::ObjectToWorldInteraction(const Interaction& isect) const
+	SurfaceInteraction Transform::ObjectToWorldInteraction(const SurfaceInteraction& isect) const
 	{
 		const Matrix4x4& localToWorld = LocalToWorld();
-		Interaction ret;
+		SurfaceInteraction ret;
 		ret.interactPoint = TransformPoint(localToWorld, isect.interactPoint, isect.pError, &ret.pError);
 		ret.normal = ObjectToWorldNormal(isect.normal);
 		ret.wo = TransformVector(localToWorld, isect.wo);

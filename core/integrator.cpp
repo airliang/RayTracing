@@ -102,7 +102,7 @@ Spectrum EstimateDirect(const Interaction& it,
 		Spectrum f;
 		if (it.IsSurfaceInteraction())
 		{
-			const Interaction& isect = (const Interaction&)it;
+			const SurfaceInteraction& isect = (const SurfaceInteraction&)it;
 			f = isect.bsdf->f(isect.wo, wi, bsdfFlags) * Vector3f::AbsDot(wi, isect.shading.n);
 			scatteringPdf = isect.bsdf->Pdf(isect.wo, wi, bsdfFlags);
 		}
@@ -158,7 +158,7 @@ Spectrum EstimateDirect(const Interaction& it,
 		if (it.IsSurfaceInteraction())
 		{
 			BxDFType sampledType;
-			const Interaction &isect = (const Interaction &)it;
+			const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
 			f = isect.bsdf->Sample_f(isect.wo, &wi, uScattering, &scatteringPdf, bsdfFlags, &sampledType);
 			sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
 		}
@@ -183,7 +183,7 @@ Spectrum EstimateDirect(const Interaction& it,
 			//wi确认后，要检测这个wi和场景的arealight有没相交
 			//假设和场景的某个geometry相交，这个geometry自带了arealight
 			//就需要返回对应的radiance
-			Interaction lightIsect;
+			SurfaceInteraction lightIsect;
 			Ray ray = it.SpawnRay(wi);
 			Spectrum Tr(1.f);
 			bool foundSurfaceInteraction = handleMedia ?
@@ -294,7 +294,7 @@ void SamplerIntegrator::Render(const Scene& scene)
 	camera->film->WriteImage();
 }
 
-Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential& ray, const Interaction& isect, const Scene& scene,
+Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential& ray, const SurfaceInteraction& isect, const Scene& scene,
 	Sampler& sampler, MemoryArena& arena, int depth) const
 {
     //出射光wo
@@ -342,7 +342,7 @@ Spectrum SamplerIntegrator::SpecularReflect(const RayDifferential& ray, const In
 	return Spectrum(0.0f);
 }
 
-Spectrum SamplerIntegrator::SpecularTransmit(const RayDifferential& ray, const Interaction& isect,
+Spectrum SamplerIntegrator::SpecularTransmit(const RayDifferential& ray, const SurfaceInteraction& isect,
 	const Scene& scene, Sampler& sampler, MemoryArena& arena, int depth) const
 {
 	Vector3f wo = isect.wo;

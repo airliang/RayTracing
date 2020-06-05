@@ -30,7 +30,7 @@ public:
         s_textures.erase(s_textures.begin(), s_textures.end());
 	}
 
-	Treturn Evaluate(const Interaction& si) const;
+	Treturn Evaluate(const SurfaceInteraction& si) const;
 
 	//static Mipmap<Tmemory>* GetTexture(const TexInfo& texInfo);
 private:

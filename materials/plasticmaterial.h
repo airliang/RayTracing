@@ -17,7 +17,7 @@ namespace AIR
 			: kd(Kd), ks(Ks), roughness(roughness), bumpMap(bumpMap),
 			remapRoughness(remapRoughness) { }
 
-		void ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,
+		void ComputeScatteringFunctions(SurfaceInteraction* si, MemoryArena& arena,
 			TransportMode mode, bool allowMultipleLobes) const;
 	private:
 		std::shared_ptr<Texture<Spectrum>> kd, ks;

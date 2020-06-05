@@ -15,7 +15,7 @@ namespace AIR
 
 	}
 
-	Spectrum DiffuseAreaLight::Sample_Li(const Interaction &ref,
+	Spectrum DiffuseAreaLight::Sample_Li(const Interaction&ref,
         const Point2f &u, Vector3f *wi, Float *pdf,
         VisibilityTester *vis) const
     {
@@ -44,7 +44,7 @@ namespace AIR
         return shape->Pdf(isect, wi);
         Ray ray(isect.interactPoint, wi);
         Float tHit;
-        Interaction it;
+        SurfaceInteraction it;
         if (shape->Intersect(ray, &tHit, &it))
         {
             Float rSquare = Vector3f::DistanceSquare(isect.interactPoint, it.interactPoint);

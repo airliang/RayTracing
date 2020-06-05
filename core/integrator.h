@@ -10,6 +10,7 @@ namespace AIR
 	class Scene;
 	class Distribution1D;
 	class Light;
+	class Interaction;
 
 	//在处理一个pixel的sampler的时候，(一个pixel的sampler有多个样本)
 	//遍历场景所有light,根据渲染方程计算所有light的积分
@@ -86,10 +87,10 @@ namespace AIR
 			Sampler& sampler, MemoryArena& arena,
 			int depth = 0) const = 0;
 
-		Spectrum SpecularReflect(const RayDifferential& ray, const Interaction& isect,
+		Spectrum SpecularReflect(const RayDifferential& ray, const SurfaceInteraction& isect,
 			const Scene& scene, Sampler& sampler, MemoryArena& arena, int depth) const;
 
-		Spectrum SpecularTransmit(const RayDifferential& ray, const Interaction& isect,
+		Spectrum SpecularTransmit(const RayDifferential& ray, const SurfaceInteraction& isect,
 			const Scene& scene, Sampler& sampler, MemoryArena& arena, int depth) const;
 	protected:
 		// SamplerIntegrator Protected Data

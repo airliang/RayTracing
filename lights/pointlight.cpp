@@ -7,7 +7,7 @@ namespace AIR
 	{
 		*wi = Vector3f::Normalize(position - ref.interactPoint);
 		*pdf = 1.0f;
-		*vis = VisibilityTester(ref, Interaction(position, ref.time));
+		*vis = VisibilityTester(ref, Interaction(position, ref.time, mediumInterface));
 
 		return intensity / Vector3f::DistanceSquare(position, ref.interactPoint);
 	}

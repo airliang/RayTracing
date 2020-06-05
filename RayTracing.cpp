@@ -45,7 +45,7 @@ int main(int argc, char* argv[])
 	Transform transform;
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, -1.0f, 1.0f, 2.0f * Pi, &transform);
 	Ray ray(Vector3f(0, 0, 2.0f), -Vector3f::forward);
-	Interaction interaction;
+	SurfaceInteraction interaction;
 	Float tHit;
 	sphere->Intersect(ray, &tHit, &interaction);
 

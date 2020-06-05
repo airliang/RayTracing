@@ -45,7 +45,8 @@ namespace AIR
 	{
 	public:
 		virtual ~Medium() { }
-		//衰减公式
+		//透过率，ray从起点到ray.tMax的距离的radiance的透过率
+		//即transmittance
 		virtual Spectrum Tr(const Ray& ray, Sampler& sampler) const = 0;
 		virtual Spectrum Sample(const Ray& ray, Sampler& sampler,
 			MemoryArena& arena, MediumInteraction* mi) const = 0;

@@ -7,8 +7,8 @@ namespace AIR
 	class SpotLight : public Light
 	{
 	public:
-		SpotLight(const Transform& LightToWorld, const Spectrum& intensity, 
-			Float totalWidth, Float falloffStart) : Light((int)LightFlags::DeltaPosition, LightToWorld)
+		SpotLight(const Transform& LightToWorld, const MediumInterface& m, const Spectrum& intensity,
+			Float totalWidth, Float falloffStart) : Light((int)LightFlags::DeltaPosition, LightToWorld, m)
 			, position(LightToWorld.ObjectToWorldPoint(Point3f::zero))
 			, intensity(intensity)
 			, cosTotalWidth(std::cos(totalWidth))

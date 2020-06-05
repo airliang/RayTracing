@@ -4,7 +4,7 @@
 
 namespace AIR
 {
-	void MatteMaterial::ComputeScatteringFunctions(Interaction *si, MemoryArena &arena, TransportMode mode, bool allowMultipleLobes) const
+	void MatteMaterial::ComputeScatteringFunctions(SurfaceInteraction *si, MemoryArena &arena, TransportMode mode, bool allowMultipleLobes) const
 	{
 		si->bsdf = ARENA_ALLOC(arena, BSDF)(*si);
 

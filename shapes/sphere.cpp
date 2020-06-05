@@ -10,7 +10,7 @@ namespace AIR
 	}
 
 	
-	bool Sphere::Intersect(const Ray &r, Float *tHit, Interaction *isect) const
+	bool Sphere::Intersect(const Ray &r, Float *tHit, SurfaceInteraction *isect) const
 	{
 		Vector3f oErr, dErr;
 		Ray ray = mTransform->WorldToObjectRay(r, &oErr, &dErr);
@@ -192,7 +192,7 @@ namespace AIR
 		Vector3f pError = gamma(5) * Vector3f::Abs(pHit);
 
 		//把interaction转回世界坐标
-		*isect = mTransform->ObjectToWorldInteraction(Interaction(pHit, Vector3f::Normalize(Vector3f::Cross(dpdu, dpdv)), Vector2f(u, v), pError, -ray.d, dpdu, dpdv, dndu, dndv, ray.time));
+		*isect = mTransform->ObjectToWorldInteraction(SurfaceInteraction(pHit, pError, Point2f(u, v), -ray.d, dpdu, dpdv, dndu, dndv, ray.time, this));
 		*tHit = (Float)tShapeHit;
 		return true;
 	}
@@ -392,7 +392,7 @@ namespace AIR
 		return it;
 	}
 
-	Float Sphere::Pdf(const Interaction &ref, const Vector3f &wi) const
+	Float Sphere::Pdf(const Interaction&ref, const Vector3f &wi) const
 	{
 		Point3f pCenter = mTransform->ObjectToWorldPoint(Vector3f::zero);
 		// Return uniform PDF if point is inside sphere

@@ -65,7 +65,7 @@ Mipmap<Tmemory>* ImageTexture<Tmemory, Treturn>::GetTexture(const std::string& f
 }
 
 template <typename Tmemory, typename Treturn>
-Treturn ImageTexture<Tmemory, Treturn>::Evaluate(const Interaction& si) const
+Treturn ImageTexture<Tmemory, Treturn>::Evaluate(const SurfaceInteraction& si) const
 {
     Vector2f dstdx, dstdy;
     //根据表面算出纹理坐标st

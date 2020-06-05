@@ -35,7 +35,7 @@ namespace AIR
 	{
 		Spectrum L(0.f);
 		// Find closest ray intersection or return background radiance
-		Interaction isect;
+		SurfaceInteraction isect;
 		if (!scene.Intersect(ray, &isect)) 
 		{
 			//如果没有和场景中任何的geometry相交

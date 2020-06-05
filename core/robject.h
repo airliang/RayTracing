@@ -7,14 +7,14 @@
 #include "medium.h"
 namespace AIR
 {
-	class Interaction;
+	class SurfaceInteraction;
 	class MemoryArena;
 	class Material;
 	class AreaLight;
 	class Primitive
 	{
 	public:
-		Primitive(){}
+		Primitive() : mTransform(nullptr) {}
 
 		Primitive(const std::shared_ptr<Shape>& shape,
 			const std::shared_ptr<Material>& material,
@@ -31,12 +31,12 @@ namespace AIR
 		virtual ~Primitive();
 
 		virtual Bounds3f WorldBound() const;
-		virtual bool Intersect(const Ray &r, Interaction *) const;
+		virtual bool Intersect(const Ray &r, SurfaceInteraction *) const;
 		virtual bool IntersectP(const Ray &r) const;
 		
 		//initializes representations of the light-scattering properties of the 
 		//material at the intersection point on the surface.
-		virtual void ComputeScatteringFunctions(Interaction* isect,
+		virtual void ComputeScatteringFunctions(SurfaceInteraction* isect,
 			MemoryArena& arena, TransportMode mode,
 			bool allowMultipleLobes) const;
 

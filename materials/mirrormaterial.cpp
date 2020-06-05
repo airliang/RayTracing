@@ -3,7 +3,7 @@
 
 namespace AIR
 {
-	void MirrorMaterial::ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,
+	void MirrorMaterial::ComputeScatteringFunctions(SurfaceInteraction* si, MemoryArena& arena,
 		TransportMode mode, bool allowMultipleLobes) const
 	{
 		si->bsdf = ARENA_ALLOC(arena, BSDF)(*si);

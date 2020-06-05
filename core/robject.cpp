@@ -39,7 +39,7 @@ namespace AIR
 		return mTransform->ObjectToWorldBound(shape->ObjectBound());
 	}
 
-	bool Primitive::Intersect(const Ray &r, Interaction* pInteract) const
+	bool Primitive::Intersect(const Ray &r, SurfaceInteraction* pInteract) const
 	{
 		Float tHit = 0;
 		if (!shape->Intersect(r, &tHit, pInteract))
@@ -49,9 +49,10 @@ namespace AIR
 		r.tMax = tHit;
 		pInteract->primitive = this;
 
+		//如果媒介是有不同过渡的，那么用这个primtive的mediumInterface
 		if (mediumInterface.IsMediumTransition())
 			pInteract->mediumInterface = mediumInterface;
-		else
+		else   //否则优先用ray携带的medium
 			pInteract->mediumInterface = MediumInterface(r.medium);
 
 		return true;
@@ -63,7 +64,7 @@ namespace AIR
 	}
 
 	void Primitive::ComputeScatteringFunctions(
-		Interaction* isect, MemoryArena& arena, TransportMode mode,
+		SurfaceInteraction* isect, MemoryArena& arena, TransportMode mode,
 		bool allowMultipleLobes) const {
 		if (material)
 			material->ComputeScatteringFunctions(isect, arena, mode,

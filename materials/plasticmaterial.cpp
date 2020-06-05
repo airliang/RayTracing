@@ -3,7 +3,7 @@
 
 namespace AIR
 {
-	void PlasticMaterial::ComputeScatteringFunctions(Interaction* si, MemoryArena& arena,
+	void PlasticMaterial::ComputeScatteringFunctions(SurfaceInteraction* si, MemoryArena& arena,
 		TransportMode mode, bool allowMultipleLobes) const
 	{
 		//bumpmap‘› ±≤ª”√

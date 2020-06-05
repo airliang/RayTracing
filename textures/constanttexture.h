@@ -15,7 +15,7 @@ public:
     }
     ~ConstantTexture() {}
 
-    virtual T Evaluate(const Interaction &si) const
+    virtual T Evaluate(const SurfaceInteraction &si) const
     {
         return value;
     }

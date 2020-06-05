@@ -5,7 +5,7 @@
 
 namespace AIR
 {
-	class Interaction;
+	class SurfaceInteraction;
 
 	class Transform
 	{
@@ -54,7 +54,7 @@ namespace AIR
 		RayDifferential ObjectToWorldRayDiff(const RayDifferential& ray) const;
 		Bounds3f ObjectToWorldBound(const Bounds3f& bound) const;
 		//Vector3f ObjectToWorldPoint(const Vector3f& point, const Vector3f& ptError, Vector3f* absError) const;
-		Interaction ObjectToWorldInteraction(const Interaction& isect) const;
+		SurfaceInteraction ObjectToWorldInteraction(const SurfaceInteraction& isect) const;
 
 		bool SwapsHandedness() const 
 		{

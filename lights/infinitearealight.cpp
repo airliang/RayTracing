@@ -81,7 +81,7 @@ namespace AIR
             *pdf = mapPdf / (2.0f * Pi * sinTheta);
 
         *vis = VisibilityTester(ref, Interaction(ref.p + *wi * (2 * worldRadius),
-            ref.time));
+            ref.time, mediumInterface));
 
         return Spectrum(Lmap->Lookup(uv), SpectrumType::Illuminant);
 	}

@@ -2,7 +2,7 @@
 
 namespace AIR
 {
-	Interaction Shape::Sample(const Interaction& ref, const Point2f& u,
+    Interaction Shape::Sample(const Interaction& ref, const Point2f& u,
 		Float* pdf) const
 	{
         Interaction intr = Sample(u, pdf);
@@ -32,7 +32,7 @@ namespace AIR
     {
 		Ray ray = ref.SpawnRay(wi);
 		Float tHit;
-		Interaction isectLight;
+		SurfaceInteraction isectLight;
 		// Ignore any alpha textures used for trimming the shape when performing
 		// this intersection. Hack for the "San Miguel" scene, where this is used
 		// to make an invisible area light.

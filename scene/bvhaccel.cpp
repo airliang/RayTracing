@@ -315,7 +315,7 @@ namespace AIR
 		return node;
 	}
 
-	bool BVHAccel::Intersect(const Ray& ray, Interaction* isect) const
+	bool BVHAccel::Intersect(const Ray& ray, SurfaceInteraction* isect) const
 	{
 		bool hit = false;
 		Vector3f invDir(1 / ray.d.x, 1 / ray.d.y, 1 / ray.d.z);
