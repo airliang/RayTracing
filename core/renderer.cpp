@@ -13,6 +13,8 @@
 #include "sceneparser.h"
 #include "stat.h"
 #include "log.h"
+#include "volpathintegrator.h"
+#include "randomsampler.h"
 
 namespace AIR
 {
@@ -157,6 +159,10 @@ namespace AIR
 		{
 			integrator = new PathIntegrator(maxDepth, camera, sampler, pixelBounds);
 		}
+		else if (IntegratorName == "volpath")
+		{
+			integrator = new VolPathIntegrator(maxDepth, camera, sampler, pixelBounds);
+		}
 		return integrator;
 	}
 
@@ -213,6 +219,10 @@ namespace AIR
 			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
 				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
 		}
+		else if (samplerParams.samplerName == "random")
+		{
+			sampler = new RandomSampler(samplerParams.spp, 0);
+		}
 		else
 		{
 			samplerParams.stratified.dimension = 4;
@@ -237,15 +247,15 @@ namespace AIR
 	void Renderer::ParseScene(const std::string& filename)
 	{
 		SceneParser parser;
-		parser.Load(filename, g_renderOptions.lights, g_renderOptions.primitives);
+		parser.Load(filename, g_renderOptions.cameraParams, 
+			g_renderOptions.lights, g_renderOptions.primitives, g_renderOptions.mediums);
 
 		g_renderOptions.cameraParams.cropBounds = Bounds2f(Point2f(-1, -1), Point2f(1, 1));
-		g_renderOptions.cameraParams.fov = parser.GetCameraFOV();
-		g_renderOptions.cameraParams.orthogonal = parser.IsCameraOrtho();
-		g_renderOptions.cameraParams.position = parser.GetCameraTransform()->Position();
-		g_renderOptions.cameraParams.rotation = parser.GetCameraTransform()->Rotation();
-		g_renderOptions.cameraParams.scale = Vector3f::one;
-		//g_renderOptions.cameraParams.imageResolution = Point2i(800, 600);
+		//g_renderOptions.cameraParams.fov = parser.GetCameraFOV();
+		//g_renderOptions.cameraParams.orthogonal = parser.IsCameraOrtho();
+		//g_renderOptions.cameraParams.position = parser.GetCameraTransform()->Position();
+		//g_renderOptions.cameraParams.rotation = parser.GetCameraTransform()->Rotation();
+		//g_renderOptions.cameraParams.scale = Vector3f::one;
 
 		g_renderOptions.sceneFile = filename;
 	}

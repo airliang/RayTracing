@@ -446,8 +446,8 @@ namespace AIR
 		}
 
 		RayDifferential(const Vector3f &o, const Vector3f &d,
-			Float tMax = Infinity, Float time = 0.f)
-			: Ray(o, d, tMax, time) 
+			Float tMax = Infinity, Float time = 0.f, const Medium* medium = nullptr)
+			: Ray(o, d, tMax, time, medium) 
 		{
 			hasDifferentials = false;
 		}

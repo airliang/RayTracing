@@ -48,6 +48,11 @@ namespace AIR
 		//透过率，ray从起点到ray.tMax的距离的radiance的透过率
 		//即transmittance
 		virtual Spectrum Tr(const Ray& ray, Sampler& sampler) const = 0;
+
+		//在ray的方向上采样一个mediumInteraction
+		//sampler 采样器
+		//return value:
+		//透射率/pdf
 		virtual Spectrum Sample(const Ray& ray, Sampler& sampler,
 			MemoryArena& arena, MediumInteraction* mi) const = 0;
 

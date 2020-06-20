@@ -109,6 +109,10 @@ Spectrum EstimateDirect(const Interaction& it,
 		else
 		{
 			//处理参与介质的radiance
+			const MediumInteraction& mi = (const MediumInteraction&)it;
+			Float p = mi.phase->Sample_p(mi.wo, &wi, uScattering);
+			f = Spectrum(p);
+			scatteringPdf = p;
 		}
 			
 
@@ -164,6 +168,11 @@ Spectrum EstimateDirect(const Interaction& it,
 		}
         else
 		{
+			//处理参与介质的radiance
+			const MediumInteraction& mi = (const MediumInteraction&)it;
+			Float p = mi.phase->Sample_p(mi.wo, &wi, uScattering);
+			f = Spectrum(p);
+			scatteringPdf = p;
 		}
 
 		//f如果是没贡献，用前面的Light采样结果就可以了

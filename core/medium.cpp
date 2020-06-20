@@ -12,9 +12,9 @@ namespace AIR
 	Float HenyeyGreenstein::Sample_p(const Vector3f& wo, Vector3f* wi, const Point2f& sample) const
 	{
 		//pHG就是ω的概率密度函数
-		//                      1 - g²
+		//                                1 - g²
 		//p(ω) = pHG(cosθ) = -----------------------------
-		//              4π(1 + g² + 2gcosθ)^(3/2)
+		//                      4π(1 + g² + 2gcosθ)^(3/2)
 		//根据概率密度函数转换
 		//p(θ,φ) = sinθp(ω)
 		//边际概率密度求p(θ)

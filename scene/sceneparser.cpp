@@ -18,9 +18,15 @@
 #include "imageio.h"
 #include "imagetexture.h"
 #include "robject.h"
+#include "homogeneousmedium.h"
 
 namespace AIR
 {
+	enum MediumType
+	{
+		homogenous,
+		heterogeneous,
+	};
 	enum LightType
 	{
 		delta_distant,
@@ -76,8 +82,10 @@ namespace AIR
 		ImageMapping_Spherical,
 	};
 
-	bool SceneParser::Load(const std::string& file, std::vector<std::shared_ptr<Light>>& lights,
-		std::vector<std::shared_ptr<Primitive>>& primitives)
+	bool SceneParser::Load(const std::string& file, CameraParam& cameraParam,
+		std::vector<std::shared_ptr<Light>>& lights,
+		std::vector<std::shared_ptr<Primitive>>& primitives,
+		std::vector<std::shared_ptr<Medium>>& mediums)
 	{
 		size_t ex = file.find_last_of('.');
 		if (ex >= 0)
@@ -93,14 +101,23 @@ namespace AIR
 
 		fs.open(file.c_str(), std::ios::in | std::ios::binary);
 
+		int mediumsNum = 0;
+		fs.read((char*)&mediumsNum, sizeof(mediumsNum));
+		for (int i = 0; i < mediumsNum; ++i)
+		{
+			std::shared_ptr<Medium> medium = ParseMedium(fs);
+			if (medium != NULL)
+				mediums.push_back(medium);
+		}
+
 		//read the camera's transform
-		ParseCamera(fs);
+		ParseCamera(cameraParam, fs);
 
 		int lightsNum = 0;
 		fs.read((char*)&lightsNum, sizeof(lightsNum));
 		for (int i = 0; i < lightsNum; ++i)
 		{
-			std::shared_ptr<Light> light = ParseLight(fs);
+			std::shared_ptr<Light> light = ParseLight(fs, mediums);
 			if (light != NULL)
 				lights.push_back(light);
 		}
@@ -109,7 +126,7 @@ namespace AIR
 		fs.read((char*)&shapesNum, sizeof(shapesNum));
 		for (int i = 0; i < shapesNum; ++i)
 		{
-			ParsePrimitive(fs, primitives, lights);
+			ParsePrimitive(fs, primitives, lights, mediums);
 		}
 
 
@@ -117,11 +134,44 @@ namespace AIR
 		return false;
 	}
 
-	void SceneParser::ParseCamera(std::ifstream& fs)
+	std::shared_ptr<Medium> SceneParser::ParseMedium(std::ifstream& fs)
+	{
+		char szName[128] = { 0 };
+		fs.read(szName, sizeof(szName));
+		int mediumType = 0;
+		fs.read((char*)&mediumType, sizeof(mediumType));
+
+		std::shared_ptr<Medium> medium = nullptr;
+
+		if (mediumType == homogenous)
+		{
+			RGBSpectrum sigma_a;
+			fs.read((char*)&sigma_a, sizeof(RGBSpectrum));
+
+			RGBSpectrum sigma_s;
+			fs.read((char*)&sigma_s, sizeof(RGBSpectrum));
+
+			float g;
+			fs.read((char*)&g, sizeof(float));
+			medium = std::make_shared<HomogeneousMedium>(sigma_a, sigma_s, g);
+		}
+
+		return medium;
+	}
+
+	void SceneParser::ParseCamera(CameraParam& cameraParam, std::ifstream& fs)
 	{
 		cameraTransform = ParseTransform(fs);
-		fs.read((char*)&cameraFOV, sizeof(cameraFOV));
-		fs.read((char*)&cameraOrtho, sizeof(cameraOrtho));
+		float fov = 0;
+		fs.read((char*)&fov, sizeof(fov));
+		cameraParam.fov = fov;
+		fs.read((char*)&cameraParam.orthogonal, sizeof(bool));
+
+		cameraParam.position = cameraTransform->Position();
+		cameraParam.rotation = cameraTransform->Rotation();
+		cameraParam.scale = Vector3f::one;
+
+		//fs.read((char*)&cameraParam.mediumIndex, sizeof(int));
 	}
 
 	Transform* SceneParser::ParseTransform(std::ifstream& fs) const
@@ -143,7 +193,8 @@ namespace AIR
 		return TransformCache::GetInstance().Lookup(transform);
 	}
 
-	std::shared_ptr<Light> SceneParser::ParseLight(std::ifstream& fs) const
+	std::shared_ptr<Light> SceneParser::ParseLight(std::ifstream& fs, 
+		std::vector<std::shared_ptr<Medium>>& mediums) const
 	{
 		std::shared_ptr<Light> light = nullptr;
 		Transform* pTransform = ParseTransform(fs);
@@ -155,6 +206,15 @@ namespace AIR
 		fs.read((char*)&intensity, sizeof(intensity));
 		Spectrum I(intensity);
 
+		Medium* medium = nullptr;
+		int mediumIndex = -1;
+		fs.read((char*)&mediumIndex, sizeof(int));
+
+		if (mediumIndex > -1)
+		{
+			medium = mediums[mediumIndex].get();
+		}
+
 		if (lightType == LightType::delta_distant)
 		{
 			Vector3f dir;
@@ -163,14 +223,14 @@ namespace AIR
 		}
 		else if (lightType == LightType::delta_point)
 		{
-			light = std::make_shared<PointLight>(*pTransform, MediumInterface(), color * I);
+			light = std::make_shared<PointLight>(*pTransform, MediumInterface(medium), color * I);
 		}
 		else if (lightType == LightType::area)
 		{
 			float radius = 0;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Disk> disk = std::make_shared<Disk>(pTransform, 0, radius, 0, 2.0f * Pi);
-			light = std::make_shared<DiffuseAreaLight>(*pTransform, MediumInterface(), color * I, 1, disk);
+			light = std::make_shared<DiffuseAreaLight>(*pTransform, MediumInterface(medium), color * I, 1, disk);
 		}
 
 
@@ -182,8 +242,6 @@ namespace AIR
 		std::shared_ptr<Material> material;
 		int materialType;
 		fs.read((char*)&materialType, sizeof(materialType));
-
-		
 
 		if (materialType == MaterialType::MaterialType_Matte)
 		{
@@ -330,7 +388,8 @@ namespace AIR
 	}
 
 	void SceneParser::ParsePrimitive(std::ifstream& fs, std::vector<std::shared_ptr<Primitive>>& primitives
-		, std::vector<std::shared_ptr<Light>>& lights) const
+		, std::vector<std::shared_ptr<Light>>& lights,
+		std::vector<std::shared_ptr<Medium>>& mediums) const
 	{
 
 		int shapeType;
@@ -338,10 +397,34 @@ namespace AIR
 
 		Transform* pTransform = ParseTransform(fs);
 
+		
+		MediumInterface mi;
+		bool hasMedium = false;
+		fs.read((char*)&hasMedium, sizeof(hasMedium));
+		if (hasMedium)
+		{
+			int insideIndex = -1;
+			fs.read((char*)&insideIndex, sizeof(int));
+
+			if (insideIndex >= 0)
+			{
+				mi.inside = mediums[insideIndex].get();
+			}
+
+			int outsideIndex = -1;
+			fs.read((char*)&outsideIndex, sizeof(int));
+
+			if (outsideIndex >= 0)
+			{
+				mi.outside = mediums[outsideIndex].get();
+			}
+		}
+
 		bool isAreaLight = false;
 		fs.read((char*)&isAreaLight, sizeof(isAreaLight));
 		RGBSpectrum lightSpectrum;
 		float I = 1.0f;
+
 		if (isAreaLight)
 		{
 			fs.read((char*)&lightSpectrum, sizeof(lightSpectrum));
@@ -350,26 +433,33 @@ namespace AIR
 
 		if (shapeType == ShapeType::ShapeType_Sphere)
 		{
-			MediumInterface medium;
+			
 			float radius;
 			fs.read((char*)&radius, sizeof(radius));
 			std::shared_ptr<Shape> shape = std::make_shared<Sphere>(radius, -radius, radius, 2.0f * Pi, pTransform);
-			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, ParseMaterial(fs), nullptr, pTransform, medium);
+
+			bool hasMaterial = false;
+			fs.read((char*)&hasMaterial, sizeof(hasMaterial));
+
+			std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, 
+				hasMaterial ? ParseMaterial(fs) : nullptr, nullptr, pTransform, mi);
 			primitives.push_back(primitive);
 
 			if (isAreaLight)
 			{
-				std::shared_ptr<Light> light = std::make_shared<DiffuseAreaLight>(*pTransform, medium, lightSpectrum * I, 1, shape);
+				std::shared_ptr<Light> light = std::make_shared<DiffuseAreaLight>(*pTransform, mi, lightSpectrum * I, 1, shape);
 				lights.push_back(light);
 			}
 		}
 		else if (shapeType == ShapeType::ShapeType_TriangleMesh || shapeType == ShapeType::ShapeType_Rectangle)
 		{
-			MediumInterface medium;
+
 			int meshIndex;
 			fs.read((char*)&meshIndex, sizeof(meshIndex));
 
-			std::shared_ptr<Material> material = ParseMaterial(fs);
+			bool hasMaterial = false;
+			fs.read((char*)&hasMaterial, sizeof(hasMaterial));
+			std::shared_ptr<Material> material = hasMaterial ? ParseMaterial(fs) : nullptr;
 
 			std::shared_ptr<TriangleMesh> mesh = triangleMeshes[meshIndex];
 
@@ -379,11 +469,11 @@ namespace AIR
 				std::shared_ptr<Shape> shape = std::make_shared<Triangle>(pTransform, mesh, i);
 				if (isAreaLight)
 				{
-					light = std::make_shared<DiffuseAreaLight>(*pTransform, medium, lightSpectrum * I, 1, shape);
+					light = std::make_shared<DiffuseAreaLight>(*pTransform, mi, lightSpectrum * I, 1, shape);
 					lights.push_back(light);
 				}
 				
-				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, std::dynamic_pointer_cast<AreaLight>(light), pTransform, medium);
+				std::shared_ptr<Primitive> primitive = std::make_shared<Primitive>(shape, material, std::dynamic_pointer_cast<AreaLight>(light), pTransform, mi);
 				primitives.push_back(primitive);
 				
 			}

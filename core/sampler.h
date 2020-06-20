@@ -12,6 +12,7 @@ namespace AIR
 	{
 	public:
 		Sampler(int64_t samplersPerPixel) : samplesPerPixel(samplersPerPixel)
+			, currentPixelSampleIndex(0), array1DOffset(0), array2DOffset(0)
 		{
 
 		}

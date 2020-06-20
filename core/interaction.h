@@ -138,6 +138,23 @@ namespace AIR
 		BSDF* bsdf = nullptr;
 		const Shape* shape = nullptr;
 	};
+
+	class MediumInteraction : public Interaction
+	{
+	public:
+		// MediumInteraction Public Methods
+		MediumInteraction() : phase(nullptr) {}
+		MediumInteraction(const Point3f& p, const Vector3f& wo, Float time,
+			const Medium* medium, const PhaseFunction* phase)
+			: Interaction(p, wo, time, medium), phase(phase) {}
+		bool IsValid() const 
+		{ 
+			return phase != nullptr; 
+		}
+
+		// MediumInteraction Public Data
+		const PhaseFunction* phase;
+	};
 };
 
 

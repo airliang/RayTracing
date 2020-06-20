@@ -58,6 +58,7 @@ namespace AIR
 		Bounds2f cropBounds;
 		//Point2i  imageResolution;
 		Float    fov;
+		//int      mediumIndex;
 		bool     orthogonal;
 	};
 
@@ -83,8 +84,10 @@ namespace AIR
 
 	struct SamplerParam
 	{
-		SamplerParam() {}
+		SamplerParam() : spp(16)
+		{}
 		std::string samplerName;
+		int spp;  //samples per pixel
 		union
 		{
 			struct
@@ -152,6 +155,7 @@ namespace AIR
 		//std::map<std::string, std::shared_ptr<Medium>> namedMedia;
 		std::vector<std::shared_ptr<Light>> lights;
 		std::vector<std::shared_ptr<Primitive>> primitives;
+		std::vector<std::shared_ptr<Medium>> mediums;
 		//std::map<std::string, std::vector<std::shared_ptr<Primitive>>> instances;
 		//std::vector<std::shared_ptr<Primitive>>* currentInstance = nullptr;
 		int maxDepth = 5;

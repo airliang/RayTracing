@@ -26,6 +26,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lights)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/integrators)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/textures)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/medium)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
@@ -114,6 +115,8 @@ set(MATH_SOURCES
 
 set(SAMPLERS_SOURCES
     samplers/stratified.cpp
+	samplers/randomsampler.h
+	samplers/randomsampler.cpp
 )
 
 set(MATERIALS_SOURCES
@@ -140,6 +143,7 @@ set(LIGHTS_SOURCES
 set(INTEGRATORS_SOURCES
     integrators/directlightingintegrator.cpp
 	integrators/pathintegrator.cpp
+	integrators/volpathintegrator.cpp
     )
 
 set(SCENE_SOURCES
@@ -147,6 +151,10 @@ set(SCENE_SOURCES
 	scene/sceneparser.cpp
 )
 
+set(MEDIUM_SOURCES
+    medium/homogeneousmedium.cpp
+	medium/homogeneousmedium.h
+)
 
 set(SOURCES 
     RayTracing.h
@@ -154,13 +162,14 @@ set(SOURCES
     ${CORE_SOURCES}
 	${SHAPES_SOURCES}
 	${MATH_SOURCES}
-	${SAMPLER_SOURCES}
+	${SAMPLERS_SOURCES}
 	${FILTER_SOURCES}
 	${MATERIALS_SOURCES}
 	${TEXTURES_SOURCES}
 	${LIGHTS_SOURCES}
 	${INTEGRATORS_SOURCES}
 	${SCENE_SOURCES}
+	${MEDIUM_SOURCES}
 	)
 
 file(GLOB STB_FILES "thirdparty/stb/*.h" "third/stb/*.c")

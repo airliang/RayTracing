@@ -107,13 +107,13 @@ namespace AIR
 			o += d * dt;
 			tMax -= dt;
 		}
-		return Ray(o, d, tMax, ray.time);
+		return Ray(o, d, tMax, ray.time, ray.medium);
 	}
 
 	RayDifferential Transform::ObjectToWorldRayDiff(const RayDifferential& ray) const
 	{
 		Ray tr = ObjectToWorldRay(Ray(ray));
-		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time);
+		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time, tr.medium);
 		ret.hasDifferentials = ray.hasDifferentials;
 		ret.rxOrigin = ObjectToWorldPoint(ray.rxOrigin);
 		ret.ryOrigin = ObjectToWorldPoint(ray.ryOrigin);
@@ -155,13 +155,13 @@ namespace AIR
 			tMax -= dt;
 		}
 
-		return Ray(o, d, tMax, ray.time);
+		return Ray(o, d, tMax, ray.time, ray.medium);
 	}
 
 	RayDifferential Transform::WorldToObjectRayDiff(const RayDifferential& ray) const
 	{
 		Ray tr = WorldToObjectRay(Ray(ray));
-		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time);
+		RayDifferential ret(tr.o, tr.d, tr.tMax, tr.time, tr.medium);
 		ret.hasDifferentials = ray.hasDifferentials;
 		ret.rxOrigin = WorldToObjectPoint(ray.rxOrigin);
 		ret.ryOrigin = WorldToObjectPoint(ray.ryOrigin);
