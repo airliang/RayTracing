@@ -409,6 +409,7 @@ namespace AIR
 	typedef Vector2f Point2f;
 	typedef Vector2i Point2i;
 	typedef Vector3f Point3f;
+	typedef Vector3i Point3i;
 
 	class Ray
 	{
@@ -891,6 +892,12 @@ namespace AIR
 		ret.pMin = Max(b1.pMin, b2.pMin);
 		ret.pMax = Min(b1.pMax, b2.pMax);
 		return ret;
+	}
+
+	template <typename T>
+	bool InsideExclusive(const Vector2<T>& pt, const Bounds2<T>& b) {
+		return (pt.x >= b.pMin.x && pt.x < b.pMax.x&& pt.y >= b.pMin.y &&
+			pt.y < b.pMax.y);
 	}
 
 	//切线空间里统一z向上

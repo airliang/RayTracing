@@ -75,6 +75,7 @@ set(CORE_SOURCES
 	core/sampling.h
 	core/sampling.cpp
 	core/fresnelreflection.cpp
+	core/integrator.h
 	core/integrator.cpp
 	core/renderer.cpp
 	core/renderer.h
@@ -84,6 +85,8 @@ set(CORE_SOURCES
 	core/log.h
 	core/medium.h
 	core/medium.cpp
+	core/lightdistribution.h
+	core/lightdistribution.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h

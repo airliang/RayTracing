@@ -164,6 +164,7 @@ Spectrum EstimateDirect(const Interaction& it,
 			BxDFType sampledType;
 			const SurfaceInteraction &isect = (const SurfaceInteraction &)it;
 			f = isect.bsdf->Sample_f(isect.wo, &wi, uScattering, &scatteringPdf, bsdfFlags, &sampledType);
+			f *= Vector3f::AbsDot(wi, isect.shading.n);
 			sampledSpecular = (sampledType & BSDF_SPECULAR) != 0;
 		}
         else
@@ -222,6 +223,18 @@ Spectrum EstimateDirect(const Interaction& it,
 	return Ld;
 }
 
+std::unique_ptr<Distribution1D> ComputeLightPowerDistribution(
+	const Scene& scene) 
+{
+	if (scene.lights.empty()) 
+		return nullptr;
+	std::vector<Float> lightPower;
+	for (const auto& light : scene.lights)
+		lightPower.push_back(light->Power().y());
+	return std::unique_ptr<Distribution1D>(
+		new Distribution1D(&lightPower[0], lightPower.size()));
+}
+
 void SamplerIntegrator::Render(const Scene& scene)
 {
 	Preprocess(scene, *sampler);
@@ -262,6 +275,10 @@ void SamplerIntegrator::Render(const Scene& scene)
 		{
 			//生成该pixel的samples
 			tileSampler->StartPixel(pixel);
+
+			if (!InsideExclusive(pixel, pixelBounds))
+				continue;
+
 			do 
 			{
 				//生成当前pixel的cameraSample

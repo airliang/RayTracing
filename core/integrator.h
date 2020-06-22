@@ -4,11 +4,10 @@
 #include "sampler.h"
 #include "spectrum.h"
 
-
 namespace AIR
 {
 	class Scene;
-	class Distribution1D;
+	struct Distribution1D;
 	class Light;
 	class Interaction;
 
@@ -50,6 +49,9 @@ namespace AIR
 		const Scene& scene, Sampler& sampler,
 		MemoryArena& arena, bool handleMedia = false,
 		bool specular = false);
+
+	std::unique_ptr<Distribution1D> ComputeLightPowerDistribution(
+		const Scene& scene);
 
 	//积分器基类
 	//pbrt中，到达摄像机的radiance都是通过bsdf计算出来
