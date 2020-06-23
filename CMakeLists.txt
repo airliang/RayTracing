@@ -28,6 +28,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/textures)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/medium)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog/include)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/OpenEXR/config)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/IlmBase/Half)
@@ -177,6 +178,11 @@ set(SOURCES
 
 file(GLOB STB_FILES "thirdparty/stb/*.h" "third/stb/*.c")
 foreach(_file IN ITEMS ${STB_FILES})
+    list(APPEND SOURCES ${_file})
+endforeach()
+
+file(GLOB SPDLOG_FILES "thirdparty/spdlog/include/spdlog/*.h" "third/spdlog/*.c" "third/spdlog/src/*.cpp")
+foreach(_file IN ITEMS ${SPDLOG_FILES})
     list(APPEND SOURCES ${_file})
 endforeach()
 

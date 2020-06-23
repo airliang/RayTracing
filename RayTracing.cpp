@@ -15,12 +15,13 @@
 #include "log.h"
 #include "imageio.h"
 #include <filesystem>
+#include "spdlog/spdlog.h"
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
 {
 
-	cout << "Hello CMake。" << endl;
+	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
 	auto forward = Vector3f::forward;
 	forward = forward.Normalize();
 	cout << "sizeof(matrix4x4)=" << sizeof(Matrix4x4) <<endl;
