@@ -1,7 +1,9 @@
 ﻿#pragma once
-#include "../RayTracing.h"
+//#include "../RayTracing.h"
 #include "geometry.h"
+#include "rng.h"
 #include <vector>
+
 
 namespace AIR
 {
@@ -161,7 +163,7 @@ namespace AIR
 		//P(θ) = ∫[0, θ]p(θ)dθ = (1 - cosθ)/2 = u.x    => cosθ = 1 - 2u.x
 		//P(φ|θ) = ∫[0, φ]p(φ|θ)dφ = φ/2π = u.y      => φ = 2πu.y 
 
-		Float z = 1 - 2 * u.x;
+		Float z = 1.0f - 2.0f * u.x;
 		Float sintheta = std::sqrt(std::max(0.0f, (1.0f - z * z)));
 		Float phi = Pi * 2.0f * u.y;
 		Float cosPhi = std::cos(phi);
@@ -303,5 +305,18 @@ namespace AIR
 	{
 		Float f = nf * fPdf, g = ng * gPdf;
 		return (f * f) / (f * f + g * g);
+	}
+
+	// Sampling Inline Functions
+	//随机交换samp里的顺序
+	template <typename T>
+	void Shuffle(T* samp, int count, int nDimensions, RNG& rng) 
+	{
+		for (int i = 0; i < count; ++i) 
+		{
+			int other = i + rng.UniformUInt32(count - i);
+			for (int j = 0; j < nDimensions; ++j)
+				std::swap(samp[nDimensions * i + j], samp[nDimensions * other + j]);
+		}
 	}
 }

@@ -92,7 +92,7 @@ static std::mutex reportDoneMutex;
 
     static void workerThreadFunc(int tIndex, std::shared_ptr<Barrier> barrier) 
     {
-        LOG << "Started execution in worker thread " << tIndex << std::endl;
+        //LOG << "Started execution in worker thread " << tIndex << std::endl;
         ThreadIndex = tIndex;
 
         // Give the profiler a chance to do per-thread initialization for
@@ -166,7 +166,7 @@ static std::mutex reportDoneMutex;
                     workListCondition.notify_all();
             }
         }
-        LOG << "Exiting worker thread " << tIndex<<std::endl;
+        //LOG << "Exiting worker thread " << tIndex<<std::endl;
     }
 
     

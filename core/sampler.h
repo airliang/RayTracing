@@ -82,4 +82,52 @@ namespace AIR
 		int current1DDimension = 0, current2DDimension = 0;
 		RNG rng;
 	};
+
+	class GlobalSampler : public Sampler
+	{
+	public:
+		GlobalSampler(int64_t samplesPerPixel) : Sampler(samplesPerPixel) 
+		{
+		}
+		void StartPixel(const Point2i&);
+		bool SetSampleNumber(int64_t sampleNum);
+		bool StartNextSample();
+		Float Get1D();
+		Point2f Get2D();
+
+		//获得当前像素对应的sample index
+		//假如image大小是2 x 3，
+		//当前像素是(1,0)，要得到当前像素的第0个sample，
+		//调用的是GetIndexForSample(0) = 1 
+		//        GetIndexForSample(1) = 7 
+		//@param sampleNum  当前像素的第sampleNum个sample
+		//@return   当前像素对应的sample的global index
+		virtual int64_t GetIndexForSample(int64_t sampleNum) const = 0;
+
+		//获得第index个sample中的第dimension个 sample的值
+		//由于sample的值必须是0 - 1中，
+		//所以返回的sample必须也是0 - 1之间，但由于sample在pixelcoordinate里，
+		//返回值要减去pixel的整数
+		//例如2 x 3的image，
+		//halton生成的第4个sample的pixelcoordinate是(0.25, 1.33333)，
+		//那SampleDimension(4, 1) = 1.33333 - 1 = 0.33333
+		//@param  index  当前像素对应的sample的global index
+		//@param  dimension 当前像素的sample的维度
+		//@return 样本的值[0,1)
+		virtual Float SampleDimension(int64_t index, int dimension) const = 0;
+	protected:
+	private:
+		//当前样本的维度
+		int dimension;
+
+		//当前像素的当前样本在global的index
+		//
+		int64_t intervalSampleIndex;
+		//这里为何=5？
+		static const int arrayStartDim = 5;
+
+		//样本结束的维度，注意，pbrbook用dimension来表示长度
+		//实际是样本的个数
+		int arrayEndDim;
+	};
 }

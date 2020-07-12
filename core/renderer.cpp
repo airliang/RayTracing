@@ -286,7 +286,7 @@ namespace AIR
 		if (scene && integrator)
 			integrator->Render(*scene.get());
 		
-		LOG << "integrator->Render done!" << std::endl;
+		//LOG << "integrator->Render done!" << std::endl;
 
 		MergeWorkerThreadStats();
         ReportThreadStats();

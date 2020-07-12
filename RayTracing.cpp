@@ -20,20 +20,23 @@ using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
 {
-
-	spdlog::info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
-	auto forward = Vector3f::forward;
-	forward = forward.Normalize();
-	cout << "sizeof(matrix4x4)=" << sizeof(Matrix4x4) <<endl;
-	cout << "sizeof(quaternion)=" << sizeof(Quaternion) <<endl;
-	cout << "sizeof(matrix3x3)=" << sizeof(Matrix3x3) << endl;
-	cout << "sizeof(Vector3f)=" << sizeof(Vector3f) << endl;
-	cout << "sizeof(Vector2f)=" << sizeof(Vector2f) << endl;
-	cout << "sizeof(Sphere)=" << sizeof(Sphere) << endl;
-	cout << "sizeof(GeometryParam)=" << sizeof(GeometryParam) << endl;
-	cout << "sizeof(Transform)=" << sizeof(Transform) << endl;
-	cout << "sizeof(RGBSpectrum)=" << sizeof(RGBSpectrum) << endl;
-	cout << "machine epsilon=" << MachineEpsilon << endl;
+	Log::Init();
+	Log::Info("Welcome to spdlog version {}.{}.{}  !", SPDLOG_VER_MAJOR, SPDLOG_VER_MINOR, SPDLOG_VER_PATCH);
+	int testLogVar = 1000;
+	Log::Error("HaltonSampler can only sample {}{} ",
+		"dimensions.", testLogVar);
+	//auto forward = Vector3f::forward;
+	//forward = forward.Normalize();
+	//cout << "sizeof(matrix4x4)=" << sizeof(Matrix4x4) <<endl;
+	//cout << "sizeof(quaternion)=" << sizeof(Quaternion) <<endl;
+	//cout << "sizeof(matrix3x3)=" << sizeof(Matrix3x3) << endl;
+	//cout << "sizeof(Vector3f)=" << sizeof(Vector3f) << endl;
+	//cout << "sizeof(Vector2f)=" << sizeof(Vector2f) << endl;
+	//cout << "sizeof(Sphere)=" << sizeof(Sphere) << endl;
+	//cout << "sizeof(GeometryParam)=" << sizeof(GeometryParam) << endl;
+	//cout << "sizeof(Transform)=" << sizeof(Transform) << endl;
+	//cout << "sizeof(RGBSpectrum)=" << sizeof(RGBSpectrum) << endl;
+	//cout << "machine epsilon=" << MachineEpsilon << endl;
 
 	std::string directory = DirectoryContaining("scene.rt");
 
@@ -42,6 +45,7 @@ int main(int argc, char* argv[])
 	std::string rootPath = path.string();
 	int index = rootPath.find("bin");
 	rootPath = rootPath.substr(0, index);
+	Log::Info("Application root path is:{}", rootPath);
 
 	Transform transform;
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, -1.0f, 1.0f, 2.0f * Pi, &transform);
@@ -95,7 +99,7 @@ int main(int argc, char* argv[])
 	Renderer::GetInstance().ParseScene(filenames[0]);
 	Renderer::GetInstance().Run();
 	Renderer::GetInstance().Cleanup();
-	LOG << "render completed!" << endl;
+	//LOG << "render completed!" << endl;
 	system("pause");
 	return 0;
 }

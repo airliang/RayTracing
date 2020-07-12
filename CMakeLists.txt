@@ -55,7 +55,8 @@ set(CORE_SOURCES
 	core/camera.cpp
 #	core/sampler.h
 	core/sampler.cpp
-#	core/rng.h
+	core/rng.h
+	core/log.h
 #	core/filter.h
 	core/texture.h
 	core/atomicfloat.h
@@ -84,10 +85,13 @@ set(CORE_SOURCES
 	core/stat.cpp
 	core/runoption.h
 	core/log.h
+	core/log.cpp
 	core/medium.h
 	core/medium.cpp
 	core/lightdistribution.h
 	core/lightdistribution.cpp
+	core/lowdiscrepancy.h
+	core/lowdiscrepancy.cpp
     )
 
 set(SHAPES_SOURCES  shapes/geometryparam.h
@@ -121,6 +125,8 @@ set(SAMPLERS_SOURCES
     samplers/stratified.cpp
 	samplers/randomsampler.h
 	samplers/randomsampler.cpp
+	samplers/haltonsampler.h
+	samplers/haltonsampler.cpp
 )
 
 set(MATERIALS_SOURCES

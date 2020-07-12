@@ -12,16 +12,25 @@ enum class TransportMode { Radiance, Importance };
 //在栈里alloc，不需要free
 #define ALLOCA(TYPE, COUNT) (TYPE *) alloca((COUNT) * sizeof(TYPE))
 
-#ifdef _MSC_VER
 
-#endif
-
-#ifdef __GNUC__
-
+#if defined(__GNUC__)
+#define F_INLINE                inline __attribute__((always_inline))
+#define NO_INLINE               __attribute__((noinline))
+#define EXPECT_TAKEN(a)        __builtin_expect(!!(a), true)
+#define EXPECT_NOT_TAKEN(a)    __builtin_expect(!!(a), false)
+#elif defined(_MSC_VER)
+#define F_INLINE                __forceinline
+#define NO_INLINE               __declspec(noinline)
+#define MM_ALIGN16             __declspec(align(16))
+#define EXPECT_TAKEN(a)        (a)
+#define EXPECT_NOT_TAKEN(a)    (a)
+#else
+#error Unsupported compiler!
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
 #define IS_WINDOWS
+#define NOMINMAX
 #endif
 
 #ifndef L1_CACHE_LINE_SIZE
