@@ -65,6 +65,8 @@ set(CORE_SOURCES
 	core/fileutil.cpp
 	core/bsdf.h
 	core/bsdf.cpp
+	core/bssrdf.h
+	core/bssrdf.cpp
 	core/memory.cpp
 	core/microfacet.h
 	core/microfacet.cpp

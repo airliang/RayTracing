@@ -3,6 +3,7 @@
 #include "light.h"
 #include "interaction.h"
 #include "bsdf.h"
+#include "bssrdf.h"
 
 namespace AIR
 {
@@ -102,7 +103,30 @@ namespace AIR
 					etaScale *= (Vector3f::Dot(wo, isect.normal) > 0) ? (eta * eta) : 1 / (eta * eta);
 				}
 				ray = isect.SpawnRay(wi);
+
+
+				if (isect.bssrdf != nullptr && (flags & BSDF_TRANSMISSION))
+				{
+					SurfaceInteraction siIncident;
+					//处理bssrdf的输出
+					Spectrum sss = isect.bssrdf->Sample_S(scene, sampler.Get1D(),
+						sampler.Get2D(), arena, &siIncident, &pdf);
+
+					if (sss.IsBlack() || pdf == 0)
+						break;
+					beta *= sss / pdf;
+
+					L += beta * UniformSampleOneLight(siIncident, scene, arena, sampler, true, nullptr);
+
+					Spectrum f = siIncident.bsdf->Sample_f(siIncident.wo, &wi, sampler.Get2D(),
+						&pdf, BSDF_ALL, &flags);
+
+					beta *= f * Vector3f::AbsDot(siIncident.shading.n, wi) / pdf;
+					ray = siIncident.SpawnRay(wi);
+				}
 			}
+
+			
 
 			Spectrum rrBeta = beta * etaScale;
 			if (rrBeta.MaxComponentValue() < rrThreshold && bounces > 3) 

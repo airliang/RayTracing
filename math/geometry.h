@@ -253,6 +253,12 @@ namespace AIR
 			return *this;
 		}
 		Vector3<T> operator-() const { return Vector3<T>(-x, -y, -z); }
+
+		Vector3<T> operator%(const Vector3<T>& b) const
+		{ 
+			return Vector3<T>(y * b.z - z * b.y, z * b.x - x * b.z, x * b.y - y * b.x); 
+		}
+
 		Float LengthSquared() const { return x * x + y * y + z * z; }
 		Float Length() const { return std::sqrt(LengthSquared()); }
 

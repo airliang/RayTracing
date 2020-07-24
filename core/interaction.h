@@ -9,6 +9,7 @@ namespace AIR
 	class BSDF;
 	class Shape;
 	class MemoryArena;
+	class BSSRDF;
 
 	struct Interaction {
 		// Interaction Public Methods
@@ -136,6 +137,7 @@ namespace AIR
 
 		const Primitive* primitive = nullptr;
 		BSDF* bsdf = nullptr;
+		BSSRDF* bssrdf = nullptr;
 		const Shape* shape = nullptr;
 	};
 
