@@ -5,6 +5,7 @@
 #include "bsdf.h"
 #include "film.h"
 #include "parallelism.h"
+#include "robject.h"
 
 namespace AIR
 {
@@ -81,6 +82,19 @@ Spectrum UniformSampleOneLight(const Interaction& it, const Scene& scene,
 	return L;
 }
 
+//看MIS的公式：
+//                f(Xi)g(Xi)wf(Xi)                    f(Xj)g(Xj)wg(Xj)
+// 1/Nf∑[i=1, Nf]----------------  +  1/Ng∑[j=1, Ng]----------------
+//                   pdf_f(Xi)                            pdf_g(Xj)
+
+//那么渲染方程可以写成MIS的形式：
+//                L(Xi)brdf(Xi)wL(Xi)                    L(Xj)brdf(Xj)wBrdf(Xj)
+// 1/Nf∑[i=1, Nf]-------------------  +  1/Ng∑[j=1, Ng]----------------------
+//                   pdf_L(Xi)                                pdf_brdf(Xj)
+//由于在蒙特卡洛中的估计取N = 1，上式可以写成：
+// L(Xi)brdf(Xi)wL(Xi)     L(Xj)brdf(Xj)wBrdf(Xj)
+// -------------------  +  ----------------------
+//    pdf_L(Xi)                pdf_brdf(Xj)
 Spectrum EstimateDirect(const Interaction& it,
 	const Point2f& uScattering, const Light& light,
 	const Point2f& uLight, const Scene& scene, Sampler& sampler,
@@ -94,6 +108,7 @@ Spectrum EstimateDirect(const Interaction& it,
 	Vector3f wi;
 	Float lightPdf = 0, scatteringPdf = 0;
 	VisibilityTester visibility;
+	//multiple importance sampling中的Pdf_L
 	//首先对光源进行采样
 	Spectrum Li = light.Sample_Li(it, uLight, &wi, &lightPdf, &visibility);
 	if (lightPdf > 0 && !Li.IsBlack())
@@ -151,6 +166,8 @@ Spectrum EstimateDirect(const Interaction& it,
 		}
 	}
 
+	//multiple importance sampling中的Pdf_bsdf
+	//接下来是采样下一个路径，但前提是light一定不是deltalight
 	//处理bsdf采样，如果Light是DeltaLight，bsdf不处理，
     //因为deltalight只有采样光源才起作用
     if (!light.IsDeltaLight())
@@ -205,8 +222,8 @@ Spectrum EstimateDirect(const Interaction& it,
 			if (foundSurfaceInteraction)
 			{
 				//该方法有待实现
-				//if (lightIsect.primitive->GetAreaLight() == &light)
-				//	Li = lightIsect.Le(-wi);
+				if (lightIsect.primitive->GetAreaLight() == &light)
+					Li = lightIsect.Le(-wi);
 			}
 			else
 			{
