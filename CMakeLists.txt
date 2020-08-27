@@ -27,6 +27,7 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/integrators)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/samplers)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/textures)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/medium)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/cpptutorial)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/stb)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/spdlog/include)
 #include_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/openexr/config)
@@ -168,6 +169,9 @@ set(MEDIUM_SOURCES
 	medium/homogeneousmedium.h
 )
 
+set(CPPTUTORIAL_SOURCES
+    cpptutorial/cpptutorial.h)
+
 set(SOURCES 
     RayTracing.h
 	RayTracing.cpp
@@ -182,6 +186,7 @@ set(SOURCES
 	${INTEGRATORS_SOURCES}
 	${SCENE_SOURCES}
 	${MEDIUM_SOURCES}
+	${CPPTUTORIAL_SOURCES}
 	)
 
 file(GLOB STB_FILES "thirdparty/stb/*.h" "third/stb/*.c")
