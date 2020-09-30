@@ -31,6 +31,15 @@ void inplace_swap(int* x, int* y) {
 	*y = *x ^ *y; /* Step 3 */
 }
 
+int fun1(unsigned word) 
+{
+	return (int)((word << 24) >> 24);
+}
+int fun2(unsigned word) 
+{
+	return ((int)word << 24) >> 24;
+}
+
 void test_showbytes()
 {
 	int val = 0x87654321;
@@ -46,7 +55,18 @@ void test_showbytes()
 
 	const char* s = "abcdef";
 	show_bytes((byte_pointer)s, strlen(s));
+
+	val = 0x00000076;
+	int shift = fun2(val);
+	printf("shift = %d \n", shift);
+	show_int(shift);
+
+	val = 0x000000C9;
+	shift = fun2(val);
+	printf("shift = %d \n", shift);
+	show_int(shift);
 }
+
 
 class A
 {
@@ -65,7 +85,7 @@ public:
 	{
 		std::cout << "move construct" << std::endl;
 	}
-
+	
 private:
 	int x;
 };
@@ -76,4 +96,17 @@ void test_rightvalue()
 
 	A a;
 	A b = std::move(a);
+	A* c = new A();
+
+	int y = 3;
+	//int y = 3;
+	inplace_swap(&y, &y);
+	
+	std::cout << "after inplace_swap, y=" << y << std::endl;
+
+	y = 0x87654321 & 0x000000FF;
+	printf("y = %08x\n", y);
+
+	y = ~0x87654300 | 0x00000021 ;
+	printf("y = %08x\n", y);
 }

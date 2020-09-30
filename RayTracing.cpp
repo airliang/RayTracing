@@ -16,6 +16,7 @@
 #include "imageio.h"
 #include <filesystem>
 #include "spdlog/spdlog.h"
+#include "cpptutorial.h"
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
@@ -25,18 +26,11 @@ int main(int argc, char* argv[])
 	int testLogVar = 1000;
 	Log::Error("HaltonSampler can only sample {}{} ",
 		"dimensions.", testLogVar);
-	//auto forward = Vector3f::forward;
-	//forward = forward.Normalize();
-	//cout << "sizeof(matrix4x4)=" << sizeof(Matrix4x4) <<endl;
-	//cout << "sizeof(quaternion)=" << sizeof(Quaternion) <<endl;
-	//cout << "sizeof(matrix3x3)=" << sizeof(Matrix3x3) << endl;
-	//cout << "sizeof(Vector3f)=" << sizeof(Vector3f) << endl;
-	//cout << "sizeof(Vector2f)=" << sizeof(Vector2f) << endl;
-	//cout << "sizeof(Sphere)=" << sizeof(Sphere) << endl;
-	//cout << "sizeof(GeometryParam)=" << sizeof(GeometryParam) << endl;
-	//cout << "sizeof(Transform)=" << sizeof(Transform) << endl;
-	//cout << "sizeof(RGBSpectrum)=" << sizeof(RGBSpectrum) << endl;
-	//cout << "machine epsilon=" << MachineEpsilon << endl;
+	
+	test_showbytes();
+	test_rightvalue();
+	system("pause");
+	return 0;
 
 	std::string directory = DirectoryContaining("scene.rt");
 
