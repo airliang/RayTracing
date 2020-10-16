@@ -28,7 +28,8 @@ int main(int argc, char* argv[])
 		"dimensions.", testLogVar);
 	
 	test_showbytes();
-	test_rightvalue();
+	//test_rightvalue();
+	test_operators();
 	system("pause");
 	return 0;
 

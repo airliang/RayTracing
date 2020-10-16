@@ -67,6 +67,13 @@ void test_showbytes()
 	show_int(shift);
 }
 
+int div16(int x)
+{
+	int bias = (x >> 31) & 0xF;
+	//如果x是负数，那么bias = 15，算出的结果往0靠近。
+	return (x + bias) >> 4;
+}
+
 
 class A
 {
@@ -109,4 +116,16 @@ void test_rightvalue()
 
 	y = ~0x87654300 | 0x00000021 ;
 	printf("y = %08x\n", y);
+}
+
+void test_operators()
+{
+	int x = 17;
+	printf("y = %d\n", div16(x));
+	int y = 17 / 16;
+	printf("operator div y = %d\n", y);
+
+	printf("y = %d\n", div16(-x));
+	y = (-17) / 16;
+	printf("operator div y = %d\n", y);
 }
