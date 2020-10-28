@@ -205,10 +205,18 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 MESSAGE("Identifying the OS...")
 if(WIN32)
   MESSAGE("This is Windows.")
+
+  SET(CXX_VERSION_17 "/std:c++17")
+  SET(CXX_VERSION_11 "/std:c++11")
+  SET(CXX_VERSION_0x "/std:c++0x")
 elseif(APPLE)
   MESSAGE("This is MacOS.")
   SET(CMAKE_C_COMPILER "/usr/bin/gcc") # 默认c编译器
   SET(CMAKE_CXX_COMPILER "/usr/bin/g++") # 默认c++编译器
+
+  SET(CXX_VERSION_17 "--std:c++17")
+  SET(CXX_VERSION_11 "--std:c++11")
+  SET(CXX_VERSION_0x "--std:c++0x")
 elseif(UNIX)
   MESSAGE("This is Linux.")
 endif()
@@ -221,18 +229,16 @@ endif()
 
 # 检查c++编译器标志，设置c++11支持变量
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("/std:c++17" COMPILER_SUPPORTS_CXX17)
-CHECK_CXX_COMPILER_FLAG("/std:c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("/std:c++0x" COMPILER_SUPPORTS_CXX0X)
+
+CHECK_CXX_COMPILER_FLAG(CXX_VERSION_17 COMPILER_SUPPORTS_CXX17)
+CHECK_CXX_COMPILER_FLAG(CXX_VERSION_11 COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG(CXX_VERSION_0x COMPILER_SUPPORTS_CXX0X)
+
 
 # 使用变量设置编译标志
 if (COMPILER_SUPPORTS_CXX17)
 set(CMAKE_CXX_STANDARD 17)
 if (MSVC)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc::__cplusplus /std:c++17")
-#add_compile_options("/wd4819")
-
-
 message("MSVC set c++ 17 compiler.")
 else()
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
@@ -256,4 +262,8 @@ set_target_properties(RayTracing PROPERTIES
     VS_DEBUGGER_COMMAND_ARGUMENTS "${CMAKE_CURRENT_SOURCE_DIR}/scenes/scene.rt")
 else ()
 endif()
+if(APPLE)
+add_definitions(--std:c++11)
+else()
 add_definitions(/std:c++14)
+endif()
