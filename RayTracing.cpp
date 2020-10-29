@@ -14,7 +14,7 @@
 #include "fileutil.h"
 #include "log.h"
 #include "imageio.h"
-#include <filesystem>
+//#include <filesystem>
 #include "spdlog/spdlog.h"
 #include "cpptutorial.h"
 using namespace std;
@@ -31,16 +31,17 @@ int main(int argc, char* argv[])
 	//test_rightvalue();
 	test_operators();
 	system("pause");
-	return 0;
+	
 
 	std::string directory = DirectoryContaining("scene.rt");
 
 	//这里获取全路径
-	std::filesystem::path path = std::filesystem::current_path();
-	std::string rootPath = path.string();
+	std::string rootPath = argv[0];//std::filesystem::current_path();
 	int index = rootPath.find("bin");
 	rootPath = rootPath.substr(0, index);
 	Log::Info("Application root path is:{}", rootPath);
+
+	return 0;
 
 	Transform transform;
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, -1.0f, 1.0f, 2.0f * Pi, &transform);
