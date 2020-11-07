@@ -41,7 +41,7 @@ int main(int argc, char* argv[])
 	rootPath = rootPath.substr(0, index);
 	Log::Info("Application root path is:{}", rootPath);
 
-	return 0;
+	//return 0;
 
 	Transform transform;
 	std::shared_ptr<Sphere> sphere = std::make_shared<Sphere>(1.0f, -1.0f, 1.0f, 2.0f * Pi, &transform);
@@ -83,6 +83,18 @@ int main(int argc, char* argv[])
 		else if (!strncmp(argv[i], "-integrator", 11))
 		{
 			options.IntegratorName = argv[++i];
+		}
+		else if (!strncmp(argv[i], "-spp", 4))
+		{
+			options.samplePerPixel = atoi(argv[++i]);
+		}
+		else if (!strncmp(argv[i], "-xspp", 4))
+		{
+			options.xSpp = atoi(argv[++i]);
+		}
+		else if (!strncmp(argv[i], "-yspp", 4))
+		{
+			options.ySpp = atoi(argv[++i]);
 		}
 		else
 		{

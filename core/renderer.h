@@ -110,6 +110,11 @@ namespace AIR
 		int nThreads = 1;
 		int filmWidth = 512;
 		int filmHeight = 512;
+		int samplePerPixel = 16;
+		//stratified sampler use xSamples
+		int xSpp = 4;
+		//stratified sampler use ySamples
+		int ySpp = 4;
 		std::string FilterName = "box";
 		//ParamSet FilterParams;
 		std::string FilmName = "image";

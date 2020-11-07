@@ -213,8 +213,8 @@ namespace AIR
 		if (samplerParams.samplerName == "stratified")
 		{
 			samplerParams.stratified.dimension = 4;
-			samplerParams.stratified.xSamples = 4;
-			samplerParams.stratified.ySamples = 4;
+			samplerParams.stratified.xSamples = g_globalOptions.xSpp;
+			samplerParams.stratified.ySamples = g_globalOptions.ySpp;
 			samplerParams.stratified.jitter = true;
 			sampler = new StratifiedSampler(samplerParams.stratified.xSamples, samplerParams.stratified.ySamples,
 				samplerParams.stratified.jitter, samplerParams.stratified.dimension);
