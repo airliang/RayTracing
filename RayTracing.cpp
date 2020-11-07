@@ -101,13 +101,18 @@ int main(int argc, char* argv[])
 			filenames.push_back(argv[i]);
 		}
 	}
+
 	ImageIO::InitPath(rootPath);
 
 	Renderer::GetInstance().Init(options);
+	Log::Info("ParseScene {}......", filenames[0]);
 	Renderer::GetInstance().ParseScene(filenames[0]);
+
+	Log::Info("Begin render.......");
 	Renderer::GetInstance().Run();
 	Renderer::GetInstance().Cleanup();
 	//LOG << "render completed!" << endl;
+	Log::Info("Render done!");
 	system("pause");
 	return 0;
 }

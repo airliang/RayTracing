@@ -19,6 +19,7 @@
 #include "imagetexture.h"
 #include "robject.h"
 #include "homogeneousmedium.h"
+#include "log.h"
 
 namespace AIR
 {
@@ -96,6 +97,8 @@ namespace AIR
 			ParseTriangleMesh(fsmesh);
 			fsmesh.close();
 		}
+
+		Log::Info("ParseTriangleMesh done!");
 
 		std::ifstream fs;
 
