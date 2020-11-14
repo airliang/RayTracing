@@ -104,7 +104,13 @@ int main(int argc, char* argv[])
 
 	ImageIO::InitPath(rootPath);
 
+	Log::Info("integrator:{}", options.IntegratorName);
+	Log::Info("sampler:{}", options.SamplerName);
+	Log::Info("xspp:{}", options.xSpp);
+	Log::Info("yspp:{}", options.ySpp);
+	Log::Info("image size:{},{}", options.filmWidth, options.filmHeight);
 	Renderer::GetInstance().Init(options);
+	
 	Log::Info("ParseScene {}......", filenames[0]);
 	Renderer::GetInstance().ParseScene(filenames[0]);
 
