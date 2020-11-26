@@ -30,6 +30,8 @@ int main(int argc, char* argv[])
 	test_showbytes();
 	//test_rightvalue();
 	test_operators();
+
+	Log::Info("sizeof SamplerState={}", sizeof(SamplerState));
 	system("pause");
 	
 

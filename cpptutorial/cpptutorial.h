@@ -129,3 +129,58 @@ void test_operators()
 	y = (-17) / 16;
 	printf("operator div y = %d\n", y);
 }
+
+struct SamplerState
+{
+	size_t sampler_filter0 : 2;
+	size_t sampler_filter1 : 2;
+	size_t sampler_filter2 : 2;
+	size_t sampler_filter3 : 2;
+	size_t sampler_filter4 : 2;
+	size_t sampler_filter5 : 2;
+	size_t sampler_filter6 : 2;
+	size_t sampler_filter7 : 2;
+	// test_alphaShadow
+	size_t sampler_filter8 : 2;
+	size_t sampler_filter9 : 2;
+	size_t sampler_filter10 : 2;
+	size_t sampler_filter11 : 2;
+	// test_end
+
+	size_t sampler_adr0 : 3;
+	size_t sampler_adr1 : 3;
+	size_t sampler_adr2 : 3;
+	size_t sampler_adr3 : 3;
+	size_t sampler_adr4 : 3;
+	size_t sampler_adr5 : 3;
+	size_t sampler_adr6 : 3;
+	size_t sampler_adr7 : 3;
+
+	// test_alphaShadow
+	size_t sampler_adr8 : 2;
+	size_t sampler_adr9 : 2;
+	size_t sampler_adr10 : 2;
+	size_t sampler_adr11 : 2;
+	// test_end
+
+	size_t sampler_srgb0 : 1;
+	size_t sampler_srgb1 : 1;
+	size_t sampler_srgb2 : 1;
+	size_t sampler_srgb3 : 1;
+	size_t sampler_srgb4 : 1;
+	size_t sampler_srgb5 : 1;
+	size_t sampler_srgb6 : 1;
+	size_t sampler_srgb7 : 1;
+	size_t sampler_srgb8 : 1;
+	size_t sampler_srgb9 : 1;
+	size_t sampler_srgb10 : 1;
+	size_t sampler_srgb11 : 1;
+
+	float sampler_miplodbias0;
+	float sampler_miplodbias1;
+
+	SamplerState()
+	{
+		memset(this, 0, sizeof(SamplerState));
+	}
+};
