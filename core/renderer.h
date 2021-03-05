@@ -135,7 +135,7 @@ namespace AIR
 		Camera* MakeCamera();
 		Film* MakeFilm();
 		std::unique_ptr<Filter> MakeFilter();
-		Sampler* MakeSampler();
+		Sampler* MakeSampler(const Bounds2i& filmBounds);
 
 		// RenderOptions Public Data
 		Float transformStartTime = 0, transformEndTime = 1;

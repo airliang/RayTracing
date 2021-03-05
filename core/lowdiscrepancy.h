@@ -35,7 +35,9 @@ namespace AIR
 	//@return    反转后的小数
 	//例如a = 5 baseIndex = 0
 	//那么baseIndex = 0对应的是二进制即base = 2
-	// a = 101 inverse = 0.101 = 5/8
+	// a = 101 inverse = 0.101 = (5/8)10
+	// 再假设a = 4，base = 2
+	// a = 100 radicalInverse = 0.001 = (1/8)10
 	Float RadicalInverse(int baseIndex, uint64_t a);
 
 	/** 注释抄袭自paladin

@@ -14,9 +14,10 @@
 #include "fileutil.h"
 #include "log.h"
 #include "imageio.h"
-//#include <filesystem>
+//#include <filesystem>h"
 #include "spdlog/spdlog.h"
 #include "cpptutorial.h"
+#include "haltonsampler.h"
 using namespace std;
 using namespace AIR;
 int main(int argc, char* argv[])
@@ -32,8 +33,9 @@ int main(int argc, char* argv[])
 	test_operators();
 
 	Log::Info("sizeof SamplerState={}", sizeof(SamplerState));
-	system("pause");
-	
+	//system("pause");
+	int row = 9 % 4;
+	int col = 9 / 4;
 
 	std::string directory = DirectoryContaining("scene.rt");
 

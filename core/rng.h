@@ -79,12 +79,15 @@ public:
         //return std::min(OneMinusEpsilon, Float(UniformUInt32() * 0x1p-32f));
 //#endif
     }
+    
     template <typename Iterator>
-    void Shuffle(Iterator begin, Iterator end) {
+    void Shuffle(Iterator begin, Iterator end) 
+    {
         for (Iterator it = end - 1; it > begin; --it)
             std::iter_swap(it,
                            begin + UniformUInt32((uint32_t)(it - begin + 1)));
     }
+    
     void Advance(int64_t idelta) {
         uint64_t cur_mult = PCG32_MULT, cur_plus = inc, acc_mult = 1u,
                  acc_plus = 0u, delta = (uint64_t)idelta;

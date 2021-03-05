@@ -12,7 +12,14 @@ namespace AIR
 		HaltonSampler(int samplesPerPixel, const Bounds2i& sampleBounds);
 
 		int64_t GetIndexForSample(int64_t sampleNum) const;
+
+		//采样某个维度的第index个样本
+		//@param index 样本序号
+		//@param dimension 第几个维度
+		//return 随机变量
 		Float SampleDimension(int64_t index, int dimension) const;
+
+		std::unique_ptr<Sampler> Clone(int seed);
 	protected:
 	private:
 		//重新排序的base数组
@@ -29,7 +36,7 @@ namespace AIR
 
 		//同一个像素里的下一个sample在radicalInversePermutations中的间隔
 		int sampleStride;
-
+		int multInverse[2];
 		//当前正在处理的像素
 		mutable Point2i pixelForOffset = Point2i(std::numeric_limits<int>::max(),
 			std::numeric_limits<int>::max());
@@ -37,6 +44,7 @@ namespace AIR
 		//当前正在处理的像素索引
 		mutable int64_t offsetForCurrentPixel;
 
+		//返回某个维度的数组的起始位置
 		const uint16_t* PermutationForDimension(int dim) const {
 			if (dim >= PrimeTableSize)
 				Log::Error("HaltonSampler can only sample {}{} "

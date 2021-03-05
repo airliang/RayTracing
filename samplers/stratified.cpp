@@ -1,4 +1,5 @@
 #include "stratified.h"
+#include "sampling.h"
 
 namespace AIR
 {

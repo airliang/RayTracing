@@ -15,6 +15,7 @@
 #include "log.h"
 #include "volpathintegrator.h"
 #include "randomsampler.h"
+#include "haltonsampler.h"
 
 namespace AIR
 {
@@ -152,9 +153,12 @@ namespace AIR
 	Integrator* RenderOptions::MakeIntegrator()
 	{
 		std::shared_ptr<Camera> camera(MakeCamera());
-		std::shared_ptr<Sampler> sampler(MakeSampler());
-		Integrator* integrator = nullptr;
+
 		Bounds2i pixelBounds = camera->film->GetOutputSampleBounds();
+
+		std::shared_ptr<Sampler> sampler(MakeSampler(pixelBounds));
+		Integrator* integrator = nullptr;
+		
 		if (IntegratorName == "path")
 		{
 			integrator = new PathIntegrator(maxDepth, camera, sampler, pixelBounds);
@@ -180,7 +184,10 @@ namespace AIR
 			size_t ex = sceneFile.find_last_of('.');
 			if (ex >= 0)
 			{
-				filmParams.imageFile = sceneFile.substr(0, ex) + ".png";
+				char strSpp[16] = { 0 };
+				sprintf_s(strSpp, "_spp[%d]_", samplerParams.spp);
+				filmParams.imageFile = sceneFile.substr(0, ex) + std::string("_") + samplerParams.samplerName 
+					+ std::string(strSpp) + IntegratorName + ".png";
 			}
 		}
 		std::unique_ptr<Filter> filter = MakeFilter();
@@ -207,7 +214,7 @@ namespace AIR
 		return std::unique_ptr<Filter>(filter);
 	}
 
-	Sampler* RenderOptions::MakeSampler()
+	Sampler* RenderOptions::MakeSampler(const Bounds2i& filmBounds)
 	{
 		Sampler* sampler = nullptr;
 		if (samplerParams.samplerName == "stratified")
@@ -222,6 +229,10 @@ namespace AIR
 		else if (samplerParams.samplerName == "random")
 		{
 			sampler = new RandomSampler(samplerParams.spp, 0);
+		}
+		else if (samplerParams.samplerName == "halton")
+		{
+			sampler = new HaltonSampler(samplerParams.spp, filmBounds);
 		}
 		else
 		{

@@ -30,13 +30,4 @@ namespace AIR
 		bool jitter = true);
 	void LatinHypercube(Float *samples, int nSamples, int nDim, RNG &rng);
 
-	// Sampling Inline Functions
-	template <typename T>
-	void Shuffle(T *samp, int count, int nDimensions, RNG &rng) {
-		for (int i = 0; i < count; ++i) {
-			int other = i + rng.UniformUInt32(count - i);
-			for (int j = 0; j < nDimensions; ++j)
-				std::swap(samp[nDimensions * i + j], samp[nDimensions * other + j]);
-		}
-	}
 }

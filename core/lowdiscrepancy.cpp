@@ -1,4 +1,5 @@
 #include "lowdiscrepancy.h"
+#include "log.h"
 
 namespace AIR
 {
@@ -88,7 +89,7 @@ namespace AIR
 		7703, 7717, 7723, 7727, 7741, 7753, 7757, 7759, 7789, 7793, 7817, 7823,
 		7829, 7841, 7853, 7867, 7873, 7877, 7879, 7883, 7901, 7907, 7919 };
 
-	//每个质数在数组中的起始位置索引
+	//每个质数的和前面所有质数的和在数组中的起始位置索引
 	const int PrimeSums[PrimeTableSize] = {
 		0, 2, 5, 10, 17,
 		// Subsequent prime sums
@@ -266,8 +267,203 @@ namespace AIR
 			return RadicalInverseSpecialized<5>(a);
 		case 3:
 			return RadicalInverseSpecialized<7>(a);
+		case 4:
+			return RadicalInverseSpecialized<11>(a);
+		case 5:
+			return RadicalInverseSpecialized<13>(a);
+		case 6:
+			return RadicalInverseSpecialized<17>(a);
+		case 7:
+			return RadicalInverseSpecialized<19>(a);
+		case 8:
+			return RadicalInverseSpecialized<23>(a);
+		case 9:
+			return RadicalInverseSpecialized<29>(a);
+		case 10:
+			return RadicalInverseSpecialized<31>(a);
+		case 11:
+			return RadicalInverseSpecialized<37>(a);
+		case 12:
+			return RadicalInverseSpecialized<41>(a);
+		case 13:
+			return RadicalInverseSpecialized<43>(a);
+		case 14:
+			return RadicalInverseSpecialized<47>(a);
+		case 15:
+			return RadicalInverseSpecialized<53>(a);
+		case 16:
+			return RadicalInverseSpecialized<59>(a);
+		case 17:
+			return RadicalInverseSpecialized<61>(a);
+		case 18:
+			return RadicalInverseSpecialized<67>(a);
+		case 19:
+			return RadicalInverseSpecialized<71>(a);
+		case 20:
+			return RadicalInverseSpecialized<73>(a);
+		case 21:
+			return RadicalInverseSpecialized<79>(a);
+		case 22:
+			return RadicalInverseSpecialized<83>(a);
+		case 23:
+			return RadicalInverseSpecialized<89>(a);
+		case 24:
+			return RadicalInverseSpecialized<97>(a);
+		case 25:
+			return RadicalInverseSpecialized<101>(a);
+		case 26:
+			return RadicalInverseSpecialized<103>(a);
+		case 27:
+			return RadicalInverseSpecialized<107>(a);
+		case 28:
+			return RadicalInverseSpecialized<109>(a);
+		case 29:
+			return RadicalInverseSpecialized<113>(a);
+		case 30:
+			return RadicalInverseSpecialized<127>(a);
+		case 31:
+			return RadicalInverseSpecialized<131>(a);
+		case 32:
+			return RadicalInverseSpecialized<137>(a);
+		case 33:
+			return RadicalInverseSpecialized<139>(a);
+		case 34:
+			return RadicalInverseSpecialized<149>(a);
+		case 35:
+			return RadicalInverseSpecialized<151>(a);
+		case 36:
+			return RadicalInverseSpecialized<157>(a);
+		case 37:
+			return RadicalInverseSpecialized<163>(a);
+		case 38:
+			return RadicalInverseSpecialized<167>(a);
+		case 39:
+			return RadicalInverseSpecialized<173>(a);
+		case 40:
+			return RadicalInverseSpecialized<179>(a);
+		case 41:
+			return RadicalInverseSpecialized<181>(a);
+		case 42:
+			return RadicalInverseSpecialized<191>(a);
+		case 43:
+			return RadicalInverseSpecialized<193>(a);
+		case 44:
+			return RadicalInverseSpecialized<197>(a);
+		case 45:
+			return RadicalInverseSpecialized<199>(a);
+		case 46:
+			return RadicalInverseSpecialized<211>(a);
+		case 47:
+			return RadicalInverseSpecialized<223>(a);
+		case 48:
+			return RadicalInverseSpecialized<227>(a);
+		case 49:
+			return RadicalInverseSpecialized<229>(a);
+		case 50:
+			return RadicalInverseSpecialized<233>(a);
+		case 51:
+			return RadicalInverseSpecialized<239>(a);
+		case 52:
+			return RadicalInverseSpecialized<241>(a);
+		case 53:
+			return RadicalInverseSpecialized<251>(a);
+		case 54:
+			return RadicalInverseSpecialized<257>(a);
+		case 55:
+			return RadicalInverseSpecialized<263>(a);
+		case 56:
+			return RadicalInverseSpecialized<269>(a);
+		case 57:
+			return RadicalInverseSpecialized<271>(a);
+		case 58:
+			return RadicalInverseSpecialized<277>(a);
+		case 59:
+			return RadicalInverseSpecialized<281>(a);
+		case 60:
+			return RadicalInverseSpecialized<283>(a);
+		case 61:
+			return RadicalInverseSpecialized<293>(a);
+		case 62:
+			return RadicalInverseSpecialized<307>(a);
+		case 63:
+			return RadicalInverseSpecialized<311>(a);
+		case 64:
+			return RadicalInverseSpecialized<313>(a);
+		case 65:
+			return RadicalInverseSpecialized<317>(a);
+		case 66:
+			return RadicalInverseSpecialized<331>(a);
+		case 67:
+			return RadicalInverseSpecialized<337>(a);
+		case 68:
+			return RadicalInverseSpecialized<347>(a);
+		case 69:
+			return RadicalInverseSpecialized<349>(a);
+		case 70:
+			return RadicalInverseSpecialized<353>(a);
+		case 71:
+			return RadicalInverseSpecialized<359>(a);
+		case 72:
+			return RadicalInverseSpecialized<367>(a);
+		case 73:
+			return RadicalInverseSpecialized<373>(a);
+		case 74:
+			return RadicalInverseSpecialized<379>(a);
+		case 75:
+			return RadicalInverseSpecialized<383>(a);
+		case 76:
+			return RadicalInverseSpecialized<389>(a);
+		case 77:
+			return RadicalInverseSpecialized<397>(a);
+		case 78:
+			return RadicalInverseSpecialized<401>(a);
+		case 79:
+			return RadicalInverseSpecialized<409>(a);
+		case 80:
+			return RadicalInverseSpecialized<419>(a);
+		case 81:
+			return RadicalInverseSpecialized<421>(a);
+		case 82:
+			return RadicalInverseSpecialized<431>(a);
+		case 83:
+			return RadicalInverseSpecialized<433>(a);
+		case 84:
+			return RadicalInverseSpecialized<439>(a);
+		case 85:
+			return RadicalInverseSpecialized<443>(a);
+		case 86:
+			return RadicalInverseSpecialized<449>(a);
+		case 87:
+			return RadicalInverseSpecialized<457>(a);
+		case 88:
+			return RadicalInverseSpecialized<461>(a);
+		case 89:
+			return RadicalInverseSpecialized<463>(a);
+		case 90:
+			return RadicalInverseSpecialized<467>(a);
+		case 91:
+			return RadicalInverseSpecialized<479>(a);
+		case 92:
+			return RadicalInverseSpecialized<487>(a);
+		case 93:
+			return RadicalInverseSpecialized<491>(a);
+		case 94:
+			return RadicalInverseSpecialized<499>(a);
+		case 95:
+			return RadicalInverseSpecialized<503>(a);
+		case 96:
+			return RadicalInverseSpecialized<509>(a);
+		case 97:
+			return RadicalInverseSpecialized<521>(a);
+		case 98:
+			return RadicalInverseSpecialized<523>(a);
+		case 99:
+			return RadicalInverseSpecialized<541>(a);
+		case 100:
+			return RadicalInverseSpecialized<547>(a);
 		default:
-			return ReverseBits64(a) * 0x1p-64;
+			Log::Error("Base {} is >= 1024, the limit of RadicalInverseSpecialized", baseIndex);
+			return 0;
 		}
 	}
 
@@ -283,9 +479,406 @@ namespace AIR
 			return ScrambledRadicalInverseSpecialized<5>(perm, a);
 		case 3:
 			return ScrambledRadicalInverseSpecialized<7>(perm, a);
+		case 4:
+			return ScrambledRadicalInverseSpecialized<11>(perm, a);
+		case 5:
+			return ScrambledRadicalInverseSpecialized<13>(perm, a);
+		case 6:
+			return ScrambledRadicalInverseSpecialized<17>(perm, a);
+		case 7:
+			return ScrambledRadicalInverseSpecialized<19>(perm, a);
+		case 8:
+			return ScrambledRadicalInverseSpecialized<23>(perm, a);
+		case 9:
+			return ScrambledRadicalInverseSpecialized<29>(perm, a);
+		case 10:
+			return ScrambledRadicalInverseSpecialized<31>(perm, a);
+		case 11:
+			return ScrambledRadicalInverseSpecialized<37>(perm, a);
+		case 12:
+			return ScrambledRadicalInverseSpecialized<41>(perm, a);
+		case 13:
+			return ScrambledRadicalInverseSpecialized<43>(perm, a);
+		case 14:
+			return ScrambledRadicalInverseSpecialized<47>(perm, a);
+		case 15:
+			return ScrambledRadicalInverseSpecialized<53>(perm, a);
+		case 16:
+			return ScrambledRadicalInverseSpecialized<59>(perm, a);
+		case 17:
+			return ScrambledRadicalInverseSpecialized<61>(perm, a);
+		case 18:
+			return ScrambledRadicalInverseSpecialized<67>(perm, a);
+		case 19:
+			return ScrambledRadicalInverseSpecialized<71>(perm, a);
+		case 20:
+			return ScrambledRadicalInverseSpecialized<73>(perm, a);
+		case 21:
+			return ScrambledRadicalInverseSpecialized<79>(perm, a);
+		case 22:
+			return ScrambledRadicalInverseSpecialized<83>(perm, a);
+		case 23:
+			return ScrambledRadicalInverseSpecialized<89>(perm, a);
+		case 24:
+			return ScrambledRadicalInverseSpecialized<97>(perm, a);
+		case 25:
+			return ScrambledRadicalInverseSpecialized<101>(perm, a);
+		case 26:
+			return ScrambledRadicalInverseSpecialized<103>(perm, a);
+		case 27:
+			return ScrambledRadicalInverseSpecialized<107>(perm, a);
+		case 28:
+			return ScrambledRadicalInverseSpecialized<109>(perm, a);
+		case 29:
+			return ScrambledRadicalInverseSpecialized<113>(perm, a);
+		case 30:
+			return ScrambledRadicalInverseSpecialized<127>(perm, a);
+		case 31:
+			return ScrambledRadicalInverseSpecialized<131>(perm, a);
+		case 32:
+			return ScrambledRadicalInverseSpecialized<137>(perm, a);
+		case 33:
+			return ScrambledRadicalInverseSpecialized<139>(perm, a);
+		case 34:
+			return ScrambledRadicalInverseSpecialized<149>(perm, a);
+		case 35:
+			return ScrambledRadicalInverseSpecialized<151>(perm, a);
+		case 36:
+			return ScrambledRadicalInverseSpecialized<157>(perm, a);
+		case 37:
+			return ScrambledRadicalInverseSpecialized<163>(perm, a);
+		case 38:
+			return ScrambledRadicalInverseSpecialized<167>(perm, a);
+		case 39:
+			return ScrambledRadicalInverseSpecialized<173>(perm, a);
+		case 40:
+			return ScrambledRadicalInverseSpecialized<179>(perm, a);
+		case 41:
+			return ScrambledRadicalInverseSpecialized<181>(perm, a);
+		case 42:
+			return ScrambledRadicalInverseSpecialized<191>(perm, a);
+		case 43:
+			return ScrambledRadicalInverseSpecialized<193>(perm, a);
+		case 44:
+			return ScrambledRadicalInverseSpecialized<197>(perm, a);
+		case 45:
+			return ScrambledRadicalInverseSpecialized<199>(perm, a);
+		case 46:
+			return ScrambledRadicalInverseSpecialized<211>(perm, a);
+		case 47:
+			return ScrambledRadicalInverseSpecialized<223>(perm, a);
+		case 48:
+			return ScrambledRadicalInverseSpecialized<227>(perm, a);
+		case 49:
+			return ScrambledRadicalInverseSpecialized<229>(perm, a);
+		case 50:
+			return ScrambledRadicalInverseSpecialized<233>(perm, a);
+		case 51:
+			return ScrambledRadicalInverseSpecialized<239>(perm, a);
+		case 52:
+			return ScrambledRadicalInverseSpecialized<241>(perm, a);
+		case 53:
+			return ScrambledRadicalInverseSpecialized<251>(perm, a);
+		case 54:
+			return ScrambledRadicalInverseSpecialized<257>(perm, a);
+		case 55:
+			return ScrambledRadicalInverseSpecialized<263>(perm, a);
+		case 56:
+			return ScrambledRadicalInverseSpecialized<269>(perm, a);
+		case 57:
+			return ScrambledRadicalInverseSpecialized<271>(perm, a);
+		case 58:
+			return ScrambledRadicalInverseSpecialized<277>(perm, a);
+		case 59:
+			return ScrambledRadicalInverseSpecialized<281>(perm, a);
+		case 60:
+			return ScrambledRadicalInverseSpecialized<283>(perm, a);
+		case 61:
+			return ScrambledRadicalInverseSpecialized<293>(perm, a);
+		case 62:
+			return ScrambledRadicalInverseSpecialized<307>(perm, a);
+		case 63:
+			return ScrambledRadicalInverseSpecialized<311>(perm, a);
+		case 64:
+			return ScrambledRadicalInverseSpecialized<313>(perm, a);
+		case 65:
+			return ScrambledRadicalInverseSpecialized<317>(perm, a);
+		case 66:
+			return ScrambledRadicalInverseSpecialized<331>(perm, a);
+		case 67:
+			return ScrambledRadicalInverseSpecialized<337>(perm, a);
+		case 68:
+			return ScrambledRadicalInverseSpecialized<347>(perm, a);
+		case 69:
+			return ScrambledRadicalInverseSpecialized<349>(perm, a);
+		case 70:
+			return ScrambledRadicalInverseSpecialized<353>(perm, a);
+		case 71:
+			return ScrambledRadicalInverseSpecialized<359>(perm, a);
+		case 72:
+			return ScrambledRadicalInverseSpecialized<367>(perm, a);
+		case 73:
+			return ScrambledRadicalInverseSpecialized<373>(perm, a);
+		case 74:
+			return ScrambledRadicalInverseSpecialized<379>(perm, a);
+		case 75:
+			return ScrambledRadicalInverseSpecialized<383>(perm, a);
+		case 76:
+			return ScrambledRadicalInverseSpecialized<389>(perm, a);
+		case 77:
+			return ScrambledRadicalInverseSpecialized<397>(perm, a);
+		case 78:
+			return ScrambledRadicalInverseSpecialized<401>(perm, a);
+		case 79:
+			return ScrambledRadicalInverseSpecialized<409>(perm, a);
+		case 80:
+			return ScrambledRadicalInverseSpecialized<419>(perm, a);
+		case 81:
+			return ScrambledRadicalInverseSpecialized<421>(perm, a);
+		case 82:
+			return ScrambledRadicalInverseSpecialized<431>(perm, a);
+		case 83:
+			return ScrambledRadicalInverseSpecialized<433>(perm, a);
+		case 84:
+			return ScrambledRadicalInverseSpecialized<439>(perm, a);
+		case 85:
+			return ScrambledRadicalInverseSpecialized<443>(perm, a);
+		case 86:
+			return ScrambledRadicalInverseSpecialized<449>(perm, a);
+		case 87:
+			return ScrambledRadicalInverseSpecialized<457>(perm, a);
+		case 88:
+			return ScrambledRadicalInverseSpecialized<461>(perm, a);
+		case 89:
+			return ScrambledRadicalInverseSpecialized<463>(perm, a);
+		case 90:
+			return ScrambledRadicalInverseSpecialized<467>(perm, a);
+		case 91:
+			return ScrambledRadicalInverseSpecialized<479>(perm, a);
+		case 92:
+			return ScrambledRadicalInverseSpecialized<487>(perm, a);
+		case 93:
+			return ScrambledRadicalInverseSpecialized<491>(perm, a);
+		case 94:
+			return ScrambledRadicalInverseSpecialized<499>(perm, a);
+		case 95:
+			return ScrambledRadicalInverseSpecialized<503>(perm, a);
+		case 96:
+			return ScrambledRadicalInverseSpecialized<509>(perm, a);
+		case 97:
+			return ScrambledRadicalInverseSpecialized<521>(perm, a);
+		case 98:
+			return ScrambledRadicalInverseSpecialized<523>(perm, a);
+		case 99:
+			return ScrambledRadicalInverseSpecialized<541>(perm, a);
+		case 100:
+			return ScrambledRadicalInverseSpecialized<547>(perm, a);
+		case 101:
+			return ScrambledRadicalInverseSpecialized<557>(perm, a);
+		case 102:
+			return ScrambledRadicalInverseSpecialized<563>(perm, a);
+		case 103:
+			return ScrambledRadicalInverseSpecialized<569>(perm, a);
+		case 104:
+			return ScrambledRadicalInverseSpecialized<571>(perm, a);
+		case 105:
+			return ScrambledRadicalInverseSpecialized<577>(perm, a);
+		case 106:
+			return ScrambledRadicalInverseSpecialized<587>(perm, a);
+		case 107:
+			return ScrambledRadicalInverseSpecialized<593>(perm, a);
+		case 108:
+			return ScrambledRadicalInverseSpecialized<599>(perm, a);
+		case 109:
+			return ScrambledRadicalInverseSpecialized<601>(perm, a);
+		case 110:
+			return ScrambledRadicalInverseSpecialized<607>(perm, a);
+		case 111:
+			return ScrambledRadicalInverseSpecialized<613>(perm, a);
+		case 112:
+			return ScrambledRadicalInverseSpecialized<617>(perm, a);
+		case 113:
+			return ScrambledRadicalInverseSpecialized<619>(perm, a);
+		case 114:
+			return ScrambledRadicalInverseSpecialized<631>(perm, a);
+		case 115:
+			return ScrambledRadicalInverseSpecialized<641>(perm, a);
+		case 116:
+			return ScrambledRadicalInverseSpecialized<643>(perm, a);
+		case 117:
+			return ScrambledRadicalInverseSpecialized<647>(perm, a);
+		case 118:
+			return ScrambledRadicalInverseSpecialized<653>(perm, a);
+		case 119:
+			return ScrambledRadicalInverseSpecialized<659>(perm, a);
+		case 120:
+			return ScrambledRadicalInverseSpecialized<661>(perm, a);
+		case 121:
+			return ScrambledRadicalInverseSpecialized<673>(perm, a);
+		case 122:
+			return ScrambledRadicalInverseSpecialized<677>(perm, a);
+		case 123:
+			return ScrambledRadicalInverseSpecialized<683>(perm, a);
+		case 124:
+			return ScrambledRadicalInverseSpecialized<691>(perm, a);
+		case 125:
+			return ScrambledRadicalInverseSpecialized<701>(perm, a);
+		case 126:
+			return ScrambledRadicalInverseSpecialized<709>(perm, a);
+		case 127:
+			return ScrambledRadicalInverseSpecialized<719>(perm, a);
+		case 128:
+			return ScrambledRadicalInverseSpecialized<727>(perm, a);
+		case 129:
+			return ScrambledRadicalInverseSpecialized<733>(perm, a);
+		case 130:
+			return ScrambledRadicalInverseSpecialized<739>(perm, a);
+		case 131:
+			return ScrambledRadicalInverseSpecialized<743>(perm, a);
+		case 132:
+			return ScrambledRadicalInverseSpecialized<751>(perm, a);
+		case 133:
+			return ScrambledRadicalInverseSpecialized<757>(perm, a);
+		case 134:
+			return ScrambledRadicalInverseSpecialized<761>(perm, a);
+		case 135:
+			return ScrambledRadicalInverseSpecialized<769>(perm, a);
+		case 136:
+			return ScrambledRadicalInverseSpecialized<773>(perm, a);
+		case 137:
+			return ScrambledRadicalInverseSpecialized<787>(perm, a);
+		case 138:
+			return ScrambledRadicalInverseSpecialized<797>(perm, a);
+		case 139:
+			return ScrambledRadicalInverseSpecialized<809>(perm, a);
+		case 140:
+			return ScrambledRadicalInverseSpecialized<811>(perm, a);
+		case 141:
+			return ScrambledRadicalInverseSpecialized<821>(perm, a);
+		case 142:
+			return ScrambledRadicalInverseSpecialized<823>(perm, a);
+		case 143:
+			return ScrambledRadicalInverseSpecialized<827>(perm, a);
+		case 144:
+			return ScrambledRadicalInverseSpecialized<829>(perm, a);
+		case 145:
+			return ScrambledRadicalInverseSpecialized<839>(perm, a);
+		case 146:
+			return ScrambledRadicalInverseSpecialized<853>(perm, a);
+		case 147:
+			return ScrambledRadicalInverseSpecialized<857>(perm, a);
+		case 148:
+			return ScrambledRadicalInverseSpecialized<859>(perm, a);
+		case 149:
+			return ScrambledRadicalInverseSpecialized<863>(perm, a);
+		case 150:
+			return ScrambledRadicalInverseSpecialized<877>(perm, a);
+		case 151:
+			return ScrambledRadicalInverseSpecialized<881>(perm, a);
+		case 152:
+			return ScrambledRadicalInverseSpecialized<883>(perm, a);
+		case 153:
+			return ScrambledRadicalInverseSpecialized<887>(perm, a);
+		case 154:
+			return ScrambledRadicalInverseSpecialized<907>(perm, a);
+		case 155:
+			return ScrambledRadicalInverseSpecialized<911>(perm, a);
+		case 156:
+			return ScrambledRadicalInverseSpecialized<919>(perm, a);
+		case 157:
+			return ScrambledRadicalInverseSpecialized<929>(perm, a);
+		case 158:
+			return ScrambledRadicalInverseSpecialized<937>(perm, a);
+		case 159:
+			return ScrambledRadicalInverseSpecialized<941>(perm, a);
+		case 160:
+			return ScrambledRadicalInverseSpecialized<947>(perm, a);
+		case 161:
+			return ScrambledRadicalInverseSpecialized<953>(perm, a);
+		case 162:
+			return ScrambledRadicalInverseSpecialized<967>(perm, a);
+		case 163:
+			return ScrambledRadicalInverseSpecialized<971>(perm, a);
+		case 164:
+			return ScrambledRadicalInverseSpecialized<977>(perm, a);
+		case 165:
+			return ScrambledRadicalInverseSpecialized<983>(perm, a);
+		case 166:
+			return ScrambledRadicalInverseSpecialized<991>(perm, a);
+		case 167:
+			return ScrambledRadicalInverseSpecialized<997>(perm, a);
+		case 168:
+			return ScrambledRadicalInverseSpecialized<1009>(perm, a);
+		case 169:
+			return ScrambledRadicalInverseSpecialized<1013>(perm, a);
+		case 170:
+			return ScrambledRadicalInverseSpecialized<1019>(perm, a);
+		case 171:
+			return ScrambledRadicalInverseSpecialized<1021>(perm, a);
+		case 172:
+			return ScrambledRadicalInverseSpecialized<1031>(perm, a);
+		case 173:
+			return ScrambledRadicalInverseSpecialized<1033>(perm, a);
+		case 174:
+			return ScrambledRadicalInverseSpecialized<1039>(perm, a);
+		case 175:
+			return ScrambledRadicalInverseSpecialized<1049>(perm, a);
+		case 176:
+			return ScrambledRadicalInverseSpecialized<1051>(perm, a);
+		case 177:
+			return ScrambledRadicalInverseSpecialized<1061>(perm, a);
+		case 178:
+			return ScrambledRadicalInverseSpecialized<1063>(perm, a);
+		case 179:
+			return ScrambledRadicalInverseSpecialized<1069>(perm, a);
+		case 180:
+			return ScrambledRadicalInverseSpecialized<1087>(perm, a);
+		case 181:
+			return ScrambledRadicalInverseSpecialized<1091>(perm, a);
+		case 182:
+			return ScrambledRadicalInverseSpecialized<1093>(perm, a);
+		case 183:
+			return ScrambledRadicalInverseSpecialized<1097>(perm, a);
+		case 184:
+			return ScrambledRadicalInverseSpecialized<1103>(perm, a);
+		case 185:
+			return ScrambledRadicalInverseSpecialized<1109>(perm, a);
+		case 186:
+			return ScrambledRadicalInverseSpecialized<1117>(perm, a);
+		case 187:
+			return ScrambledRadicalInverseSpecialized<1123>(perm, a);
+		case 188:
+			return ScrambledRadicalInverseSpecialized<1129>(perm, a);
+		case 189:
+			return ScrambledRadicalInverseSpecialized<1151>(perm, a);
+		case 190:
+			return ScrambledRadicalInverseSpecialized<1153>(perm, a);
+		case 191:
+			return ScrambledRadicalInverseSpecialized<1163>(perm, a);
+		case 192:
+			return ScrambledRadicalInverseSpecialized<1171>(perm, a);
+		case 193:
+			return ScrambledRadicalInverseSpecialized<1181>(perm, a);
+		case 194:
+			return ScrambledRadicalInverseSpecialized<1187>(perm, a);
+		case 195:
+			return ScrambledRadicalInverseSpecialized<1193>(perm, a);
+		case 196:
+			return ScrambledRadicalInverseSpecialized<1201>(perm, a);
+		case 197:
+			return ScrambledRadicalInverseSpecialized<1213>(perm, a);
+		case 198:
+			return ScrambledRadicalInverseSpecialized<1217>(perm, a);
+		case 199:
+			return ScrambledRadicalInverseSpecialized<1223>(perm, a);
+		case 200:
+			return ScrambledRadicalInverseSpecialized<1229>(perm, a);
 		default:
-			return ScrambledRadicalInverseSpecialized<2>(perm, a);
+			Log::Error("Base {} is >= 1024, the limit of ScrambledRadicalInverse",
+				baseIndex);
 		}
+
+		return 0;
 	}
 
 	std::vector<uint16_t> ComputeRadicalInversePermutations(RNG& rng) 

@@ -373,6 +373,10 @@ namespace AIR
 	Vector2f Vector2f::one = Vector2f(1.0f, 1.0f);
 	template <>
 	Vector2f Vector2f::zero = Vector2f(0, 0);
+	template <>
+	Vector2i Vector2i::one = Vector2i(1, 1);
+	template <>
+	Vector2i Vector2i::zero = Vector2i(0, 0);
 
 	template <typename T>
 	Vector2<T> Min(const Vector2<T> &pa, const Vector2<T> &pb) 
